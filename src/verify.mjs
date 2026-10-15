@@ -187,7 +187,18 @@ assert.equal(paperAuthors.length,15);assert.equal(paperAffiliations.length,7);
 for(const [name,affiliation] of paperAuthors){
   assert(paperHtml.includes(`${name}<sup>${affiliation}</sup>`));
   assert(paperBibtex.includes(name));
-  assert(!home.includes(name),'Author block must not be on the homepage');
+  assert(home.includes(`${name}<sup>${affiliation}</sup>`),'Homepage must include all paper authors');
+}
+assert(/<\/section>\s*<div class="home-paper" id="overview"/.test(home),'Paper must immediately follow the carousel');
+assert(home.includes('<h2 class="paper-title">'));
+assert(home.includes('/assets/paper.css'));
+assert.equal([...home.matchAll(/id="paper-overview"/g)].length,1);
+assert.equal([...home.matchAll(/src="\/assets\/paper\/dexarena-overview.png"/g)].length,1,'Do not repeat Figure 1 on the homepage');
+for(const id of ['abstract','data-pipeline','paper-results','citation','paper-bibtex','paper-wechat-id'])assert(home.includes(`id="${id}"`));
+assert(home.includes(paperAbstract));
+for(const html of [home,paperHtml]){
+  const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
+  assert.equal(ids.length,new Set(ids).size,'Paper embedding must not introduce duplicate IDs');
 }
 assert(paperHtml.includes(paperAbstract));
 assert(paperHtml.includes('datetime="2026-09-11"')&&paperHtml.includes('datetime="2026-10-06"'));

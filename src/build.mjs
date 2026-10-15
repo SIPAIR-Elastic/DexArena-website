@@ -3,7 +3,7 @@ import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { extraDocs, protocolBody, evidenceBody } from "./documentation.mjs";
-import { paperBody, paperBibtex } from "./paper-page.mjs";
+import { paperBody, paperBibtex, renderPaperBody } from "./paper-page.mjs";
 import { communityBody } from "./community.mjs";
 import { reportBody } from "./report.mjs";
 import { algorithmLink, algorithmDirectory, algorithmReferenceSection } from "./references.mjs";
@@ -178,7 +178,7 @@ function methodProfiles(){
 }
 
 function header(active="") {
-  const links = nav.map(([href,label,id]) => `<a class="site-nav__link ${active===id?"is-active":""}" href="${href}">${label}</a>`).join("");
+  const links = nav.map(([href,label,id]) => `<a class="site-nav__link ${active===id?"is-active":""}" href="${href}"${active===id?' aria-current="page"':""}>${label}</a>`).join("");
   return `<header class="site-nav is-solid" data-nav>
     <div class="site-nav__pill">
       <div class="site-nav__left">
@@ -213,7 +213,7 @@ function layout({title,description,active,body,pageClass=""}) {
     <title>${esc(title)}</title><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
     <link rel="preload" href="/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${pageClass==="paper-page"?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}<script src="/assets/site.js" defer></script>
+    <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${["paper-page","home-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}<script src="/assets/site.js" defer></script>
   </head><body class="${pageClass}">${header(active)}<main>${body}</main>${footer()}<div class="route-progress" aria-hidden="true"></div></body></html>`;
 }
 
@@ -287,27 +287,16 @@ const homeBody = `
     </article>
   </div>
   <div class="cover-controls">
+    <div class="cover-caption"><span>Explore DexArena</span><small>Skills. Scenes. Sequences.</small></div>
+    <div class="cover-pagination">
     <button class="carousel-arrow carousel-arrow--prev" type="button" data-prev aria-label="Previous slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5.5 8.5 12 15 18.5"/><path d="M9 12h11"/></svg></button>
-    <div class="cover-dots">${[0,1,2].map(i=>`<button type="button" data-dot="${i}" aria-label="Go to slide ${i+1}" class="${i===0?"active":""}"></button>`).join("")}</div>
+    <div class="cover-dots">${["Benchmark","Generalization","Bimanual tasks"].map((label,i)=>`<button type="button" data-dot="${i}" aria-label="Go to slide ${i+1}: ${label}" class="${i===0?"active":""}"><span>${String(i+1).padStart(2,"0")}</span><small>${label}</small></button>`).join("")}</div>
     <button class="carousel-arrow carousel-arrow--next" type="button" data-next aria-label="Next slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5.5 6.5 6.5L9 18.5"/><path d="M15 12H4"/></svg></button>
+    </div>
   </div>
 </section>
 
-<section class="project-intro section" id="overview">
-  <div class="section-label">Project</div>
-  <div class="project-title reveal"><h2><span class="text-accent">DexArena:</span> A Unified Benchmark for Long-Horizon Dexterous Manipulation</h2>
-    <p>DexArena pairs exact stage slices with their parent long-horizon environments, so isolated skill execution and end-to-end composition can be evaluated without changing the underlying physical setting.</p>
-  </div>
-  <div class="project-links reveal">${arrowLink("/paper/","Paper")}${arrowLink("/tasks/","Task catalog")}${arrowLink("/leaderboard/","Leaderboard")}${arrowLink("/docs/","Documentation")}</div>
-</section>
-
-<section class="section benchmark-overview" id="benchmark-overview">
-  <div class="section-head reveal"><span>The benchmark at a glance</span><h2><span class="text-accent">Dexterous skills,</span> connected into complete behaviors.</h2></div>
-  <div class="overview-prose reveal"><p>Long-horizon manipulation asks a robot to do more than repeat an isolated movement. It must coordinate its fingers and arms, interact precisely with articulated objects, and carry the outcome of one skill into the next. DexArena makes these abilities measurable in a shared physical setting.</p><p>The benchmark brings together <b>10 long-horizon tasks and 30 stage-level tasks</b>, spanning six motion categories and household, laboratory and industrial-style scenarios. Each stage is an exact slice of its parent sequence, with matching objects, initialization rules and physical success conditions.</p></div>
-  <figure class="overview-figure reveal"><a href="/assets/paper/dexarena-overview.png" target="_blank" rel="noreferrer" aria-label="Open Figure 1: DexArena overview at full resolution"><img src="/assets/paper/dexarena-overview.png" alt="Figure 1: DexArena overview, connecting long-horizon tasks, interactive objects, dexterous embodiments, six skill categories, task composition and diverse scenarios" loading="lazy" width="1800" height="1040"></a><figcaption><b>Figure 1 · DexArena overview.</b> Multi-stage tasks, interactive objects, dexterous embodiments and diverse scenarios in one benchmark. <a href="/assets/paper/dexarena-overview.png" target="_blank" rel="noreferrer">View full resolution ↗</a></figcaption></figure>
-  <div class="overview-prose reveal"><p>A common interface supports a parallel-jaw gripper, Sharpa Hand, Wuji Hand and XHand. The canonical demonstration release uses Panda arms with Sharpa hands: <b>3,000 replay-successful episodes</b>, with recorded scene states for restoration and offline rendering.</p><p>Six policy baselines are evaluated along three complementary axes: <b>skill execution, visual generalization and long-horizon composition</b>. Separating these questions reveals whether a policy has learned a contact-rich skill, can transfer it to a different scene, and can reliably use it as part of a complete task.</p></div>
-  <div class="overview-links">${arrowLink("/tasks/","Explore the tasks")}${arrowLink("/leaderboard/","Compare the baselines")}${arrowLink("/docs/quick-evaluation/","Start evaluating")}</div>
-</section>
+<div class="home-paper" id="overview" aria-label="DexArena paper">${renderPaperBody({home:true})}</div>
 
 <section class="home-tasks section-wide" id="simulation-tasks" data-task-showcase data-task-media="images">
   <div class="section-head centered reveal"><span>Simulation tasks</span><h2>Ten sequences. Thirty measurable stages.</h2><p>From kitchen preparation to precision assembly, each long-horizon task is decomposed into physically grounded stages.</p></div>

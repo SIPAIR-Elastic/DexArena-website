@@ -2,11 +2,82 @@
 
 Public, English-language website for the DexArena dexterous manipulation benchmark.
 
-Website: **https://dexarena-benchmark.adeptfawn4.chatgpt.site/**
+Selected hosting target: **Cloudflare Pages**. Record the actual public URL only
+after account authorization and a successful deployment; none is assumed here.
 
-The GitHub repository is private. The public website is hosted independently;
-visitors do not need GitHub access. GitHub Pages is not currently available for
-this private repository under its present configuration.
+The GitHub repository remains private. Only the generated website in `dist/`
+is published; visitors do not need GitHub access. The previous chatgpt.site,
+GitHub Pages, Vercel and Render targets are not the selected hosting platform.
+
+## Cloudflare Pages (selected host)
+
+Use **Workers & Pages → Create → Pages → Connect to Git**, not a Worker project.
+Authorize the Cloudflare GitHub App for **Only select repositories → Qhf7/DexArena**.
+Keep the GitHub repository private and production website public.
+
+- Production branch: `main`.
+- Framework preset: `None`.
+- Root directory: repository root (leave blank).
+- Build command: `npm run build:cloudflare`.
+- Build output directory: `dist`.
+- Node.js: `22` (also pinned in `.node-version`).
+- No start command or running Node server is needed for Pages.
+
+The build uses Cloudflare's `CF_PAGES_URL`, regenerates all 34 English pages at
+`/`, and verifies media, navigation, search, citations and benchmark results.
+For a stable production/custom domain, set `SITE_URL` to the project's **actual**
+HTTPS root URL. Do not reuse `/DexArena/` or an old hosting URL. After deployment,
+verify anonymous access, nested task pages, videos and search. Do not enable
+Cloudflare Access authentication for the public production hostname.
+
+Every output asset is checked against Pages' 25 MiB single-file limit, and source,
+credentials and symlinks are rejected from the public output. Git integration
+automatically deploys future pushes. Direct Upload is an alternative, but a
+Direct Upload project cannot later switch to Git integration in-place; choose the
+desired project type before creating it.
+
+Local validation (replace the URL with the actual project URL):
+
+```bash
+npm test
+SITE_URL=https://YOUR-ACTUAL-PROJECT.pages.dev/ npm run build:cloudflare
+```
+
+## Homepage layout
+
+The complete paper content follows the homepage carousel: title, 15 authors,
+seven affiliations, official institutional marks where available, PAIR links,
+abstract, Figures 1 and 3, findings and citation. It shares a renderer with
+`/paper/` so metadata stays consistent. The standalone paper URL is preserved.
+The black/blue/white header and numbered carousel controls are DexArena-specific.
+
+## Legacy Render Web Service (not the selected host)
+
+The configured service uses Build Command `yarn` and Start Command `yarn start`.
+No dependency packages are required. During Render's install step, the
+`postinstall` hook generates and verifies all 34 pages at the service root. The
+start script serves only `dist/`, binds to `0.0.0.0:$PORT`, and supports HEAD and
+byte-range requests for videos. It never serves the Git checkout or source.
+
+Explicit settings, if changing the dashboard configuration:
+
+- Branch: `main`; Root Directory: blank (repository root).
+- Build Command: `node scripts/build-render.mjs`.
+- Start Command: `node scripts/start-render.mjs` (or `yarn start`).
+- Health Check Path: `/_health`.
+- Node.js: 22 or later. Render's Node.js 24 runtime is supported.
+
+`RENDER_EXTERNAL_URL` supplies the actual public origin. Set `SITE_URL` only for
+a verified custom HTTPS root domain; do not set it to the old /DexArena/ URL.
+The start script also builds if an install hook was disabled or the build marker
+does not match the current Render commit. No paid plan upgrade is required by
+these code changes. A free web-service instance may have cold-start delays.
+
+```bash
+npm test
+RENDER_EXTERNAL_URL=https://dexarena.onrender.com npm run build:render
+PORT=10000 npm start
+```
 
 ## Build
 
@@ -78,7 +149,7 @@ The original image cards remain the default. The Images / Videos switch changes
 only the Simulation tasks card backgrounds, preserving the layout and task links.
 Share the video variant directly at:
 
-**https://dexarena-benchmark.adeptfawn4.chatgpt.site/?task-media=videos#simulation-tasks**
+`/?task-media=videos#simulation-tasks` on the selected site's actual public domain.
 
 Videos load only after selecting Videos and bringing cards into view. Pause videos
 also pauses the moving rows; failed videos retain the original image. The showcase

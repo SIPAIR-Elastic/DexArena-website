@@ -270,7 +270,7 @@ if(searchTriggers.length){
     previousFocus=document.activeElement;dialog.showModal();document.body.classList.add("search-open");input.focus();render();
     if(entries)return;
     try{
-      loadPromise ||= fetch("/DexArena/assets/search-index.json").then(response=>{if(!response.ok)throw new Error("Search unavailable");return response.json()});
+      loadPromise ||= fetch("/assets/search-index.json").then(response=>{if(!response.ok)throw new Error("Search unavailable");return response.json()});
       entries=await loadPromise;render();
     }catch{status.textContent="Search could not load. Please use Docs or the task catalog.";loadPromise=null}
   }

@@ -1,0 +1,15 @@
+{
+  "name": "dexarena-benchmark-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DexArena benchmark website with dependency-free static builds",
+  "engines": {"node": ">=22"},
+  "scripts": {
+    "postinstall": "node scripts/render-postinstall.mjs",
+    "build": "node scripts/build-cloudflare-pages.mjs",
+    "build:cloudflare": "node scripts/build-cloudflare-pages.mjs",
+    "build:render": "node scripts/build-render.mjs",
+    "start": "node scripts/start-render.mjs",
+    "test": "node --test scripts/render-deployment.test.mjs scripts/cloudflare-pages.test.mjs"
+  }
+}

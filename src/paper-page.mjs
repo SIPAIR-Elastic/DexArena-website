@@ -10,9 +10,12 @@ export const paperBibtex = "@misc{ping2026dexarena,\n  title = {DexArena: A Unif
 // Preserve the original marks on disk; do not redraw or alter official university artwork.
 export const universityLogos = ["umich.ico",null,"nus.png","penn.svg","ntu.png","stanford.png",null];
 const universitySizes = [[32,32],[601,160],[349,160],[563,184],[3006,1079],[192,192],[557,160]];
-export const paperBody = `
+export function renderPaperBody({home=false}={}) {
+  const titleTag=home?"h2":"h1";
+  return `
 <section class="paper-masthead section">
-  <h1>DexArena: A Unified Benchmark for Long-Horizon Dexterous Manipulation</h1>
+${home?'<div class="home-paper-eyebrow"><span>The research behind DexArena</span><a href="/paper/">Standalone paper page ↗</a></div>':""}
+  <${titleTag} class="paper-title">${paperTitle}</${titleTag}>
   <div class="paper-identity">
 <div class="paper-authors"><h2>Author</h2><div class="author-list">${paperAuthors.map(([name,index])=>'<a href="#affiliation-'+index+'" data-affiliation="'+index+'" title="'+paperAffiliations[index-1][0]+'">'+name+'<sup>'+index+'</sup></a>').join(', ')}</div></div>
     <div class="paper-affiliations" id="affiliations"><h2>Affiliations</h2><ol>${paperAffiliations.map(([name,url],i)=>'<li id="affiliation-'+(i+1)+'"><a href="'+url+'" title="'+(i+1)+'. '+name+'" aria-label="'+(i+1)+'. '+name+' official website" target="_blank" rel="noreferrer">'+(universityLogos[i]?'<span class="affiliation-logo-frame '+(i===3?'affiliation-logo-frame--dark':'')+'"><img class="affiliation-logo '+([0,5].includes(i)?'affiliation-logo--icon':'')+'" src="/assets/universities/'+universityLogos[i]+'" alt="'+name+' logo" width="'+universitySizes[i][0]+'" height="'+universitySizes[i][1]+'" decoding="async"></span>':'<span class="affiliation-english-name"><sup>'+(i+1)+'</sup>'+name+'</span>')+'</a></li>').join('')}</ol></div>
@@ -38,6 +41,7 @@ export const paperBody = `
   <div><p>Long-horizon dexterous manipulation remains a fundamental challenge for robot learning, requiring the composition of multiple skills, precise bimanual coordination, generalizable visual understanding, and robust skill transitions. Yet existing manipulation benchmarks largely emphasize isolated skills or support only a limited range of end-effectors, making these capabilities difficult to evaluate systematically. We introduce DexArena, a benchmark designed to evaluate learning and generalization in long-horizon bimanual dexterous manipulation. DexArena features 10 long-horizon tasks and 30 stage-level tasks spanning diverse household and industrial scenarios. Each long-horizon task is composed of explicitly defined stages with physically grounded success conditions, enabling reliable evaluation of both intermediate progress and end-to-end task completion. A unified benchmark interface and verified human-teleoperated demonstrations enable testing different policy learning algorithms, with standardized simulation configurations, scene randomization, trajectory replay, and task-level evaluation. Through extensive baseline experiments, we identify substantial challenges in precise manipulation, generalization to scene variation, and skill composition. DexArena establishes a challenging and reproducible benchmark for developing robot learning methods that move toward generalizable long-horizon dexterous behavior.</p><p class="paper-note">Primary area: applications to robotics, autonomy, planning.</p></div>
 </section>
 <section class="section paper-visual-section" id="paper-overview">
+${home?'<span class="anchor-alias" id="benchmark-overview" aria-hidden="true"></span>':""}
   <div class="section-head"><span>02 · Benchmark design</span><h2>Skills and sequences in a shared physical setting.</h2><p>Ten complete tasks and thirty matched stage environments connect household, laboratory and industrial interactions. Persistent physical predicates measure both intermediate progress and complete behavior.</p></div>
   <figure class="overview-figure"><a href="/assets/paper/dexarena-overview.png" target="_blank" rel="noreferrer" aria-label="Open Figure 1 at full resolution"><img src="/assets/paper/dexarena-overview.png" width="1800" height="1040" alt="Figure 1: DexArena overview of tasks, objects, embodiments, skills and scenarios" loading="lazy"></a><figcaption><b>Figure 1 · DexArena overview.</b> Multi-stage tasks, diverse scenarios, teleoperated demonstrations and multiple embodiments. <a href="/assets/paper/dexarena-overview.png" target="_blank" rel="noreferrer">Full resolution ↗</a></figcaption></figure>
 </section>
@@ -62,3 +66,5 @@ export const paperBody = `
 </code></pre><p class="citation-feedback" role="status" aria-live="polite" data-citation-status></p></div></section>
 <section class="section paper-footnotes"><details><summary>Submission transparency</summary><p>The supplied record identifies a public ICLR 2027 submission under CC BY 4.0, with ethics and submission requirements acknowledged. AI assistance was used to aid or polish writing; details are described in the paper. Reviewing administration is available in the OpenReview record.</p></details><p class="paper-note">Author metadata follows the record supplied for this project. Institutional names link to their official homepages; university marks identify affiliations only and do not imply institutional sponsorship or endorsement. PAIR's WeChat account details are supplied by the project owner. Public repository and project email links remain pending.</p></section>
 `;
+}
+export const paperBody = renderPaperBody();
