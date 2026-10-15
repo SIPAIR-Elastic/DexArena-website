@@ -1,10 +1,22 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {mkdtemp,mkdir,writeFile,symlink,rm} from 'node:fs/promises';
+import {mkdtemp,mkdir,readFile,writeFile,symlink,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createStaticServer} from './serve.mjs';
 import {renderSiteUrl} from './render-config.mjs';
+
+test('Render is the default build and the documented production host',async()=>{
+  const pkg=JSON.parse(await readFile(new URL('../package.json',import.meta.url),'utf8'));
+  assert.equal(pkg.scripts.build,'node scripts/build-render.mjs');
+  assert.equal(pkg.scripts.start,'node scripts/start-render.mjs');
+  assert.equal(pkg.scripts.postinstall,'node scripts/render-postinstall.mjs');
+  assert(!Object.keys(pkg.scripts).some(name=>/cloudflare|vercel/i.test(name)));
+  const readme=await readFile(new URL('../README.md',import.meta.url),'utf8');
+  assert(readme.includes('https://dexarena.onrender.com/'));
+  assert(readme.includes('## Render deployment'));
+  assert(!/cloudflare|vercel/i.test(readme));
+});
 
 test('Render URLs use the service root and allow a verified custom domain',()=>{
   assert.equal(renderSiteUrl({}),'https://dexarena.onrender.com/');

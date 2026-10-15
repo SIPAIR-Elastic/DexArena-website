@@ -6,10 +6,9 @@
   "engines": {"node": ">=22"},
   "scripts": {
     "postinstall": "node scripts/render-postinstall.mjs",
-    "build": "node scripts/build-cloudflare-pages.mjs",
-    "build:cloudflare": "node scripts/build-cloudflare-pages.mjs",
+    "build": "node scripts/build-render.mjs",
     "build:render": "node scripts/build-render.mjs",
     "start": "node scripts/start-render.mjs",
-    "test": "node --test scripts/render-deployment.test.mjs scripts/cloudflare-pages.test.mjs"
+    "test": "node --test scripts/render-deployment.test.mjs"
   }
 }
