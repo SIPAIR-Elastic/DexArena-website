@@ -212,10 +212,19 @@ runInNewContext(js.slice(js.indexOf('const citationButton='),js.indexOf('const d
 await copyButton.handlers.click();
 assert.equal(copiedText,paperBibtex);assert.equal(copyStatus.textContent,'BibTeX copied.');
 assert.equal(universityLogos.length,7);
-assert.equal([...paperHtml.matchAll(/class="affiliation-logo /g)].length,universityLogos.filter(Boolean).length);
+assert.equal(universityLogos.filter(Boolean).length,7,'All seven affiliations must display their institutional marks');
+for(const html of [home,paperHtml]){
+  assert.equal([...html.matchAll(/class="affiliation-logo /g)].length,7);
+  for(const index of [1,6]){
+    assert(html.includes(`src="/assets/universities/${universityLogos[index]}"`),'SJTU and Tsinghua logos must render on Home and Paper');
+    assert(html.includes(`alt="${paperAffiliations[index][0]} logo"`),'Institutional marks need English accessible labels');
+  }
+}
 for(const file of universityLogos.filter(Boolean))assert((await stat(join(dist,'assets','universities',file))).size>0);
-assert(!paperHtml.includes('/universities/sjtu.png')&&!paperHtml.includes('/universities/tsinghua.png'),'Do not display identity artwork containing Chinese');
-for(const index of [1,6])assert(paperHtml.includes(`<span class="affiliation-english-name"><sup>${index+1}</sup>${paperAffiliations[index][0]}</span>`));
+for(const file of ['sjtu.png','tsinghua.png']){
+  const buffer=await readFile(join(dist,'assets','universities',file));
+  assert.equal(buffer.subarray(0,8).toString('hex'),'89504e470d0a1a0a','Institutional mark must be a real PNG');
+}
 const refinement=await readFile(join(dist,'assets','refinement.css'),'utf8');
 for(const font of ['inter','manrope','jetbrains-mono']){
   assert(refinement.includes('/assets/fonts/'+font+'.woff2'));
