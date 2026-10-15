@@ -82,8 +82,11 @@
   "taskShowcaseVideos": {
     "manifest": "src/task-preview-videos.json",
     "count": 10,
-    "kind": "Short representative human-teleoperated stage demonstrations, matched by episode SHA-256 to the successful 100-episode subsets; not complete-sequence rollouts or policy-score evidence.",
-    "presentation": "Original recorded video timestamps, resized to 640 pixels wide, muted H.264. Original task images remain unchanged and are the default presentation and failure fallback."
+    "kind": "Representative human-teleoperated stages, matched by episode SHA-256 to the successful subsets and re-rendered from unchanged states; not complete-sequence rollouts or policy-score evidence.",
+    "presentation": "Ten authored RoboCasa interior styles. Matched original review-video samples retain their frame count, frame rate and duration. No physics steps. Original task images remain unchanged and are the default and failure fallback; original videos are retained as recovery assets.",
+    "render_manifest": "src/task-scene-renders.json",
+    "source": "https://robocasa.ai/",
+    "benchmark_scope": "Presentation-only styles do not change the published three-scene evaluation matrix."
   },
   "fonts": {
     "provider": "Google Fonts",

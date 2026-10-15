@@ -11,6 +11,8 @@ import { algorithmLink, algorithmDirectory, algorithmReferenceSection } from "./
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(root, "dist");
 const paper = JSON.parse(await readFile(join(root,"src","paper-results.json"),"utf8"));
+const taskPreviewVideos = JSON.parse(await readFile(join(root,"src","task-preview-videos.json"),"utf8"));
+const taskPreviewFiles = new Map(taskPreviewVideos.map(record=>[record.task,record.file]));
 
 const tasks = [
   {
@@ -228,7 +230,7 @@ function taskCard(task,index) {
 
 function marqueeRow(items,reverse=false) {
   const cards = [...items,...items].map((task,index)=>`<a class="marquee-card" href="/tasks/${task.slug}/" aria-label="Explore ${esc(task.title)}" aria-hidden="${index>=items.length}"${index>=items.length?' tabindex="-1"':''}>
-    <img src="${taskImage(task.cover)}" alt=""><video data-task-preview="/assets/task-previews/${task.slug}.mp4" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true" tabindex="-1"></video><span>${task.title}</span>
+    <img src="${taskImage(task.cover)}" alt=""><video data-task-preview="/${taskPreviewFiles.get(task.slug)}" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true" tabindex="-1"></video><span>${task.title}</span>
   </a>`).join("");
   return `<div class="marquee-row ${reverse?"is-reverse":""}"><div class="marquee-track">${cards}</div></div>`;
 }
@@ -314,7 +316,7 @@ const homeBody = `
     <button class="task-media-playback" type="button" data-task-media-pause aria-pressed="false" hidden>Pause videos</button>
   </div>
   <div class="marquee-shell">${marqueeRow(tasks.slice(0,5))}${marqueeRow(tasks.slice(5),true)}</div>
-  <p class="task-media-note" data-task-video-note hidden>Representative stage demonstrations, not complete-sequence rollouts or policy evaluations. If a video is unavailable, its original image is retained.</p>
+  <p class="task-media-note" data-task-video-note hidden>The same recorded stages, re-rendered across diverse RoboCasa interiors. Presentation scenes only, not new policy evaluations. Original images remain available as fallbacks.</p>
   <div class="center-link">${arrowLink("/tasks/","View all task definitions")}</div>
 </section>
 

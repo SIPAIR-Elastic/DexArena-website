@@ -11,6 +11,9 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const project = resolve(process.argv[2] || join(root, '..', 'SoftHandGrasping'));
 const data = join(project, 'data');
 const ffmpeg = process.env.FFMPEG_PATH || 'ffmpeg';
+const activeManifest = join(root, 'src', 'task-preview-videos.json');
+assert(!existsSync(activeManifest) || !JSON.parse(readFileSync(activeManifest, 'utf8')).some(r => r.scene_id),
+  'Scene-rendered previews are active. Use render_task_scene_batch.mjs and install_task_scene_renders.mjs; this initial raw-video preparation script must not overwrite the scene manifest.');
 const tasks = [
   ['meal-preparation', 'AngledMobileBaseSharpaOpenCloseBox-v1', 'Open box lid'],
   ['cabinet-pour', 'CabinetPourDoorOpen-v1', 'Open cabinet'],

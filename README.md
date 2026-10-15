@@ -87,9 +87,25 @@ rollouts or policy-score evidence. Metadata and source identities are recorded i
 `src/task-preview-videos.json`.
 
 The short, muted H.264 files are committed in `dist/assets/task-previews/`, so
-deployment does not need access to private datasets. To regenerate them locally,
-run `FFMPEG_PATH=/path/to/ffmpeg node scripts/prepare-task-previews.mjs /path/to/SoftHandGrasping`.
-This optional script only reads the original dataset and writes website assets.
+deployment does not need access to private datasets. The active files in its
+`scenes/` directory use ten distinct authored RoboCasa finishes. Their original
+review-video samples are matched to recorded states, then rendered without
+physics steps. Frame count, fps and duration are retained. These presentation
+styles do not change the benchmark's three-scene evaluation matrix. Original
+images and unscened videos remain available as recovery assets. Evidence is in
+`src/task-scene-renders.json`.
+
+Regenerate with an existing ManiSkill environment and the local project assets:
+
+```bash
+RENDER_PYTHON=/path/to/ms3/bin/python node scripts/render_task_scene_batch.mjs /path/to/output
+node scripts/install_task_scene_renders.mjs /path/to/output
+```
+
+Then run the selected host's build. The older `prepare-task-previews.mjs` script
+is only for initial raw-video preparation and is guarded against overwriting an
+active scene-rendered manifest. Rendering does not modify simulator source or
+original recordings.
 
 ## Scope
 

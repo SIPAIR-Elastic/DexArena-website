@@ -1,0 +1,2036 @@
+[
+  {
+    "task": "meal-preparation",
+    "scene_id": "robocasa_l3_s1",
+    "source": "SoftHandGrasping/data/teleop_pending/session_20260904_153037_ce8d12_AngledMobileBaseSharpaOpenCloseBox-v1/episode_0094/video.mp4",
+    "env_id": "AngledMobileBaseSharpaOpenCloseBox-v1",
+    "episode_sha256": "04bf9fff365f6aca0f63e741dca8481e09054a173c125565c273639728ca1251",
+    "raw_state_sha256": "9f1ec5d9b42b8c7b25a21495fd610696c74a6a530a0c1d703ed6f3755eac3fac",
+    "fps": 10,
+    "rendered_frames": 42,
+    "duration_seconds": 4.2,
+    "matched_raw_frame_indices": [
+      0,
+      4,
+      6,
+      8,
+      11,
+      13,
+      15,
+      17,
+      20,
+      22,
+      24,
+      26,
+      29,
+      31,
+      33,
+      36,
+      38,
+      40,
+      42,
+      44,
+      47,
+      49,
+      51,
+      53,
+      55,
+      57,
+      59,
+      62,
+      64,
+      67,
+      69,
+      71,
+      72,
+      75,
+      77,
+      80,
+      82,
+      84,
+      86,
+      88,
+      90,
+      92
+    ],
+    "alignment": {
+      "mean_rgb_mae": 1.0658435821533203,
+      "max_rgb_mae": 1.074588418006897,
+      "motion_pixels": 412,
+      "source_video_frames": 42,
+      "raw_frames": 95
+    },
+    "physics_steps": 0,
+    "max_restore_error": 0,
+    "frames_checked": 42,
+    "camera": {
+      "eye": [
+        -1.1,
+        -0.28,
+        0.95
+      ],
+      "target": [
+        -0.05,
+        -0.04,
+        0.08
+      ],
+      "fov": 0.85,
+      "resolution": [
+        960,
+        720
+      ]
+    },
+    "native_scene_checks": [
+      {
+        "raw_frame": 0,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      },
+      {
+        "raw_frame": 49,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      },
+      {
+        "raw_frame": 92,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      }
+    ],
+    "background": {
+      "version": "dex_native_surface_v6",
+      "scene_id": "robocasa_l3_s1",
+      "label": "Light wood kitchen island",
+      "anchor": [
+        3.4499967,
+        -3.2499874,
+        0.92,
+        -3.141589,
+        0
+      ],
+      "mode": "native_surface",
+      "physics": "authored_scene_collision_geometry",
+      "original_table": "render_and_collision_disabled",
+      "robot_root_z_offset": 0,
+      "robot_reset": "original_pose_and_qpos_unchanged",
+      "native_height_delta_m": 0.0003570999999999991,
+      "height_tolerance_m": 0.001,
+      "scene_friction": 0.3,
+      "camera": "original_evaluation_profile",
+      "source_sha256": {
+        "utils/dex_scene_eval.py": "5f8d771699d5b960ead7546178d06ac5b59bd6bf7afb16f704a209a5c034a373",
+        "task/scene_builders/backgrounds.py": "35f37d26ea1ab464f13ec0a81efbf302e3435c3ff2e3df73289974b65f16abfb",
+        "task/scene_builders/scene_library.py": "c6c6dd676d69d5291006936926af83f203560a042dcde0d75424120794b7992b",
+        "task/scene_builders/anchor.py": "d492c02c643a7f71ebe45b1c6b84e51c2a8d7128e1d022ab410f27991a5263ab",
+        "utils/dex_cameras.py": "facc0fa67a525097a38177ac7e21d3b126023ef4b7639a6e8a1bc81ae57a4daf",
+        "utils/dex_camera_rigs.py": "830fcbb3fdb6bc736c49d60b5e2967c496b03cb055b31a36cc6132707433ad6f",
+        "utils/camera_configs.py": "ab48d7fd2f02179ced11a832d95b9f57249a9028c2c00afb98e5da3124576c53",
+        "utils/dex_scene_checks.py": "306a79c2aa092011ee01be3e93243d7705fb12c3dc7ea62471059215f295e1c8",
+        "utils/scene_matrix.py": "3b38d9ff859403145a16e333e92f22f16a78a59604108d74314a74457868c200"
+      },
+      "world_from_source_scene": {
+        "position": [
+          3.309768259525299,
+          -3.25,
+          -0.9200000166893005
+        ],
+        "quaternion_wxyz": [
+          0.0000018267949144501472,
+          0,
+          0,
+          1
+        ]
+      },
+      "floor_fit": "native_height_matches_workspace_within_1mm_robot_unchanged",
+      "hidden_background_entities": [
+        "eval-scene/scene-0_plant_left_group_0",
+        "eval-scene/scene-0_stool_1_stool_group_0",
+        "eval-scene/scene-0_stool_2_stool_group_0",
+        "eval-scene/scene-0_stool_3_stool_group_0"
+      ],
+      "render_entity_count": 121,
+      "edge_alignment": {
+        "reference": "original task table-workspace visible mesh after reset",
+        "axis": "X, robot-facing edge",
+        "original_near_edge_m": -0.4402167797088623,
+        "native_near_edge_m": -0.4402167797088623,
+        "error_m": 0,
+        "original_tabletop_z_m": 3.5762786865234375e-7,
+        "native_tabletop_z_m": 0.00009998679161071777,
+        "tabletop_height_error_m": 0.00009962916374206543,
+        "room_x_adjustment_m": -0.015216529369354248,
+        "original_table_aabb": [
+          [
+            -0.4402167797088623,
+            -1.2148621082305908,
+            -0.9196425676345825
+          ],
+          [
+            0.7688596248626709,
+            1.2030162811279297,
+            3.5762786865234375e-7
+          ]
+        ]
+      }
+    },
+    "usage": "Presentation-only state restoration in a different scene; not new policy or action-replay evaluation.",
+    "output_sha256": "d9af6a84309c3eab4e036ad56760503ac691d9d481f9131763753bff83f1e8e6"
+  },
+  {
+    "task": "cabinet-pour",
+    "scene_id": "robocasa_l3_s6",
+    "source": "SoftHandGrasping/data/teleop_pending/session_20260902_105321_998396_CabinetPourDoorOpen-v1/episode_0017/video.mp4",
+    "env_id": "CabinetPourDoorOpen-v1",
+    "episode_sha256": "e26959299341126cb44124053e205d08c0fd5a48c7fdf6afeba2537985cab506",
+    "raw_state_sha256": "0e5b7414ede7101bcc1fcf3c3c1dcd26bc44a12da8e74a12e95a6ebd75603fdc",
+    "fps": 10,
+    "rendered_frames": 47,
+    "duration_seconds": 4.7,
+    "matched_raw_frame_indices": [
+      0,
+      4,
+      7,
+      10,
+      12,
+      14,
+      17,
+      19,
+      21,
+      23,
+      25,
+      27,
+      29,
+      32,
+      34,
+      36,
+      38,
+      40,
+      42,
+      44,
+      46,
+      48,
+      50,
+      52,
+      54,
+      56,
+      58,
+      60,
+      62,
+      64,
+      67,
+      69,
+      71,
+      73,
+      75,
+      77,
+      79,
+      81,
+      83,
+      85,
+      88,
+      91,
+      94,
+      96,
+      99,
+      102,
+      104
+    ],
+    "alignment": {
+      "mean_rgb_mae": 1.1888271570205688,
+      "max_rgb_mae": 1.2159850597381592,
+      "motion_pixels": 1535,
+      "source_video_frames": 47,
+      "raw_frames": 106
+    },
+    "physics_steps": 0,
+    "max_restore_error": 0,
+    "frames_checked": 47,
+    "camera": {
+      "eye": [
+        -1.15,
+        -0.25,
+        1.12
+      ],
+      "target": [
+        0.18,
+        0,
+        0.26
+      ],
+      "fov": 0.88,
+      "resolution": [
+        960,
+        720
+      ]
+    },
+    "native_scene_checks": [
+      {
+        "raw_frame": 0,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      },
+      {
+        "raw_frame": 52,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      },
+      {
+        "raw_frame": 104,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      }
+    ],
+    "background": {
+      "version": "dex_native_surface_v6",
+      "scene_id": "robocasa_l3_s6",
+      "label": "Warm wood kitchen stone island",
+      "anchor": [
+        3.4499967,
+        -3.2499874,
+        0.92,
+        -3.141589,
+        0
+      ],
+      "mode": "native_surface",
+      "physics": "authored_scene_collision_geometry",
+      "original_table": "render_and_collision_disabled",
+      "robot_root_z_offset": 0,
+      "robot_reset": "original_pose_and_qpos_unchanged",
+      "native_height_delta_m": 0.0003570999999999991,
+      "height_tolerance_m": 0.001,
+      "scene_friction": 0.3,
+      "camera": "original_evaluation_profile",
+      "source_sha256": {
+        "utils/dex_scene_eval.py": "5f8d771699d5b960ead7546178d06ac5b59bd6bf7afb16f704a209a5c034a373",
+        "task/scene_builders/backgrounds.py": "35f37d26ea1ab464f13ec0a81efbf302e3435c3ff2e3df73289974b65f16abfb",
+        "task/scene_builders/scene_library.py": "c6c6dd676d69d5291006936926af83f203560a042dcde0d75424120794b7992b",
+        "task/scene_builders/anchor.py": "d492c02c643a7f71ebe45b1c6b84e51c2a8d7128e1d022ab410f27991a5263ab",
+        "utils/dex_cameras.py": "facc0fa67a525097a38177ac7e21d3b126023ef4b7639a6e8a1bc81ae57a4daf",
+        "utils/dex_camera_rigs.py": "830fcbb3fdb6bc736c49d60b5e2967c496b03cb055b31a36cc6132707433ad6f",
+        "utils/camera_configs.py": "ab48d7fd2f02179ced11a832d95b9f57249a9028c2c00afb98e5da3124576c53",
+        "utils/dex_scene_checks.py": "306a79c2aa092011ee01be3e93243d7705fb12c3dc7ea62471059215f295e1c8",
+        "utils/scene_matrix.py": "3b38d9ff859403145a16e333e92f22f16a78a59604108d74314a74457868c200"
+      },
+      "world_from_source_scene": {
+        "position": [
+          3.309768259525299,
+          -3.25,
+          -0.9200000166893005
+        ],
+        "quaternion_wxyz": [
+          0.0000018267949144501472,
+          0,
+          0,
+          1
+        ]
+      },
+      "floor_fit": "native_height_matches_workspace_within_1mm_robot_unchanged",
+      "hidden_background_entities": [
+        "eval-scene/scene-0_plant_left_group_0",
+        "eval-scene/scene-0_stool_1_stool_group_0",
+        "eval-scene/scene-0_stool_2_stool_group_0",
+        "eval-scene/scene-0_stool_3_stool_group_0"
+      ],
+      "render_entity_count": 119,
+      "edge_alignment": {
+        "reference": "original task table-workspace visible mesh after reset",
+        "axis": "X, robot-facing edge",
+        "original_near_edge_m": -0.4402167797088623,
+        "native_near_edge_m": -0.4402167797088623,
+        "error_m": 0,
+        "original_tabletop_z_m": 3.5762786865234375e-7,
+        "native_tabletop_z_m": 0.00009998679161071777,
+        "tabletop_height_error_m": 0.00009962916374206543,
+        "room_x_adjustment_m": -0.015216529369354248,
+        "original_table_aabb": [
+          [
+            -0.4402167797088623,
+            -1.2148621082305908,
+            -0.9196425676345825
+          ],
+          [
+            0.7688596248626709,
+            1.2030162811279297,
+            3.5762786865234375e-7
+          ]
+        ]
+      }
+    },
+    "usage": "Presentation-only state restoration in a different scene; not new policy or action-replay evaluation.",
+    "output_sha256": "4747f492a38d0f530fed07cdcd98e86c3d58f98ff3f7eca9eefdffa9709db2a4"
+  },
+  {
+    "task": "drawer-plug",
+    "scene_id": "robocasa_l3_s2",
+    "source": "SoftHandGrasping/data/teleop_pending/session_20260903_180856_21130a_DrawerPlugOpen-v1/episode_0108/video.mp4",
+    "env_id": "DrawerPlugOpen-v1",
+    "episode_sha256": "9c7e70e0cbd4d7d15a4d938f37dbc0009161dcb5dc9bf95f474f3b7f1820c373",
+    "raw_state_sha256": "544f07c1504bb1f5c3519768001cea0f6dfbcf993c6c0e1148665f54b49cbf50",
+    "fps": 10,
+    "rendered_frames": 38,
+    "duration_seconds": 3.8,
+    "matched_raw_frame_indices": [
+      0,
+      4,
+      6,
+      8,
+      10,
+      13,
+      15,
+      17,
+      20,
+      22,
+      24,
+      26,
+      29,
+      31,
+      33,
+      35,
+      38,
+      40,
+      42,
+      45,
+      47,
+      49,
+      52,
+      54,
+      56,
+      58,
+      60,
+      62,
+      65,
+      67,
+      69,
+      71,
+      73,
+      75,
+      77,
+      80,
+      82,
+      85
+    ],
+    "alignment": {
+      "mean_rgb_mae": 1.1895761489868164,
+      "max_rgb_mae": 1.203768014907837,
+      "motion_pixels": 1245,
+      "source_video_frames": 38,
+      "raw_frames": 86
+    },
+    "physics_steps": 0,
+    "max_restore_error": 0,
+    "frames_checked": 38,
+    "camera": {
+      "eye": [
+        -1.08,
+        -0.24,
+        1.1
+      ],
+      "target": [
+        0.185,
+        0.18,
+        0.23
+      ],
+      "fov": 0.88,
+      "resolution": [
+        960,
+        720
+      ]
+    },
+    "native_scene_checks": [
+      {
+        "raw_frame": 0,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      },
+      {
+        "raw_frame": 45,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      },
+      {
+        "raw_frame": 85,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      }
+    ],
+    "background": {
+      "version": "dex_native_surface_v6",
+      "scene_id": "robocasa_l3_s2",
+      "label": "Blue kitchen",
+      "anchor": [
+        3.4499967,
+        -3.2499874,
+        0.92,
+        -3.141589,
+        0
+      ],
+      "mode": "native_surface",
+      "physics": "authored_scene_collision_geometry",
+      "original_table": "render_and_collision_disabled",
+      "robot_root_z_offset": 0,
+      "robot_reset": "original_pose_and_qpos_unchanged",
+      "native_height_delta_m": 0.0003570999999999991,
+      "height_tolerance_m": 0.001,
+      "scene_friction": 0.3,
+      "camera": "original_evaluation_profile",
+      "source_sha256": {
+        "utils/dex_scene_eval.py": "5f8d771699d5b960ead7546178d06ac5b59bd6bf7afb16f704a209a5c034a373",
+        "task/scene_builders/backgrounds.py": "35f37d26ea1ab464f13ec0a81efbf302e3435c3ff2e3df73289974b65f16abfb",
+        "task/scene_builders/scene_library.py": "c6c6dd676d69d5291006936926af83f203560a042dcde0d75424120794b7992b",
+        "task/scene_builders/anchor.py": "d492c02c643a7f71ebe45b1c6b84e51c2a8d7128e1d022ab410f27991a5263ab",
+        "utils/dex_cameras.py": "facc0fa67a525097a38177ac7e21d3b126023ef4b7639a6e8a1bc81ae57a4daf",
+        "utils/dex_camera_rigs.py": "830fcbb3fdb6bc736c49d60b5e2967c496b03cb055b31a36cc6132707433ad6f",
+        "utils/camera_configs.py": "ab48d7fd2f02179ced11a832d95b9f57249a9028c2c00afb98e5da3124576c53",
+        "utils/dex_scene_checks.py": "306a79c2aa092011ee01be3e93243d7705fb12c3dc7ea62471059215f295e1c8",
+        "utils/scene_matrix.py": "3b38d9ff859403145a16e333e92f22f16a78a59604108d74314a74457868c200"
+      },
+      "world_from_source_scene": {
+        "position": [
+          3.309768259525299,
+          -3.25,
+          -0.9200000166893005
+        ],
+        "quaternion_wxyz": [
+          0.0000018267949144501472,
+          0,
+          0,
+          1
+        ]
+      },
+      "floor_fit": "native_height_matches_workspace_within_1mm_robot_unchanged",
+      "hidden_background_entities": [
+        "eval-scene/scene-0_plant_left_group_0",
+        "eval-scene/scene-0_stool_1_stool_group_0",
+        "eval-scene/scene-0_stool_2_stool_group_0",
+        "eval-scene/scene-0_stool_3_stool_group_0"
+      ],
+      "render_entity_count": 119,
+      "edge_alignment": {
+        "reference": "original task table-workspace visible mesh after reset",
+        "axis": "X, robot-facing edge",
+        "original_near_edge_m": -0.4402167797088623,
+        "native_near_edge_m": -0.4402167797088623,
+        "error_m": 0,
+        "original_tabletop_z_m": 3.5762786865234375e-7,
+        "native_tabletop_z_m": 0.00009998679161071777,
+        "tabletop_height_error_m": 0.00009962916374206543,
+        "room_x_adjustment_m": -0.015216529369354248,
+        "original_table_aabb": [
+          [
+            -0.4402167797088623,
+            -1.2148621082305908,
+            -0.9196425676345825
+          ],
+          [
+            0.7688596248626709,
+            1.2030162811279297,
+            3.5762786865234375e-7
+          ]
+        ]
+      }
+    },
+    "usage": "Presentation-only state restoration in a different scene; not new policy or action-replay evaluation.",
+    "output_sha256": "fbc4b87cf4c036b7e71a8927c86fd2a12a928a2e8db865851e0b161b0c68b116"
+  },
+  {
+    "task": "nut-bolt",
+    "scene_id": "robocasa_l3_s0",
+    "source": "SoftHandGrasping/data/teleop_pending/session_20260910_132847_8a8376_ScrewingTurn-v1/episode_0042/video.mp4",
+    "env_id": "ScrewingTurn-v1",
+    "episode_sha256": "5c96769f1e09132ee1bf6d79d960af88809e62f419b15674fffe7769ed7d6e30",
+    "raw_state_sha256": "27db02bbe5876cf9f136090b4457dfebfba6e0f2e4042c8f9e9565efa365ce5f",
+    "fps": 10,
+    "rendered_frames": 45,
+    "duration_seconds": 4.5,
+    "matched_raw_frame_indices": [
+      0,
+      1,
+      4,
+      6,
+      8,
+      10,
+      12,
+      14,
+      17,
+      19,
+      21,
+      23,
+      25,
+      27,
+      29,
+      31,
+      33,
+      35,
+      37,
+      39,
+      42,
+      44,
+      46,
+      49,
+      52,
+      55,
+      57,
+      59,
+      61,
+      63,
+      65,
+      67,
+      69,
+      71,
+      73,
+      76,
+      79,
+      81,
+      84,
+      86,
+      88,
+      91,
+      93,
+      95,
+      97
+    ],
+    "alignment": {
+      "mean_rgb_mae": 1.2032749652862549,
+      "max_rgb_mae": 1.2140560150146484,
+      "motion_pixels": 537,
+      "source_video_frames": 45,
+      "raw_frames": 98
+    },
+    "physics_steps": 0,
+    "max_restore_error": 0,
+    "frames_checked": 45,
+    "camera": {
+      "eye": [
+        -0.9,
+        0.42,
+        0.82
+      ],
+      "target": [
+        -0.04,
+        0,
+        0.08
+      ],
+      "fov": 0.78,
+      "resolution": [
+        960,
+        720
+      ]
+    },
+    "native_scene_checks": [
+      {
+        "raw_frame": 0,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      },
+      {
+        "raw_frame": 46,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      },
+      {
+        "raw_frame": 97,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      }
+    ],
+    "background": {
+      "version": "dex_native_surface_v6",
+      "scene_id": "robocasa_l3_s0",
+      "label": "Presentation: Industrial",
+      "anchor": [
+        3.4499967,
+        -3.2499874,
+        0.92,
+        -3.141589,
+        0
+      ],
+      "mode": "native_surface",
+      "physics": "authored_scene_collision_geometry",
+      "original_table": "render_and_collision_disabled",
+      "robot_root_z_offset": 0,
+      "robot_reset": "original_pose_and_qpos_unchanged",
+      "native_height_delta_m": 0.0003570999999999991,
+      "height_tolerance_m": 0.001,
+      "scene_friction": 0.3,
+      "camera": "original_evaluation_profile",
+      "source_sha256": {
+        "utils/dex_scene_eval.py": "5f8d771699d5b960ead7546178d06ac5b59bd6bf7afb16f704a209a5c034a373",
+        "task/scene_builders/backgrounds.py": "35f37d26ea1ab464f13ec0a81efbf302e3435c3ff2e3df73289974b65f16abfb",
+        "task/scene_builders/scene_library.py": "c6c6dd676d69d5291006936926af83f203560a042dcde0d75424120794b7992b",
+        "task/scene_builders/anchor.py": "d492c02c643a7f71ebe45b1c6b84e51c2a8d7128e1d022ab410f27991a5263ab",
+        "utils/dex_cameras.py": "facc0fa67a525097a38177ac7e21d3b126023ef4b7639a6e8a1bc81ae57a4daf",
+        "utils/dex_camera_rigs.py": "830fcbb3fdb6bc736c49d60b5e2967c496b03cb055b31a36cc6132707433ad6f",
+        "utils/camera_configs.py": "ab48d7fd2f02179ced11a832d95b9f57249a9028c2c00afb98e5da3124576c53",
+        "utils/dex_scene_checks.py": "306a79c2aa092011ee01be3e93243d7705fb12c3dc7ea62471059215f295e1c8",
+        "utils/scene_matrix.py": "3b38d9ff859403145a16e333e92f22f16a78a59604108d74314a74457868c200"
+      },
+      "world_from_source_scene": {
+        "position": [
+          3.309768259525299,
+          -3.25,
+          -0.9200000166893005
+        ],
+        "quaternion_wxyz": [
+          0.0000018267949144501472,
+          0,
+          0,
+          1
+        ]
+      },
+      "floor_fit": "native_height_matches_workspace_within_1mm_robot_unchanged",
+      "hidden_background_entities": [
+        "eval-scene/scene-0_plant_left_group_0",
+        "eval-scene/scene-0_stool_1_stool_group_0",
+        "eval-scene/scene-0_stool_2_stool_group_0",
+        "eval-scene/scene-0_stool_3_stool_group_0"
+      ],
+      "render_entity_count": 121,
+      "edge_alignment": {
+        "reference": "original task table-workspace visible mesh after reset",
+        "axis": "X, robot-facing edge",
+        "original_near_edge_m": -0.4402167797088623,
+        "native_near_edge_m": -0.4402167797088623,
+        "error_m": 0,
+        "original_tabletop_z_m": 3.5762786865234375e-7,
+        "native_tabletop_z_m": 0.00009998679161071777,
+        "tabletop_height_error_m": 0.00009962916374206543,
+        "room_x_adjustment_m": -0.015216529369354248,
+        "original_table_aabb": [
+          [
+            -0.4402167797088623,
+            -1.2148621082305908,
+            -0.9196425676345825
+          ],
+          [
+            0.7688596248626709,
+            1.2030162811279297,
+            3.5762786865234375e-7
+          ]
+        ]
+      }
+    },
+    "usage": "Presentation-only state restoration in a different scene; not new policy or action-replay evaluation.",
+    "output_sha256": "7586e4b62a4bba118fc7a33386485a134b5b1ff696ee36b0e9bc40c4149b122d"
+  },
+  {
+    "task": "office-desk",
+    "scene_id": "robocasa_l3_s3",
+    "source": "SoftHandGrasping/data/teleop_pending/session_20260902_133857_8bf647_SharpaAngledOpenLaptop-v1/episode_0046/video.mp4",
+    "env_id": "SharpaAngledOpenLaptop-v1",
+    "episode_sha256": "03b2322c3390d92a84642d62651a636d59e49d0ba7bbf3e3c8fae7585235a4b2",
+    "raw_state_sha256": "3732873dedc3fab47da6060a3d75a8674c13ad93b23130b588a56695e87f3e2b",
+    "fps": 10,
+    "rendered_frames": 48,
+    "duration_seconds": 4.8,
+    "matched_raw_frame_indices": [
+      0,
+      4,
+      6,
+      8,
+      10,
+      12,
+      14,
+      16,
+      18,
+      20,
+      23,
+      25,
+      27,
+      29,
+      31,
+      33,
+      35,
+      37,
+      39,
+      41,
+      43,
+      45,
+      47,
+      49,
+      51,
+      53,
+      55,
+      57,
+      59,
+      61,
+      63,
+      65,
+      67,
+      69,
+      71,
+      73,
+      75,
+      78,
+      80,
+      82,
+      84,
+      87,
+      89,
+      91,
+      93,
+      96,
+      99,
+      101
+    ],
+    "alignment": {
+      "mean_rgb_mae": 1.2784796953201294,
+      "max_rgb_mae": 1.300732970237732,
+      "motion_pixels": 826,
+      "source_video_frames": 48,
+      "raw_frames": 102
+    },
+    "physics_steps": 0,
+    "max_restore_error": 0,
+    "frames_checked": 48,
+    "camera": {
+      "eye": [
+        -1.1,
+        0.15,
+        1.1
+      ],
+      "target": [
+        -0.07,
+        0,
+        0.15
+      ],
+      "fov": 0.85,
+      "resolution": [
+        960,
+        720
+      ]
+    },
+    "native_scene_checks": [
+      {
+        "raw_frame": 0,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      },
+      {
+        "raw_frame": 51,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      },
+      {
+        "raw_frame": 101,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      }
+    ],
+    "background": {
+      "version": "dex_native_surface_v6",
+      "scene_id": "robocasa_l3_s3",
+      "label": "Presentation: Modern 1",
+      "anchor": [
+        3.4499967,
+        -3.2499874,
+        0.92,
+        -3.141589,
+        0
+      ],
+      "mode": "native_surface",
+      "physics": "authored_scene_collision_geometry",
+      "original_table": "render_and_collision_disabled",
+      "robot_root_z_offset": 0,
+      "robot_reset": "original_pose_and_qpos_unchanged",
+      "native_height_delta_m": 0.0003570999999999991,
+      "height_tolerance_m": 0.001,
+      "scene_friction": 0.3,
+      "camera": "original_evaluation_profile",
+      "source_sha256": {
+        "utils/dex_scene_eval.py": "5f8d771699d5b960ead7546178d06ac5b59bd6bf7afb16f704a209a5c034a373",
+        "task/scene_builders/backgrounds.py": "35f37d26ea1ab464f13ec0a81efbf302e3435c3ff2e3df73289974b65f16abfb",
+        "task/scene_builders/scene_library.py": "c6c6dd676d69d5291006936926af83f203560a042dcde0d75424120794b7992b",
+        "task/scene_builders/anchor.py": "d492c02c643a7f71ebe45b1c6b84e51c2a8d7128e1d022ab410f27991a5263ab",
+        "utils/dex_cameras.py": "facc0fa67a525097a38177ac7e21d3b126023ef4b7639a6e8a1bc81ae57a4daf",
+        "utils/dex_camera_rigs.py": "830fcbb3fdb6bc736c49d60b5e2967c496b03cb055b31a36cc6132707433ad6f",
+        "utils/camera_configs.py": "ab48d7fd2f02179ced11a832d95b9f57249a9028c2c00afb98e5da3124576c53",
+        "utils/dex_scene_checks.py": "306a79c2aa092011ee01be3e93243d7705fb12c3dc7ea62471059215f295e1c8",
+        "utils/scene_matrix.py": "3b38d9ff859403145a16e333e92f22f16a78a59604108d74314a74457868c200"
+      },
+      "world_from_source_scene": {
+        "position": [
+          3.309768259525299,
+          -3.25,
+          -0.9200000166893005
+        ],
+        "quaternion_wxyz": [
+          0.0000018267949144501472,
+          0,
+          0,
+          1
+        ]
+      },
+      "floor_fit": "native_height_matches_workspace_within_1mm_robot_unchanged",
+      "hidden_background_entities": [
+        "eval-scene/scene-0_plant_left_group_0",
+        "eval-scene/scene-0_stool_1_stool_group_0",
+        "eval-scene/scene-0_stool_2_stool_group_0",
+        "eval-scene/scene-0_stool_3_stool_group_0"
+      ],
+      "render_entity_count": 121,
+      "edge_alignment": {
+        "reference": "original task table-workspace visible mesh after reset",
+        "axis": "X, robot-facing edge",
+        "original_near_edge_m": -0.4402167797088623,
+        "native_near_edge_m": -0.4402167797088623,
+        "error_m": 0,
+        "original_tabletop_z_m": 3.5762786865234375e-7,
+        "native_tabletop_z_m": 0.00009998679161071777,
+        "tabletop_height_error_m": 0.00009962916374206543,
+        "room_x_adjustment_m": -0.015216529369354248,
+        "original_table_aabb": [
+          [
+            -0.4402167797088623,
+            -1.2148621082305908,
+            -0.9196425676345825
+          ],
+          [
+            0.7688596248626709,
+            1.2030162811279297,
+            3.5762786865234375e-7
+          ]
+        ]
+      }
+    },
+    "usage": "Presentation-only state restoration in a different scene; not new policy or action-replay evaluation.",
+    "output_sha256": "c32c0c1c182d2563d6116308cc7146a16fa06231a3a5de08ac6f379a86512431"
+  },
+  {
+    "task": "furniture-assembly",
+    "scene_id": "robocasa_l3_s8",
+    "source": "SoftHandGrasping/data/teleop_pending/session_20260904_131159_19611a_SharpaAngledMobileRailInsert-v1/episode_0260/video.mp4",
+    "env_id": "SharpaAngledMobileRailInsert-v1",
+    "episode_sha256": "e89547971fe81daa2fab10dac4cab2badba91893b4487e40b4aac0e69e67440d",
+    "raw_state_sha256": "03c6f5b9baee2f7c331effef4f4834711ec4f47e056b0c21520ca44e1e3ca40b",
+    "fps": 10,
+    "rendered_frames": 55,
+    "duration_seconds": 5.5,
+    "matched_raw_frame_indices": [
+      0,
+      4,
+      6,
+      8,
+      10,
+      12,
+      15,
+      18,
+      20,
+      22,
+      25,
+      27,
+      29,
+      31,
+      33,
+      36,
+      38,
+      40,
+      42,
+      45,
+      47,
+      50,
+      53,
+      56,
+      58,
+      60,
+      62,
+      65,
+      67,
+      69,
+      71,
+      73,
+      76,
+      78,
+      80,
+      82,
+      85,
+      87,
+      89,
+      92,
+      94,
+      96,
+      98,
+      101,
+      104,
+      107,
+      109,
+      111,
+      114,
+      116,
+      118,
+      121,
+      124,
+      126,
+      128
+    ],
+    "alignment": {
+      "mean_rgb_mae": 1.637717604637146,
+      "max_rgb_mae": 1.6844135522842407,
+      "motion_pixels": 816,
+      "source_video_frames": 55,
+      "raw_frames": 130
+    },
+    "physics_steps": 0,
+    "max_restore_error": 1.1920928955078125e-7,
+    "frames_checked": 55,
+    "camera": {
+      "eye": [
+        -0.96,
+        0.72,
+        1.15
+      ],
+      "target": [
+        -0.13,
+        -0.06,
+        0.1
+      ],
+      "fov": 0.85,
+      "resolution": [
+        960,
+        720
+      ]
+    },
+    "native_scene_checks": [
+      {
+        "raw_frame": 0,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      },
+      {
+        "raw_frame": 65,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      },
+      {
+        "raw_frame": 128,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      }
+    ],
+    "background": {
+      "version": "dex_native_surface_v6",
+      "scene_id": "robocasa_l3_s8",
+      "label": "Presentation: Rustic",
+      "anchor": [
+        3.4499967,
+        -3.2499874,
+        0.92,
+        -3.141589,
+        0
+      ],
+      "mode": "native_surface",
+      "physics": "authored_scene_collision_geometry",
+      "original_table": "render_and_collision_disabled",
+      "robot_root_z_offset": 0,
+      "robot_reset": "original_pose_and_qpos_unchanged",
+      "native_height_delta_m": 0.0003570999999999991,
+      "height_tolerance_m": 0.001,
+      "scene_friction": 0.3,
+      "camera": "original_evaluation_profile",
+      "source_sha256": {
+        "utils/dex_scene_eval.py": "5f8d771699d5b960ead7546178d06ac5b59bd6bf7afb16f704a209a5c034a373",
+        "task/scene_builders/backgrounds.py": "35f37d26ea1ab464f13ec0a81efbf302e3435c3ff2e3df73289974b65f16abfb",
+        "task/scene_builders/scene_library.py": "c6c6dd676d69d5291006936926af83f203560a042dcde0d75424120794b7992b",
+        "task/scene_builders/anchor.py": "d492c02c643a7f71ebe45b1c6b84e51c2a8d7128e1d022ab410f27991a5263ab",
+        "utils/dex_cameras.py": "facc0fa67a525097a38177ac7e21d3b126023ef4b7639a6e8a1bc81ae57a4daf",
+        "utils/dex_camera_rigs.py": "830fcbb3fdb6bc736c49d60b5e2967c496b03cb055b31a36cc6132707433ad6f",
+        "utils/camera_configs.py": "ab48d7fd2f02179ced11a832d95b9f57249a9028c2c00afb98e5da3124576c53",
+        "utils/dex_scene_checks.py": "306a79c2aa092011ee01be3e93243d7705fb12c3dc7ea62471059215f295e1c8",
+        "utils/scene_matrix.py": "3b38d9ff859403145a16e333e92f22f16a78a59604108d74314a74457868c200"
+      },
+      "world_from_source_scene": {
+        "position": [
+          3.309768259525299,
+          -3.25,
+          -0.9200000166893005
+        ],
+        "quaternion_wxyz": [
+          0.0000018267949144501472,
+          0,
+          0,
+          1
+        ]
+      },
+      "floor_fit": "native_height_matches_workspace_within_1mm_robot_unchanged",
+      "hidden_background_entities": [
+        "eval-scene/scene-0_plant_left_group_0",
+        "eval-scene/scene-0_stool_1_stool_group_0",
+        "eval-scene/scene-0_stool_2_stool_group_0",
+        "eval-scene/scene-0_stool_3_stool_group_0"
+      ],
+      "render_entity_count": 121,
+      "edge_alignment": {
+        "reference": "original task table-workspace visible mesh after reset",
+        "axis": "X, robot-facing edge",
+        "original_near_edge_m": -0.4402167797088623,
+        "native_near_edge_m": -0.4402167797088623,
+        "error_m": 0,
+        "original_tabletop_z_m": 3.5762786865234375e-7,
+        "native_tabletop_z_m": 0.00009998679161071777,
+        "tabletop_height_error_m": 0.00009962916374206543,
+        "room_x_adjustment_m": -0.015216529369354248,
+        "original_table_aabb": [
+          [
+            -0.4402167797088623,
+            -1.2148621082305908,
+            -0.9196425676345825
+          ],
+          [
+            0.7688596248626709,
+            1.2030162811279297,
+            3.5762786865234375e-7
+          ]
+        ]
+      }
+    },
+    "usage": "Presentation-only state restoration in a different scene; not new policy or action-replay evaluation.",
+    "output_sha256": "ba517cab8f5ac2bb60ba2a52ee75e2d2fafcd4b5b8bfb92cdceb325f274477a4"
+  },
+  {
+    "task": "pipette-transfer",
+    "scene_id": "robocasa_l3_s4",
+    "source": "SoftHandGrasping/data/teleop_pending/session_20260907_192356_f018fa_SharpaAngledMobilePipetteAspirate-v1/episode_0084/video.mp4",
+    "env_id": "SharpaAngledMobilePipetteAspirate-v1",
+    "episode_sha256": "714c97f51734ca27ffc9b25bef908b80c37f3bb607a6993944cdd1f9e8ef3abb",
+    "raw_state_sha256": "5d93aae343157c0f5b0117393e49cba9c1f7cb2924f49c982d1d8372b6323970",
+    "fps": 10,
+    "rendered_frames": 135,
+    "duration_seconds": 13.5,
+    "matched_raw_frame_indices": [
+      0,
+      4,
+      6,
+      8,
+      10,
+      12,
+      14,
+      17,
+      19,
+      21,
+      23,
+      25,
+      27,
+      29,
+      31,
+      33,
+      36,
+      38,
+      40,
+      42,
+      45,
+      47,
+      49,
+      51,
+      53,
+      56,
+      58,
+      60,
+      62,
+      64,
+      66,
+      68,
+      70,
+      72,
+      74,
+      76,
+      79,
+      82,
+      84,
+      86,
+      89,
+      92,
+      94,
+      96,
+      99,
+      101,
+      103,
+      105,
+      107,
+      109,
+      111,
+      113,
+      116,
+      118,
+      120,
+      122,
+      125,
+      127,
+      129,
+      131,
+      133,
+      135,
+      138,
+      140,
+      142,
+      145,
+      147,
+      149,
+      151,
+      153,
+      155,
+      158,
+      160,
+      162,
+      165,
+      167,
+      170,
+      172,
+      174,
+      176,
+      178,
+      181,
+      183,
+      185,
+      187,
+      189,
+      191,
+      193,
+      195,
+      197,
+      199,
+      201,
+      204,
+      206,
+      208,
+      210,
+      212,
+      215,
+      217,
+      219,
+      221,
+      224,
+      226,
+      228,
+      230,
+      232,
+      234,
+      236,
+      238,
+      241,
+      243,
+      245,
+      247,
+      249,
+      252,
+      254,
+      256,
+      258,
+      261,
+      263,
+      265,
+      268,
+      270,
+      272,
+      275,
+      278,
+      280,
+      282,
+      285,
+      287,
+      289,
+      291,
+      293,
+      295,
+      297
+    ],
+    "alignment": {
+      "mean_rgb_mae": 1.223373532295227,
+      "max_rgb_mae": 1.2423481941223145,
+      "motion_pixels": 628,
+      "source_video_frames": 135,
+      "raw_frames": 299
+    },
+    "physics_steps": 0,
+    "max_restore_error": 1.1920928955078125e-7,
+    "frames_checked": 135,
+    "camera": {
+      "eye": [
+        -0.9,
+        0.4,
+        0.9
+      ],
+      "target": [
+        -0.04,
+        0,
+        0.17
+      ],
+      "fov": 0.83,
+      "resolution": [
+        960,
+        720
+      ]
+    },
+    "native_scene_checks": [
+      {
+        "raw_frame": 0,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      },
+      {
+        "raw_frame": 149,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      },
+      {
+        "raw_frame": 297,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      }
+    ],
+    "background": {
+      "version": "dex_native_surface_v6",
+      "scene_id": "robocasa_l3_s4",
+      "label": "Presentation: Modern 2",
+      "anchor": [
+        3.4499967,
+        -3.2499874,
+        0.92,
+        -3.141589,
+        0
+      ],
+      "mode": "native_surface",
+      "physics": "authored_scene_collision_geometry",
+      "original_table": "render_and_collision_disabled",
+      "robot_root_z_offset": 0,
+      "robot_reset": "original_pose_and_qpos_unchanged",
+      "native_height_delta_m": 0.0003570999999999991,
+      "height_tolerance_m": 0.001,
+      "scene_friction": 0.3,
+      "camera": "original_evaluation_profile",
+      "source_sha256": {
+        "utils/dex_scene_eval.py": "5f8d771699d5b960ead7546178d06ac5b59bd6bf7afb16f704a209a5c034a373",
+        "task/scene_builders/backgrounds.py": "35f37d26ea1ab464f13ec0a81efbf302e3435c3ff2e3df73289974b65f16abfb",
+        "task/scene_builders/scene_library.py": "c6c6dd676d69d5291006936926af83f203560a042dcde0d75424120794b7992b",
+        "task/scene_builders/anchor.py": "d492c02c643a7f71ebe45b1c6b84e51c2a8d7128e1d022ab410f27991a5263ab",
+        "utils/dex_cameras.py": "facc0fa67a525097a38177ac7e21d3b126023ef4b7639a6e8a1bc81ae57a4daf",
+        "utils/dex_camera_rigs.py": "830fcbb3fdb6bc736c49d60b5e2967c496b03cb055b31a36cc6132707433ad6f",
+        "utils/camera_configs.py": "ab48d7fd2f02179ced11a832d95b9f57249a9028c2c00afb98e5da3124576c53",
+        "utils/dex_scene_checks.py": "306a79c2aa092011ee01be3e93243d7705fb12c3dc7ea62471059215f295e1c8",
+        "utils/scene_matrix.py": "3b38d9ff859403145a16e333e92f22f16a78a59604108d74314a74457868c200"
+      },
+      "world_from_source_scene": {
+        "position": [
+          3.309768259525299,
+          -3.25,
+          -0.9200000166893005
+        ],
+        "quaternion_wxyz": [
+          0.0000018267949144501472,
+          0,
+          0,
+          1
+        ]
+      },
+      "floor_fit": "native_height_matches_workspace_within_1mm_robot_unchanged",
+      "hidden_background_entities": [
+        "eval-scene/scene-0_plant_left_group_0",
+        "eval-scene/scene-0_stool_1_stool_group_0",
+        "eval-scene/scene-0_stool_2_stool_group_0",
+        "eval-scene/scene-0_stool_3_stool_group_0"
+      ],
+      "render_entity_count": 120,
+      "edge_alignment": {
+        "reference": "original task table-workspace visible mesh after reset",
+        "axis": "X, robot-facing edge",
+        "original_near_edge_m": -0.4402167797088623,
+        "native_near_edge_m": -0.4402167797088623,
+        "error_m": 0,
+        "original_tabletop_z_m": 3.5762786865234375e-7,
+        "native_tabletop_z_m": 0.00009998679161071777,
+        "tabletop_height_error_m": 0.00009962916374206543,
+        "room_x_adjustment_m": -0.015216529369354248,
+        "original_table_aabb": [
+          [
+            -0.4402167797088623,
+            -1.2148621082305908,
+            -0.9196425676345825
+          ],
+          [
+            0.7688596248626709,
+            1.2030162811279297,
+            3.5762786865234375e-7
+          ]
+        ]
+      }
+    },
+    "usage": "Presentation-only state restoration in a different scene; not new policy or action-replay evaluation.",
+    "output_sha256": "9a6c03c862f0e33c9a2f9cb12a19a0eef91f306a0febf6a8865c163d15ff83d8"
+  },
+  {
+    "task": "juice-preparation",
+    "scene_id": "robocasa_l3_s7",
+    "source": "SoftHandGrasping/data/teleop_pending/session_20260909_203313_848b1c_SharpaTakeAppleToBlender-v1/episode_0017/video.mp4",
+    "env_id": "SharpaTakeAppleToBlender-v1",
+    "episode_sha256": "9d1727049053b101c6bb50561910001a36fc107121f0d8985284fa35ccf9d0de",
+    "raw_state_sha256": "ae8057419298d16865d24ec438e68391da069b4811293434ead19abb81d520f9",
+    "fps": 10,
+    "rendered_frames": 93,
+    "duration_seconds": 9.3,
+    "matched_raw_frame_indices": [
+      0,
+      4,
+      6,
+      8,
+      10,
+      13,
+      15,
+      17,
+      19,
+      21,
+      23,
+      25,
+      27,
+      29,
+      31,
+      33,
+      35,
+      37,
+      39,
+      41,
+      44,
+      46,
+      48,
+      50,
+      52,
+      54,
+      56,
+      58,
+      60,
+      63,
+      66,
+      68,
+      71,
+      74,
+      76,
+      79,
+      81,
+      84,
+      86,
+      88,
+      90,
+      93,
+      95,
+      97,
+      100,
+      103,
+      105,
+      107,
+      109,
+      111,
+      113,
+      115,
+      118,
+      120,
+      122,
+      125,
+      127,
+      129,
+      132,
+      134,
+      136,
+      138,
+      140,
+      143,
+      145,
+      147,
+      149,
+      151,
+      153,
+      155,
+      157,
+      159,
+      161,
+      164,
+      167,
+      170,
+      173,
+      175,
+      178,
+      180,
+      183,
+      185,
+      188,
+      190,
+      192,
+      194,
+      197,
+      199,
+      201,
+      203,
+      205,
+      207,
+      209
+    ],
+    "alignment": {
+      "mean_rgb_mae": 1.2087916135787964,
+      "max_rgb_mae": 1.2279449701309204,
+      "motion_pixels": 1394,
+      "source_video_frames": 93,
+      "raw_frames": 210
+    },
+    "physics_steps": 0,
+    "max_restore_error": 0,
+    "frames_checked": 93,
+    "camera": {
+      "eye": [
+        -1.1,
+        0.64,
+        1.15
+      ],
+      "target": [
+        0.12,
+        -0.05,
+        0.2
+      ],
+      "fov": 0.95,
+      "resolution": [
+        960,
+        720
+      ]
+    },
+    "native_scene_checks": [
+      {
+        "raw_frame": 0,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      },
+      {
+        "raw_frame": 105,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      },
+      {
+        "raw_frame": 209,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      }
+    ],
+    "background": {
+      "version": "dex_native_surface_v6",
+      "scene_id": "robocasa_l3_s7",
+      "label": "Presentation: Farmhouse",
+      "anchor": [
+        3.4499967,
+        -3.2499874,
+        0.92,
+        -3.141589,
+        0
+      ],
+      "mode": "native_surface",
+      "physics": "authored_scene_collision_geometry",
+      "original_table": "render_and_collision_disabled",
+      "robot_root_z_offset": 0,
+      "robot_reset": "original_pose_and_qpos_unchanged",
+      "native_height_delta_m": 0.0003570999999999991,
+      "height_tolerance_m": 0.001,
+      "scene_friction": 0.3,
+      "camera": "original_evaluation_profile",
+      "source_sha256": {
+        "utils/dex_scene_eval.py": "5f8d771699d5b960ead7546178d06ac5b59bd6bf7afb16f704a209a5c034a373",
+        "task/scene_builders/backgrounds.py": "35f37d26ea1ab464f13ec0a81efbf302e3435c3ff2e3df73289974b65f16abfb",
+        "task/scene_builders/scene_library.py": "c6c6dd676d69d5291006936926af83f203560a042dcde0d75424120794b7992b",
+        "task/scene_builders/anchor.py": "d492c02c643a7f71ebe45b1c6b84e51c2a8d7128e1d022ab410f27991a5263ab",
+        "utils/dex_cameras.py": "facc0fa67a525097a38177ac7e21d3b126023ef4b7639a6e8a1bc81ae57a4daf",
+        "utils/dex_camera_rigs.py": "830fcbb3fdb6bc736c49d60b5e2967c496b03cb055b31a36cc6132707433ad6f",
+        "utils/camera_configs.py": "ab48d7fd2f02179ced11a832d95b9f57249a9028c2c00afb98e5da3124576c53",
+        "utils/dex_scene_checks.py": "306a79c2aa092011ee01be3e93243d7705fb12c3dc7ea62471059215f295e1c8",
+        "utils/scene_matrix.py": "3b38d9ff859403145a16e333e92f22f16a78a59604108d74314a74457868c200"
+      },
+      "world_from_source_scene": {
+        "position": [
+          3.309768259525299,
+          -3.25,
+          -0.9200000166893005
+        ],
+        "quaternion_wxyz": [
+          0.0000018267949144501472,
+          0,
+          0,
+          1
+        ]
+      },
+      "floor_fit": "native_height_matches_workspace_within_1mm_robot_unchanged",
+      "hidden_background_entities": [
+        "eval-scene/scene-0_plant_left_group_0",
+        "eval-scene/scene-0_stool_1_stool_group_0",
+        "eval-scene/scene-0_stool_2_stool_group_0",
+        "eval-scene/scene-0_stool_3_stool_group_0"
+      ],
+      "render_entity_count": 119,
+      "edge_alignment": {
+        "reference": "original task table-workspace visible mesh after reset",
+        "axis": "X, robot-facing edge",
+        "original_near_edge_m": -0.4402167797088623,
+        "native_near_edge_m": -0.4402167797088623,
+        "error_m": 0,
+        "original_tabletop_z_m": 3.5762786865234375e-7,
+        "native_tabletop_z_m": 0.00009998679161071777,
+        "tabletop_height_error_m": 0.00009962916374206543,
+        "room_x_adjustment_m": -0.015216529369354248,
+        "original_table_aabb": [
+          [
+            -0.4402167797088623,
+            -1.2148621082305908,
+            -0.9196425676345825
+          ],
+          [
+            0.7688596248626709,
+            1.2030162811279297,
+            3.5762786865234375e-7
+          ]
+        ]
+      }
+    },
+    "usage": "Presentation-only state restoration in a different scene; not new policy or action-replay evaluation.",
+    "output_sha256": "62919e53acc31b0658cb986d7e3d5e3eb753961b6738db65e152ced454912b01"
+  },
+  {
+    "task": "package-opening",
+    "scene_id": "robocasa_l3_s5",
+    "source": "SoftHandGrasping/data/teleop_pending/session_20260907_173926_8c2244_SharpaPackageOpeningOpenPackage-v1/episode_0047/video.mp4",
+    "env_id": "SharpaPackageOpeningOpenPackage-v1",
+    "episode_sha256": "cc1dd4c8a1b3022fd4e979b73957c5c60a4584f45311dd7c2e80fba5fed50188",
+    "raw_state_sha256": "6c95828490761e1302080774041c59bc3677867a6fb145b72b1bb3c95355571f",
+    "fps": 10,
+    "rendered_frames": 49,
+    "duration_seconds": 4.9,
+    "matched_raw_frame_indices": [
+      0,
+      4,
+      7,
+      9,
+      12,
+      14,
+      17,
+      19,
+      21,
+      24,
+      27,
+      29,
+      31,
+      33,
+      36,
+      38,
+      40,
+      42,
+      45,
+      47,
+      50,
+      53,
+      56,
+      59,
+      61,
+      63,
+      65,
+      67,
+      70,
+      72,
+      74,
+      76,
+      78,
+      80,
+      82,
+      84,
+      86,
+      88,
+      90,
+      93,
+      95,
+      98,
+      100,
+      102,
+      104,
+      106,
+      108,
+      110,
+      113
+    ],
+    "alignment": {
+      "mean_rgb_mae": 1.3122481107711792,
+      "max_rgb_mae": 1.3451646566390991,
+      "motion_pixels": 1772,
+      "source_video_frames": 49,
+      "raw_frames": 115
+    },
+    "physics_steps": 0,
+    "max_restore_error": 0,
+    "frames_checked": 49,
+    "camera": {
+      "eye": [
+        -1.15,
+        0,
+        1.1
+      ],
+      "target": [
+        -0.12,
+        0,
+        0.12
+      ],
+      "fov": 0.94,
+      "resolution": [
+        960,
+        720
+      ]
+    },
+    "native_scene_checks": [
+      {
+        "raw_frame": 0,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      },
+      {
+        "raw_frame": 61,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      },
+      {
+        "raw_frame": 113,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      }
+    ],
+    "background": {
+      "version": "dex_native_surface_v6",
+      "scene_id": "robocasa_l3_s5",
+      "label": "Presentation: Traditional 1",
+      "anchor": [
+        3.4499967,
+        -3.2499874,
+        0.92,
+        -3.141589,
+        0
+      ],
+      "mode": "native_surface",
+      "physics": "authored_scene_collision_geometry",
+      "original_table": "render_and_collision_disabled",
+      "robot_root_z_offset": 0,
+      "robot_reset": "original_pose_and_qpos_unchanged",
+      "native_height_delta_m": 0.0003570999999999991,
+      "height_tolerance_m": 0.001,
+      "scene_friction": 0.3,
+      "camera": "original_evaluation_profile",
+      "source_sha256": {
+        "utils/dex_scene_eval.py": "5f8d771699d5b960ead7546178d06ac5b59bd6bf7afb16f704a209a5c034a373",
+        "task/scene_builders/backgrounds.py": "35f37d26ea1ab464f13ec0a81efbf302e3435c3ff2e3df73289974b65f16abfb",
+        "task/scene_builders/scene_library.py": "c6c6dd676d69d5291006936926af83f203560a042dcde0d75424120794b7992b",
+        "task/scene_builders/anchor.py": "d492c02c643a7f71ebe45b1c6b84e51c2a8d7128e1d022ab410f27991a5263ab",
+        "utils/dex_cameras.py": "facc0fa67a525097a38177ac7e21d3b126023ef4b7639a6e8a1bc81ae57a4daf",
+        "utils/dex_camera_rigs.py": "830fcbb3fdb6bc736c49d60b5e2967c496b03cb055b31a36cc6132707433ad6f",
+        "utils/camera_configs.py": "ab48d7fd2f02179ced11a832d95b9f57249a9028c2c00afb98e5da3124576c53",
+        "utils/dex_scene_checks.py": "306a79c2aa092011ee01be3e93243d7705fb12c3dc7ea62471059215f295e1c8",
+        "utils/scene_matrix.py": "3b38d9ff859403145a16e333e92f22f16a78a59604108d74314a74457868c200"
+      },
+      "world_from_source_scene": {
+        "position": [
+          3.309768259525299,
+          -3.25,
+          -0.9200000166893005
+        ],
+        "quaternion_wxyz": [
+          0.0000018267949144501472,
+          0,
+          0,
+          1
+        ]
+      },
+      "floor_fit": "native_height_matches_workspace_within_1mm_robot_unchanged",
+      "hidden_background_entities": [
+        "eval-scene/scene-0_plant_left_group_0",
+        "eval-scene/scene-0_stool_1_stool_group_0",
+        "eval-scene/scene-0_stool_2_stool_group_0",
+        "eval-scene/scene-0_stool_3_stool_group_0"
+      ],
+      "render_entity_count": 120,
+      "edge_alignment": {
+        "reference": "original task table-workspace visible mesh after reset",
+        "axis": "X, robot-facing edge",
+        "original_near_edge_m": -0.4402167797088623,
+        "native_near_edge_m": -0.4402167797088623,
+        "error_m": 0,
+        "original_tabletop_z_m": 3.5762786865234375e-7,
+        "native_tabletop_z_m": 0.00009998679161071777,
+        "tabletop_height_error_m": 0.00009962916374206543,
+        "room_x_adjustment_m": -0.015216529369354248,
+        "original_table_aabb": [
+          [
+            -0.4402167797088623,
+            -1.2148621082305908,
+            -0.9196425676345825
+          ],
+          [
+            0.7688596248626709,
+            1.2030162811279297,
+            3.5762786865234375e-7
+          ]
+        ]
+      }
+    },
+    "usage": "Presentation-only state restoration in a different scene; not new policy or action-replay evaluation.",
+    "output_sha256": "69e664061ddd83fefd4d002185dcbac2ecfe11a8aecd12407e86863c52937968"
+  },
+  {
+    "task": "table-cleaning",
+    "scene_id": "robocasa_l3_s9",
+    "source": "SoftHandGrasping/data/teleop_pending/session_20260911_162506_d9b9a5_TableCleanPickDebris-v1/episode_0022/video.mp4",
+    "env_id": "TableCleanPickDebris-v1",
+    "episode_sha256": "65b01d5526fe658f22e71038e467f1b7dd7729941fb861d25bd2b902e7293bc5",
+    "raw_state_sha256": "f5c94505fac815076c7fd26f696c613a3348cbea6d5e1afe30779915345d1b4a",
+    "fps": 10,
+    "rendered_frames": 132,
+    "duration_seconds": 13.2,
+    "matched_raw_frame_indices": [
+      0,
+      4,
+      7,
+      10,
+      12,
+      14,
+      16,
+      18,
+      20,
+      22,
+      24,
+      27,
+      29,
+      31,
+      33,
+      36,
+      39,
+      41,
+      43,
+      45,
+      47,
+      49,
+      51,
+      53,
+      55,
+      57,
+      60,
+      62,
+      65,
+      67,
+      69,
+      72,
+      74,
+      76,
+      78,
+      80,
+      82,
+      84,
+      86,
+      89,
+      92,
+      96,
+      97,
+      99,
+      101,
+      103,
+      106,
+      108,
+      110,
+      112,
+      115,
+      117,
+      119,
+      122,
+      124,
+      127,
+      130,
+      132,
+      134,
+      137,
+      139,
+      141,
+      144,
+      147,
+      149,
+      152,
+      155,
+      157,
+      159,
+      161,
+      163,
+      165,
+      167,
+      169,
+      172,
+      174,
+      177,
+      179,
+      181,
+      183,
+      186,
+      188,
+      190,
+      192,
+      194,
+      197,
+      199,
+      201,
+      203,
+      206,
+      208,
+      210,
+      212,
+      214,
+      216,
+      218,
+      220,
+      222,
+      224,
+      226,
+      228,
+      231,
+      234,
+      236,
+      238,
+      240,
+      243,
+      246,
+      248,
+      250,
+      252,
+      254,
+      257,
+      259,
+      261,
+      263,
+      266,
+      268,
+      271,
+      273,
+      275,
+      277,
+      279,
+      281,
+      283,
+      286,
+      288,
+      290,
+      292,
+      295,
+      297,
+      299
+    ],
+    "alignment": {
+      "mean_rgb_mae": 1.2444788217544556,
+      "max_rgb_mae": 1.2630529403686523,
+      "motion_pixels": 775,
+      "source_video_frames": 132,
+      "raw_frames": 301
+    },
+    "physics_steps": 0,
+    "max_restore_error": 0,
+    "frames_checked": 132,
+    "camera": {
+      "eye": [
+        -1.1,
+        0.62,
+        1.05
+      ],
+      "target": [
+        0.08,
+        -0.05,
+        0.1
+      ],
+      "fov": 0.94,
+      "resolution": [
+        960,
+        720
+      ]
+    },
+    "native_scene_checks": [
+      {
+        "raw_frame": 0,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      },
+      {
+        "raw_frame": 155,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      },
+      {
+        "raw_frame": 299,
+        "height_error_m": 0.00009962916374206543,
+        "robot_clearance_m": 0.023004084825515747
+      }
+    ],
+    "background": {
+      "version": "dex_native_surface_v6",
+      "scene_id": "robocasa_l3_s9",
+      "label": "Presentation: Mediterranean",
+      "anchor": [
+        3.4499967,
+        -3.2499874,
+        0.92,
+        -3.141589,
+        0
+      ],
+      "mode": "native_surface",
+      "physics": "authored_scene_collision_geometry",
+      "original_table": "render_and_collision_disabled",
+      "robot_root_z_offset": 0,
+      "robot_reset": "original_pose_and_qpos_unchanged",
+      "native_height_delta_m": 0.0003570999999999991,
+      "height_tolerance_m": 0.001,
+      "scene_friction": 0.3,
+      "camera": "original_evaluation_profile",
+      "source_sha256": {
+        "utils/dex_scene_eval.py": "5f8d771699d5b960ead7546178d06ac5b59bd6bf7afb16f704a209a5c034a373",
+        "task/scene_builders/backgrounds.py": "35f37d26ea1ab464f13ec0a81efbf302e3435c3ff2e3df73289974b65f16abfb",
+        "task/scene_builders/scene_library.py": "c6c6dd676d69d5291006936926af83f203560a042dcde0d75424120794b7992b",
+        "task/scene_builders/anchor.py": "d492c02c643a7f71ebe45b1c6b84e51c2a8d7128e1d022ab410f27991a5263ab",
+        "utils/dex_cameras.py": "facc0fa67a525097a38177ac7e21d3b126023ef4b7639a6e8a1bc81ae57a4daf",
+        "utils/dex_camera_rigs.py": "830fcbb3fdb6bc736c49d60b5e2967c496b03cb055b31a36cc6132707433ad6f",
+        "utils/camera_configs.py": "ab48d7fd2f02179ced11a832d95b9f57249a9028c2c00afb98e5da3124576c53",
+        "utils/dex_scene_checks.py": "306a79c2aa092011ee01be3e93243d7705fb12c3dc7ea62471059215f295e1c8",
+        "utils/scene_matrix.py": "3b38d9ff859403145a16e333e92f22f16a78a59604108d74314a74457868c200"
+      },
+      "world_from_source_scene": {
+        "position": [
+          3.309768259525299,
+          -3.25,
+          -0.9200000166893005
+        ],
+        "quaternion_wxyz": [
+          0.0000018267949144501472,
+          0,
+          0,
+          1
+        ]
+      },
+      "floor_fit": "native_height_matches_workspace_within_1mm_robot_unchanged",
+      "hidden_background_entities": [
+        "eval-scene/scene-0_plant_left_group_0",
+        "eval-scene/scene-0_stool_1_stool_group_0",
+        "eval-scene/scene-0_stool_2_stool_group_0",
+        "eval-scene/scene-0_stool_3_stool_group_0"
+      ],
+      "render_entity_count": 121,
+      "edge_alignment": {
+        "reference": "original task table-workspace visible mesh after reset",
+        "axis": "X, robot-facing edge",
+        "original_near_edge_m": -0.4402167797088623,
+        "native_near_edge_m": -0.4402167797088623,
+        "error_m": 0,
+        "original_tabletop_z_m": 3.5762786865234375e-7,
+        "native_tabletop_z_m": 0.00009998679161071777,
+        "tabletop_height_error_m": 0.00009962916374206543,
+        "room_x_adjustment_m": -0.015216529369354248,
+        "original_table_aabb": [
+          [
+            -0.4402167797088623,
+            -1.2148621082305908,
+            -0.9196425676345825
+          ],
+          [
+            0.7688596248626709,
+            1.2030162811279297,
+            3.5762786865234375e-7
+          ]
+        ]
+      }
+    },
+    "usage": "Presentation-only state restoration in a different scene; not new policy or action-replay evaluation.",
+    "output_sha256": "5c6bc7d8e7e0441d649ef63287f7d9e339af9377575f013f22e8f6300e9ae006"
+  }
+]
