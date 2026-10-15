@@ -282,3 +282,71 @@ if(searchTriggers.length){
   input.addEventListener("keydown",event=>{if(event.key==="ArrowDown"){event.preventDefault();list.querySelector("a")?.focus()}});
   document.addEventListener("keydown",event=>{if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="k"){event.preventDefault();dialog.open?dialog.close():openSearch()}});
 }
+
+// The original image showcase remains the default. Video URLs are not requested
+// until the visitor selects Videos and the corresponding card enters view.
+const taskShowcase=document.querySelector("[data-task-showcase]");
+if(taskShowcase){
+  const videos=[...taskShowcase.querySelectorAll("[data-task-preview]")];
+  const buttons=[...taskShowcase.querySelectorAll("[data-task-media-mode]")];
+  const pauseButton=taskShowcase.querySelector("[data-task-media-pause]");
+  const note=taskShowcase.querySelector("[data-task-video-note]");
+  const visible=new Set();
+  let mode="images",paused=false;
+  const readMode=()=>new URL(window.location.href).searchParams.get("task-media")==="videos"?"videos":"images";
+  function syncVideo(video){
+    if(mode!=="videos"||paused||document.hidden||!visible.has(video)||video.dataset.failed){video.pause();return}
+    if(!video.hasAttribute("src"))video.src=video.dataset.taskPreview;
+    video.muted=true;
+    const attempt=video.play();
+    attempt?.catch(()=>{
+      // Switching mode while play() is pending can abort it; that is harmless.
+      if(video.paused&&video.readyState<2)video.closest(".marquee-card").classList.remove("is-video-ready");
+    });
+  }
+  function syncPlayback(){
+    taskShowcase.dataset.taskPlayback=mode==="videos"&&paused?"paused":"running";
+    pauseButton.setAttribute("aria-pressed",String(paused));
+    pauseButton.textContent=paused?"Play videos":"Pause videos";
+    videos.forEach(syncVideo);
+  }
+  function selectMode(value,updateUrl=true){
+    mode=value==="videos"?"videos":"images";
+    taskShowcase.dataset.taskMedia=mode;
+    buttons.forEach(button=>button.setAttribute("aria-pressed",String(button.dataset.taskMediaMode===mode)));
+    pauseButton.hidden=mode!=="videos";note.hidden=mode!=="videos";
+    if(updateUrl){
+      const url=new URL(window.location.href);
+      mode==="videos"?url.searchParams.set("task-media","videos"):url.searchParams.delete("task-media");
+      window.history.replaceState(null,"",url.href);
+    }
+    syncPlayback();
+  }
+  videos.forEach(video=>{
+    video.addEventListener("playing",()=>{
+      video.closest(".marquee-card").classList.add("is-video-ready");
+      // Also stop a pending play() that resolved after the user changed mode.
+      if(mode!=="videos"||paused||document.hidden||!visible.has(video))video.pause();
+    });
+    video.addEventListener("error",()=>{
+      video.dataset.failed="true";video.pause();
+      video.closest(".marquee-card").classList.remove("is-video-ready");
+    });
+  });
+  if("IntersectionObserver" in window){
+    const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{
+      const video=entry.target.querySelector("[data-task-preview]");
+      entry.isIntersecting?visible.add(video):visible.delete(video);
+      syncVideo(video);
+    }),{threshold:.01});
+    videos.forEach(video=>observer.observe(video.closest(".marquee-card")));
+  }else videos.forEach(video=>visible.add(video));
+  buttons.forEach(button=>button.addEventListener("click",()=>selectMode(button.dataset.taskMediaMode)));
+  pauseButton.addEventListener("click",()=>{paused=!paused;syncPlayback()});
+  document.addEventListener("visibilitychange",syncPlayback);
+  window.addEventListener("popstate",()=>selectMode(readMode(),false));
+  window.addEventListener("pagehide",()=>videos.forEach(video=>video.pause()));
+  window.addEventListener("pageshow",syncPlayback);
+  taskShowcase.querySelector("[data-task-media-tools]").hidden=false;
+  selectMode(readMode(),false);
+}

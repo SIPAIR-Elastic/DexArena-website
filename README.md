@@ -71,6 +71,25 @@ Pages settings must use **GitHub Actions** as the deployment source. The reposit
 and published site are public. A custom domain is optional and not currently
 configured. A manual workflow dispatch can also redeploy the current `main`.
 
+## Homepage task showcase: images and videos
+
+The original image cards remain the default. The Images / Videos switch changes
+only the Simulation tasks card backgrounds, preserving the layout and task links.
+Share the video variant directly at:
+
+**https://qhf7.github.io/DexArena/?task-media=videos#simulation-tasks**
+
+Videos load only after selecting Videos and bringing cards into view. Pause videos
+also pauses the moving rows; failed videos retain the original image. The showcase
+uses representative human-teleoperated **stage** demonstrations, not complete task
+rollouts or policy-score evidence. Metadata and source identities are recorded in
+`src/task-preview-videos.json`.
+
+The short, muted H.264 files are committed in `dist/assets/task-previews/`, so
+deployment does not need access to private datasets. To regenerate them locally,
+run `FFMPEG_PATH=/path/to/ffmpeg node scripts/prepare-task-previews.mjs /path/to/SoftHandGrasping`.
+This optional script only reads the original dataset and writes website assets.
+
 ## Scope
 
 This repository contains only the website source, public presentation assets,

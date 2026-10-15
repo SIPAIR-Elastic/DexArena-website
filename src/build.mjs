@@ -227,8 +227,8 @@ function taskCard(task,index) {
 }
 
 function marqueeRow(items,reverse=false) {
-  const cards = [...items,...items].map((task,index)=>`<a class="marquee-card" href="/tasks/${task.slug}/" aria-hidden="${index>=items.length}">
-    <img src="${taskImage(task.cover)}" alt=""><span>${task.title}</span>
+  const cards = [...items,...items].map((task,index)=>`<a class="marquee-card" href="/tasks/${task.slug}/" aria-label="Explore ${esc(task.title)}" aria-hidden="${index>=items.length}"${index>=items.length?' tabindex="-1"':''}>
+    <img src="${taskImage(task.cover)}" alt=""><video data-task-preview="/assets/task-previews/${task.slug}.mp4" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true" tabindex="-1"></video><span>${task.title}</span>
   </a>`).join("");
   return `<div class="marquee-row ${reverse?"is-reverse":""}"><div class="marquee-track">${cards}</div></div>`;
 }
@@ -307,9 +307,14 @@ const homeBody = `
   <div class="overview-links">${arrowLink("/tasks/","Explore the tasks")}${arrowLink("/leaderboard/","Compare the baselines")}${arrowLink("/docs/quick-evaluation/","Start evaluating")}</div>
 </section>
 
-<section class="home-tasks section-wide">
+<section class="home-tasks section-wide" id="simulation-tasks" data-task-showcase data-task-media="images">
   <div class="section-head centered reveal"><span>Simulation tasks</span><h2>Ten sequences. Thirty measurable stages.</h2><p>From kitchen preparation to precision assembly, each long-horizon task is decomposed into physically grounded stages.</p></div>
+  <div class="task-media-tools" data-task-media-tools hidden>
+    <div class="task-media-switch" role="group" aria-label="Task preview format"><button type="button" data-task-media-mode="images" aria-pressed="true">Images</button><button type="button" data-task-media-mode="videos" aria-pressed="false">Videos</button></div>
+    <button class="task-media-playback" type="button" data-task-media-pause aria-pressed="false" hidden>Pause videos</button>
+  </div>
   <div class="marquee-shell">${marqueeRow(tasks.slice(0,5))}${marqueeRow(tasks.slice(5),true)}</div>
+  <p class="task-media-note" data-task-video-note hidden>Representative stage demonstrations, not complete-sequence rollouts or policy evaluations. If a video is unavailable, its original image is retained.</p>
   <div class="center-link">${arrowLink("/tasks/","View all task definitions")}</div>
 </section>
 

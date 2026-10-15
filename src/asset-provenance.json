@@ -79,6 +79,12 @@
     "kind": "authentic recorded simulator state rendered with an additional presentation camera; no object, robot or collision modifications",
     "usage": "Demonstration illustration only, not evidence for manuscript policy scores. Original task-02.jpg is retained for recovery."
   },
+  "taskShowcaseVideos": {
+    "manifest": "src/task-preview-videos.json",
+    "count": 10,
+    "kind": "Short representative human-teleoperated stage demonstrations, matched by episode SHA-256 to the successful 100-episode subsets; not complete-sequence rollouts or policy-score evidence.",
+    "presentation": "Original recorded video timestamps, resized to 640 pixels wide, muted H.264. Original task images remain unchanged and are the default presentation and failure fallback."
+  },
   "fonts": {
     "provider": "Google Fonts",
     "families": [

@@ -114,6 +114,23 @@ main{min-height:70vh}
 .marquee-row:hover .marquee-track{animation-play-state:paused}
 .marquee-card{position:relative;flex:0 0 clamp(220px,22vw,330px);aspect-ratio:4/3;overflow:hidden;border-radius:12px;background:var(--surface-2)}
 .marquee-card img{width:100%;height:100%;object-fit:cover;transition:.5s}
+.marquee-card video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;pointer-events:none;transition:opacity .3s,transform .5s}
+[data-task-media="videos"] .marquee-card.is-video-ready video{opacity:1}
+[data-task-media="videos"] .marquee-card:hover video{transform:scale(1.05)}
+.task-media-tools{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin:-4px 0 24px}
+.task-media-tools[hidden],.task-media-playback[hidden],.task-media-note[hidden]{display:none}
+.task-media-switch{display:inline-flex;padding:4px;gap:4px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.task-media-switch button{padding:9px 22px;border:0;border-radius:999px;background:transparent;color:var(--muted);font:600 12px var(--font);cursor:pointer;transition:background .2s,color .2s}
+.task-media-switch button[aria-pressed="true"]{background:#1967d2;color:#fff}
+.task-media-switch button[aria-pressed="false"]:hover{background:#e8f0fe;color:#174ea6}
+.task-media-playback{padding:9px 14px;min-width:116px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);font:500 12px var(--font);cursor:pointer}
+.task-media-playback:hover{color:#1967d2;border-color:#1967d2}
+.task-media-switch button:focus-visible,.task-media-playback:focus-visible,.marquee-card:focus-visible{outline:3px solid #1967d2;outline-offset:4px}
+.marquee-row:focus-within .marquee-track{animation-play-state:paused}
+.marquee-card:focus-visible span{opacity:1;transform:none}
+.task-media-note{max-width:680px;margin:18px auto 0;text-align:center;font-size:11px;line-height:1.7;color:var(--muted)}
+[data-task-playback="paused"] .marquee-track{animation-play-state:paused}
+[data-task-showcase]{scroll-margin-top:100px}
 .marquee-card:after{content:"";position:absolute;inset:50% 0 0;background:linear-gradient(transparent,rgba(0,0,0,.7))}
 .marquee-card span{position:absolute;z-index:2;left:15px;right:15px;bottom:13px;color:#fff;font-family:var(--mono);font-size:12px;opacity:0;transform:translateY(5px);transition:.2s}
 .marquee-card:hover img{transform:scale(1.05)}.marquee-card:hover span{opacity:1;transform:none}

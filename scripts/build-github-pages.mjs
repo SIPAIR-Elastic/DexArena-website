@@ -22,7 +22,7 @@ const htmlFiles=files.filter(file=>file.endsWith('.html'));
 for(const file of files){
   if(file.endsWith('.html')){
     let html=await readFile(file,'utf8');
-    html=html.replace(/\b(href|src|poster|data-image|data-copy-text)="(\/(?!\/)[^"]*)"/g,(_,attribute,url)=>`${attribute}="${withBase(url)}"`);
+    html=html.replace(/\b(href|src|poster|data-image|data-copy-text|data-task-preview)="(\/(?!\/)[^"]*)"/g,(_,attribute,url)=>`${attribute}="${withBase(url)}"`);
     html=html.replaceAll(oldOrigin,site.origin+base.slice(0,-1));
     const url=new URL(relative(dist,file).replaceAll('\\','/').replace(/index\.html$/,''),site).href;
     html=html.replace('</head>',`<link rel="canonical" href="${url}"><meta property="og:url" content="${url}"></head>`);
@@ -62,7 +62,7 @@ for(const file of htmlFiles){
   const html=await readFile(file,'utf8');
   assert(!html.includes(oldOrigin),'Old hosting link remains');
   assert(!/\p{Script=Han}/u.test(html),'Non-English website content');
-  for(const match of html.matchAll(/\b(?:href|src|poster|data-image)="([^"]+)"/g))await checkTarget(match[1],file);
+  for(const match of html.matchAll(/\b(?:href|src|poster|data-image|data-task-preview)="([^"]+)"/g))await checkTarget(match[1],file);
 }
 for(const file of files.filter(file=>file.endsWith('.css'))){
   for(const match of (await readFile(file,'utf8')).matchAll(/url\(\s*(?:"([^"]*)"|'([^']*)'|([^)]*))\s*\)/g))await checkTarget((match[1]??match[2]??match[3]).trim(),file);

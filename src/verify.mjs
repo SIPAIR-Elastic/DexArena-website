@@ -8,6 +8,8 @@ import {pairAccount} from './community.mjs';
 import {algorithmReferences} from './references.mjs';
 import {reportCoverage,reportConferences} from './report.mjs';
 import {verifyCarousel} from './verify-carousel.mjs';
+import {verifyTaskMedia} from './verify-task-media.mjs';
+import {createHash} from 'node:crypto';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const dist=join(root,'dist');
@@ -59,6 +61,20 @@ const views=ids.flatMap(()=>viewIds.map(id=>node({resultView:id})));
 const filter=node();filter.value='all';
 const js=await readFile(join(root,'src','site.js'),'utf8');
 verifyCarousel(js);
+verifyTaskMedia(js);
+const taskPreviews=JSON.parse(await readFile(join(root,'src','task-preview-videos.json'),'utf8'));
+assert.equal(taskPreviews.length,10);
+assert.equal(new Set(taskPreviews.map(p=>p.task)).size,10);
+const homeHtml=await readFile(join(dist,'index.html'),'utf8');
+assert(homeHtml.includes('data-task-media="images"'),'Preserve image mode as the default');
+assert.equal([...homeHtml.matchAll(/data-task-preview=/g)].length,20);
+for(const preview of taskPreviews){
+  assert(preview.recorded_final_success&&preview.episode_sha256&&preview.source_hash);
+  assert(homeHtml.includes(`data-task-preview="/${preview.file}"`));
+  assert((await stat(join(dist,preview.file))).size>0);
+  assert.equal(createHash('sha256').update(await readFile(join(dist,preview.file))).digest('hex'),preview.output_sha256);
+}
+console.log('Verified 10/10 task-specific video assets, image-default mode, lazy loading, playback controls, URL switching and failure fallback.');
 assert(!/\p{Script=Han}/u.test(js),'Chinese in visitor-facing runtime messages');
 const selectors={'[data-method-row], [data-visual-method]':rows,'[data-result-tab]':tabs,'[data-result-panel]':panels,'[data-view-button]':viewButtons,'[data-result-view]':views};
 runInNewContext(js.slice(js.indexOf('const methodFilter='),js.indexOf('const docSearch=')),{document:{querySelector:()=>filter,querySelectorAll:selector=>selectors[selector]||[]},window:{location:{hash:''}}});
