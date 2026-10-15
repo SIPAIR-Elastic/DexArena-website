@@ -1,6 +1,8 @@
-name: Legacy GitHub Pages deployment (manual only)
+name: Publish DexArena website
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:

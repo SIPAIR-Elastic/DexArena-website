@@ -2,9 +2,10 @@
 
 Public, English-language website for the DexArena dexterous manipulation benchmark.
 
-The repository is private. The intended public host is Vercel; the production
-URL will be recorded after deployment and anonymous-access verification. The
-previous GitHub Pages URL is not currently live.
+Website: **https://qhf7.github.io/DexArena/**
+
+The repository and website are public. GitHub Pages is the selected production
+host, with automatic deployment from `main`.
 
 ## Build
 
@@ -28,7 +29,11 @@ python3 -m http.server 4173 --directory dist
 
 Open http://localhost:4173. Use the build for the selected host before deployment.
 
-## Vercel deployment (private source, public website)
+## Alternative: Vercel deployment
+
+The Vercel configuration is retained as an optional alternative. It is not the
+current production deployment. Vercel can host a public site with a private
+repository if the project later chooses that arrangement.
 
 1. Authorize the Vercel GitHub App with **Only select repositories**, selecting
    only `Qhf7/DexArena`. Keep the repository private.
@@ -56,15 +61,15 @@ that the example domain exists. Authorization and a successful production
 deployment are still required. Public website assets are accessible to visitors;
 repository privacy does not make published HTML, PDFs or media confidential.
 
-## Legacy GitHub Pages deployment
+## GitHub Pages deployment
 
-The retained, manual-only `.github/workflows/pages.yml` workflow uses
+Push to `main` to publish through `.github/workflows/pages.yml`. The workflow uses
 the GitHub Pages environment and a short-lived GitHub Actions token; no personal
 access token or external hosting account is required for visitors.
 
-This is not the selected deployment path. GitHub Pages is currently unavailable
-for this private repository under its present configuration. Do not make the
-repository public to enable it; use Vercel instead.
+Pages settings must use **GitHub Actions** as the deployment source. The repository
+and published site are public. A custom domain is optional and not currently
+configured. A manual workflow dispatch can also redeploy the current `main`.
 
 ## Scope
 
