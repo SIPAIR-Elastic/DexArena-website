@@ -2,7 +2,9 @@
 
 Public, English-language website for the DexArena dexterous manipulation benchmark.
 
-Website: **https://qhf7.github.io/DexArena/**
+The repository is private. The intended public host is Vercel; the production
+URL will be recorded after deployment and anonymous-access verification. The
+previous GitHub Pages URL is not currently live.
 
 ## Build
 
@@ -24,16 +26,45 @@ node src/verify.mjs
 python3 -m http.server 4173 --directory dist
 ```
 
-Open http://localhost:4173. Re-run the GitHub Pages build before deployment.
+Open http://localhost:4173. Use the build for the selected host before deployment.
 
-## Deployment
+## Vercel deployment (private source, public website)
 
-Push to `main` to publish through `.github/workflows/pages.yml`. The workflow uses
+1. Authorize the Vercel GitHub App with **Only select repositories**, selecting
+   only `Qhf7/DexArena`. Keep the repository private.
+2. Import that repository in Vercel, with the repository root as Root Directory
+   and Framework Preset set to Other. The checked-in `vercel.json` sets the build
+   command and `dist` output directory; no dependency installation is required.
+3. Use Node.js 22 or later and leave Vercel system environment variables enabled.
+   The build uses the production domain for canonical, sharing and sitemap URLs.
+   For a custom domain, set `SITE_URL` to its complete HTTPS root URL.
+4. Deploy `main` to Production. Ensure **production** deployment protection is
+   disabled so visitors do not need a Vercel account; preview protection may
+   remain enabled. Check the project's actual protection settings, not just the
+   visibility of the GitHub repository.
+5. Verify the production homepage, nested task pages, video assets, Docs search
+   and results downloads from a signed-out browser before sharing the URL.
+
+To validate the root-path build locally:
+
+```bash
+SITE_URL=https://your-project.vercel.app/ node scripts/build-vercel.mjs
+```
+
+This command validates build output only; it does not deploy a website or prove
+that the example domain exists. Authorization and a successful production
+deployment are still required. Public website assets are accessible to visitors;
+repository privacy does not make published HTML, PDFs or media confidential.
+
+## Legacy GitHub Pages deployment
+
+The retained, manual-only `.github/workflows/pages.yml` workflow uses
 the GitHub Pages environment and a short-lived GitHub Actions token; no personal
 access token or external hosting account is required for visitors.
 
-Pages settings must use **GitHub Actions** as the deployment source. The repository
-and published site are public. A custom domain is optional and not currently configured.
+This is not the selected deployment path. GitHub Pages is currently unavailable
+for this private repository under its present configuration. Do not make the
+repository public to enable it; use Vercel instead.
 
 ## Scope
 
