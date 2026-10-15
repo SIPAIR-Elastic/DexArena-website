@@ -2,10 +2,11 @@
 
 Public, English-language website for the DexArena dexterous manipulation benchmark.
 
-Website: **https://qhf7.github.io/DexArena/**
+Website: **https://dexarena-benchmark.adeptfawn4.chatgpt.site/**
 
-The repository and website are public. GitHub Pages is the selected production
-host, with automatic deployment from `main`.
+The GitHub repository is private. The public website is hosted independently;
+visitors do not need GitHub access. GitHub Pages is not currently available for
+this private repository under its present configuration.
 
 ## Build
 
@@ -61,15 +62,15 @@ that the example domain exists. Authorization and a successful production
 deployment are still required. Public website assets are accessible to visitors;
 repository privacy does not make published HTML, PDFs or media confidential.
 
-## GitHub Pages deployment
+## Optional GitHub Pages deployment (not the selected host)
 
-Push to `main` to publish through `.github/workflows/pages.yml`. The workflow uses
+The retained, manual-only `.github/workflows/pages.yml` workflow uses
 the GitHub Pages environment and a short-lived GitHub Actions token; no personal
 access token or external hosting account is required for visitors.
 
-Pages settings must use **GitHub Actions** as the deployment source. The repository
-and published site are public. A custom domain is optional and not currently
-configured. A manual workflow dispatch can also redeploy the current `main`.
+Automatic Pages publication is disabled while the repository is private. Do not
+make the repository public to deploy the website. The original static build and
+path checks remain available for optional future use.
 
 ## Homepage task showcase: images and videos
 
@@ -77,7 +78,7 @@ The original image cards remain the default. The Images / Videos switch changes
 only the Simulation tasks card backgrounds, preserving the layout and task links.
 Share the video variant directly at:
 
-**https://qhf7.github.io/DexArena/?task-media=videos#simulation-tasks**
+**https://dexarena-benchmark.adeptfawn4.chatgpt.site/?task-media=videos#simulation-tasks**
 
 Videos load only after selecting Videos and bringing cards into view. Pause videos
 also pauses the moving rows; failed videos retain the original image. The showcase
