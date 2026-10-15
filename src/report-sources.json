@@ -1,0 +1,22 @@
+{
+  "checked_at": "2026-10-14",
+  "editorial_policy": "English editorial titles and concise summaries; source-language labels on all non-English external publications. Institute announcements, media coverage, benchmark technical notes and conference submission status are separate. No claim that media coverage independently evaluates DexArena.",
+  "layout_reference": "https://robodojo-benchmark.com/report",
+  "institute_identity": {
+    "display": "Shanghai Institute for Physical Artificial Intelligence and Robotics (PAIR)",
+    "english_name_reference": "https://cn.linkedin.com/in/wei-jie-soo-291921234",
+    "note": "English institutional name in a researcher profile; account certification is an English rendering of the project-owner-supplied original-language account details. Not an independently verified official English WeChat account title.",
+    "wechat_account_id": "gh_6279469803d5",
+    "official_wechat_article_links": "Awaiting verified original article links from the project owner. Publicly accessible institute reprints and separately attributed media coverage are shown meanwhile."
+  },
+  "coverage_sources": [
+    {"id":"quantum-ai","primary":"https://www.mittrchina.com/news/detail/17087","coverage_date":"2026-10-13","date_evidence":"https://kandian.sina.cn/article_1738690784_67a250e001901nrjq.html","relationship":"Media coverage of a PAIR-hosted conference"},
+    {"id":"quantum-frontiers","primary":"https://www.mittrchina.com/news/detail/17084","coverage_date":"2026-10-12","date_evidence":"https://finance.sina.cn/stock/jdts/2026-10-12/detail-iniuytpc8365996.d.html","relationship":"Media coverage of a PAIR keynote"},
+    {"id":"science-infrastructure","primary":"https://www.mittrchina.com/news/detail/17065","coverage_date":"2026-10-08","date_evidence":"https://bydrug.pharmcube.com/news/detail/be880f36af9af4996bd4484e3aa1c7cb","wechat_evidence":"The reprint's View original link identifies a DeepTech publisher WeChat article, not a PAIR official-account article."},
+    {"id":"pair-announcement","primary":"https://www.jfdaily.com/sgh/detail?id=4045653","coverage_date":"2026-08-27","relationship":"Article explicitly attributed to PAIR as a republication"}
+  ],
+  "conference_sources": [
+    {"id":"pair-2026","event_dates":"2026-09-20/2026-09-21","announcement":"https://www.jfdaily.com/sgh/detail?id=4045653","held_evidence":"https://finance.sina.cn/stock/jdts/2026-09-22/detail-inissuif5647857.d.html"},
+    {"id":"iclr-2027","status":"Under-review submission only, according to project-owner-supplied paper record","record":"https://openreview.net/forum?id=9yr0F1saHs","conference":"https://iclr.cc/Conferences/2027"}
+  ]
+}

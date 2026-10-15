@@ -1,0 +1,39 @@
+<!doctype html><html lang="en"><head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="Demonstration examples and the evidence required for a reproducible evaluation."><meta name="theme-color" content="#f8f9fa">
+    <meta property="og:title" content="Rollouts &amp; evidence — DexArena"><meta property="og:description" content="Demonstration examples and the evidence required for a reproducible evaluation.">
+    <title>Rollouts &amp; evidence — DexArena</title><link rel="icon" href="/DexArena/assets/favicon.svg" type="image/svg+xml">
+    <link rel="preload" href="/DexArena/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/DexArena/assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="/DexArena/assets/site.css"><link rel="stylesheet" href="/DexArena/assets/layout.css"><link rel="stylesheet" href="/DexArena/assets/refinement.css"><script src="/DexArena/assets/site.js" defer></script>
+  <link rel="canonical" href="https://qhf7.github.io/DexArena/evaluation/evidence/"><meta property="og:url" content="https://qhf7.github.io/DexArena/evaluation/evidence/"></head><body class="evidence-page"><header class="site-nav is-solid" data-nav>
+    <div class="site-nav__pill">
+      <div class="site-nav__left">
+        <a class="wordmark" href="/DexArena/" aria-label="DexArena home"><span class="wordmark__mark"><i></i><i></i><i></i></span><b>DexArena</b></a>
+        <nav class="site-nav__desktop" aria-label="Primary"><a class="site-nav__link " href="/DexArena/">Project</a><a class="site-nav__link " href="/DexArena/tasks/">Tasks</a><a class="site-nav__link " href="/DexArena/leaderboard/">Leaderboard</a><a class="site-nav__link is-active" href="/DexArena/evaluation/">Evaluation</a><a class="site-nav__link " href="/DexArena/docs/">Docs</a><a class="site-nav__link " href="/DexArena/report/">Report</a><a class="site-nav__link " href="/DexArena/community/">Community</a></nav>
+      </div>
+      <div class="site-nav__actions">
+        <button class="nav-search" type="button" data-open-search aria-label="Search documentation and tasks">Search <kbd>⌘ K</kbd></button>
+        <a class="nav-paper " href="/DexArena/paper/" >Paper ↗</a>
+        <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" data-menu><span></span><span></span></button>
+      </div>
+      <nav class="site-nav__drawer" data-drawer aria-label="Mobile"><a class="site-nav__link " href="/DexArena/">Project</a><a class="site-nav__link " href="/DexArena/tasks/">Tasks</a><a class="site-nav__link " href="/DexArena/leaderboard/">Leaderboard</a><a class="site-nav__link is-active" href="/DexArena/evaluation/">Evaluation</a><a class="site-nav__link " href="/DexArena/docs/">Docs</a><a class="site-nav__link " href="/DexArena/report/">Report</a><a class="site-nav__link " href="/DexArena/community/">Community</a><a class="site-nav__link " href="/DexArena/paper/">Paper</a></nav>
+    </div>
+  </header><main><section class="page-hero"><div><span>Evaluation evidence</span><h1>Rollouts & evidence</h1><p>See the task interactions, then preserve the artifacts needed to explain a policy score.</p></div></section><section class="section"><div class="section-head"><span>Collection examples</span><h2>Teleoperation previews.</h2><p>These videos illustrate demonstration collection. They are not scored baseline-policy rollouts and do not substantiate a leaderboard number.</p></div><div class="evidence-gallery"><article><video controls muted playsinline preload="none" poster="/DexArena/assets/tasks/task-26.jpg"><source src="/DexArena/assets/media/hero-package-opening.mp4" type="video/mp4"></video><div><h3>Package Opening</h3><p>Teleoperation collection preview</p><a href="/DexArena/tasks/package-opening/">Task definition →</a></div></article><article><video controls muted playsinline preload="none" poster="/DexArena/assets/tasks/task-28.jpg"><source src="/DexArena/assets/media/hero-table-cleaning.mp4" type="video/mp4"></video><div><h3>Table Cleaning</h3><p>Teleoperation collection preview</p><a href="/DexArena/tasks/table-cleaning/">Task definition →</a></div></article><article><video controls muted playsinline preload="none" poster="/DexArena/assets/tasks/task-12.jpg"><source src="/DexArena/assets/media/hero-nut-bolt.mp4" type="video/mp4"></video><div><h3>Nut & Bolt</h3><p>Teleoperation collection preview</p><a href="/DexArena/tasks/nut-bolt/">Task definition →</a></div></article></div></section><section class="section protocol-content"><section id="record"><h2>What to retain for each episode</h2><p>A score should be traceable to a task, seed, scene, policy and terminal outcome. Save the stage transition trace for long-horizon episodes so a failed sequence can be diagnosed independently of its aggregate result.</p><pre><code>{
+  "env_id": "SharpaAngledClickMouse-v1",
+  "seed": 10001,
+  "scene_background": "robocasa_l3_s2",
+  "checkpoint_hash": "&lt;record actual hash&gt;",
+  "adapter_revision": "&lt;record actual revision&gt;",
+  "success": false,
+  "control_steps": 500,
+  "stage_trace": [],
+  "video_path": "&lt;episode video&gt;",
+  "log_path": "&lt;episode log&gt;"
+}</code></pre><p class="figure-note">Suggested documentation record only, not a universal implemented output schema. Add the registered horizon, task fingerprint, observation configuration and background manifest from your runner.</p></section><section id="policy-rollouts"><h2>Scored policy rollouts</h2><div class="docs-callout"><b>Matching rollout artifacts pending</b><p>Scored baseline videos will be added when policy, checkpoint, seeds and run logs are supplied together. Collection previews remain explicitly separate from evaluation evidence.</p></div><div class="overview-links"><a class="arrow-link" href="/DexArena/leaderboard/protocol/"><span>Score protocol</span><b>↗</b></a><a class="arrow-link" href="/DexArena/docs/quick-evaluation/"><span>Run an evaluation</span><b>↗</b></a></div></section></section></main><footer class="site-footer">
+    <div class="footer-top"><a class="wordmark wordmark--footer" href="/DexArena/"><span class="wordmark__mark"><i></i><i></i><i></i></span><b>DexArena</b></a>
+      <div class="footer-description"><p>A unified benchmark for long-horizon bimanual dexterous manipulation.</p><a class="footer-community" href="/DexArena/community/#wechat">PAIR · WeChat official account →</a></div>
+      <div class="footer-links"><a href="/DexArena/paper/">Paper</a><a href="/DexArena/tasks/">Tasks</a><a href="/DexArena/leaderboard/">Leaderboard</a><a href="/DexArena/evaluation/">Evaluation</a><a href="/DexArena/docs/">Docs</a><a href="/DexArena/report/">Report</a><a href="/DexArena/community/">Community</a></div>
+    </div>
+    <div class="footer-bottom"><span>Research preview · 2026</span><a href="/DexArena/docs/resources/">Resources & release status</a><span>Built on SAPIEN / ManiSkill</span></div>
+  </footer><div class="route-progress" aria-hidden="true"></div></body></html>

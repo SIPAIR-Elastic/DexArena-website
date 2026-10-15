@@ -1,0 +1,11 @@
+Task,PPO success (%),RLPD success (%),ACT success (%),Diffusion Policy success (%),GR00T success (%),π0.5 success (%)
+Meal preparation,0,0,0,0,0,0
+Cabinet and pouring,0,0,0,0,0,2
+Drawer and plug,0,0,0,0,0,0
+Nut and bolt,0,0,0,0,0,0
+Office desk,0,0,0,0,0,0
+Furniture assembly,0,0,8,0,0,0
+Pipette transfer,0,0,0,0,0,0
+Juice preparation,0,0,0,0,0,0
+Package opening,0,0,4,0,0,14
+Table cleaning,0,0,0,0,0,0

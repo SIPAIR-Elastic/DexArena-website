@@ -1,0 +1,137 @@
+{
+  "task": "replay",
+  "scene_background": "robocasa_l3_s1",
+  "source": "SoftHandGrasping/data/teleop_pending/session_20260924_205742_aa2040/episode_0000/video.mp4",
+  "env_id": "SharpaPackageOpeningStandalone-v1",
+  "seed": 0,
+  "raw_state_sha256": "7b1e05b5b4581311cf2cdf0f84d4da7166f699e66025eb215f1dc7284bb6e7c6",
+  "recorded_final_success": true,
+  "frame_count": 747,
+  "rendered_frames": 767,
+  "fps": 20,
+  "resolution": [
+    1280,
+    800
+  ],
+  "camera": {
+    "eye": [
+      -1.08,
+      0,
+      1.12
+    ],
+    "target": [
+      -0.12,
+      0.02,
+      0.27
+    ],
+    "fov": 0.88
+  },
+  "restore_errors": [
+    {
+      "frame": 0,
+      "max_abs": 0
+    },
+    {
+      "frame": 373,
+      "max_abs": 0
+    },
+    {
+      "frame": 746,
+      "max_abs": 0
+    }
+  ],
+  "native_scene_checks": [
+    {
+      "frame": 0,
+      "height_error_m": 0.00009962916374206543,
+      "robot_clearance_m": 0.023004084825515747
+    },
+    {
+      "frame": 373,
+      "height_error_m": 0.00009962916374206543,
+      "robot_clearance_m": 0.023004084825515747
+    },
+    {
+      "frame": 746,
+      "height_error_m": 0.00009962916374206543,
+      "robot_clearance_m": 0.023004084825515747
+    }
+  ],
+  "mode": "raw-state restoration, no physics steps; illustration only, not policy-score evidence",
+  "background": {
+    "version": "dex_native_surface_v6",
+    "scene_id": "robocasa_l3_s1",
+    "label": "Light wood kitchen island",
+    "anchor": [
+      3.4499967,
+      -3.2499874,
+      0.92,
+      -3.141589,
+      0
+    ],
+    "mode": "native_surface",
+    "physics": "authored_scene_collision_geometry",
+    "original_table": "render_and_collision_disabled",
+    "robot_root_z_offset": 0,
+    "robot_reset": "original_pose_and_qpos_unchanged",
+    "native_height_delta_m": 0.0003570999999999991,
+    "height_tolerance_m": 0.001,
+    "scene_friction": 0.3,
+    "camera": "original_evaluation_profile",
+    "source_sha256": {
+      "utils/dex_scene_eval.py": "5f8d771699d5b960ead7546178d06ac5b59bd6bf7afb16f704a209a5c034a373",
+      "task/scene_builders/backgrounds.py": "35f37d26ea1ab464f13ec0a81efbf302e3435c3ff2e3df73289974b65f16abfb",
+      "task/scene_builders/scene_library.py": "c6c6dd676d69d5291006936926af83f203560a042dcde0d75424120794b7992b",
+      "task/scene_builders/anchor.py": "d492c02c643a7f71ebe45b1c6b84e51c2a8d7128e1d022ab410f27991a5263ab",
+      "utils/dex_cameras.py": "facc0fa67a525097a38177ac7e21d3b126023ef4b7639a6e8a1bc81ae57a4daf",
+      "utils/dex_camera_rigs.py": "830fcbb3fdb6bc736c49d60b5e2967c496b03cb055b31a36cc6132707433ad6f",
+      "utils/camera_configs.py": "ab48d7fd2f02179ced11a832d95b9f57249a9028c2c00afb98e5da3124576c53",
+      "utils/dex_scene_checks.py": "306a79c2aa092011ee01be3e93243d7705fb12c3dc7ea62471059215f295e1c8",
+      "utils/scene_matrix.py": "3b38d9ff859403145a16e333e92f22f16a78a59604108d74314a74457868c200"
+    },
+    "world_from_source_scene": {
+      "position": [
+        3.309768259525299,
+        -3.25,
+        -0.9200000166893005
+      ],
+      "quaternion_wxyz": [
+        0.0000018267949144501472,
+        0,
+        0,
+        1
+      ]
+    },
+    "floor_fit": "native_height_matches_workspace_within_1mm_robot_unchanged",
+    "hidden_background_entities": [
+      "eval-scene/scene-0_plant_left_group_0",
+      "eval-scene/scene-0_stool_1_stool_group_0",
+      "eval-scene/scene-0_stool_2_stool_group_0",
+      "eval-scene/scene-0_stool_3_stool_group_0"
+    ],
+    "render_entity_count": 121,
+    "edge_alignment": {
+      "reference": "original task table-workspace visible mesh after reset",
+      "axis": "X, robot-facing edge",
+      "original_near_edge_m": -0.4402167797088623,
+      "native_near_edge_m": -0.4402167797088623,
+      "error_m": 0,
+      "original_tabletop_z_m": 3.5762786865234375e-7,
+      "native_tabletop_z_m": 0.00009998679161071777,
+      "tabletop_height_error_m": 0.00009962916374206543,
+      "room_x_adjustment_m": -0.015216529369354248,
+      "original_table_aabb": [
+        [
+          -0.4402167797088623,
+          -1.2148621082305908,
+          -0.9196425676345825
+        ],
+        [
+          0.7688596248626709,
+          1.2030162811279297,
+          3.5762786865234375e-7
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,48 @@
+name: Publish DexArena website
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out website
+        uses: actions/checkout@v7.0.1
+      - name: Set up Node.js
+        uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+      - name: Build and verify all pages
+        run: node scripts/build-github-pages.mjs
+        env:
+          SITE_BASE_PATH: /DexArena/
+          SITE_URL: https://qhf7.github.io/DexArena/
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v6.0.0
+      - name: Upload static website
+        uses: actions/upload-pages-artifact@v5.0.0
+        with:
+          path: dist
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy public website
+        id: deployment
+        uses: actions/deploy-pages@v5.0.1

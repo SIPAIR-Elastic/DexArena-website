@@ -1,0 +1,252 @@
+{
+  "universities": [
+    {
+      "file": "umich.ico",
+      "source": "https://umich.edu/favicon.ico",
+      "reference": "https://brand.umich.edu/trademarks",
+      "kind": "official website icon"
+    },
+    {
+      "file": "sjtu.png",
+      "display_status": "Not displayed: available artwork contains Chinese. An English linked affiliation name is used instead; original artwork is preserved.",
+      "source": "https://media.luminis-sim.com/media/home/partners/sjtu.png",
+      "reference": "https://www.sjtu.edu.cn/",
+      "kind": "unmodified university wordmark from reference-site media"
+    },
+    {
+      "file": "nus.png",
+      "source": "https://media.luminis-sim.com/media/home/partners/nus.png",
+      "reference": "https://nus.edu.sg/identity",
+      "kind": "unmodified university wordmark from reference-site media"
+    },
+    {
+      "file": "penn.svg",
+      "source": "https://www.upenn.edu/themes/custom/penn_starter/assets/img/UPenn-logo.svg",
+      "reference": "https://www.upenn.edu/",
+      "kind": "official website logo; displayed on dark background"
+    },
+    {
+      "file": "ntu.png",
+      "source": "https://www.ntu.edu.sg/ResourcePackages/NTU/assets/images/NTU_Logo.png",
+      "reference": "https://www.ntu.edu.sg/",
+      "kind": "official website logo"
+    },
+    {
+      "file": "stanford.png",
+      "source": "https://www-media.stanford.edu/assets/favicon/favicon-192x192.png",
+      "reference": "https://identity.stanford.edu/",
+      "kind": "official website icon"
+    },
+    {
+      "file": "tsinghua.png",
+      "display_status": "Not displayed: available artwork contains Chinese. An English linked affiliation name is used instead; original artwork is preserved.",
+      "source": "https://media.luminis-sim.com/media/home/partners/thu.png",
+      "reference": "https://www.tsinghua.edu.cn/",
+      "kind": "unmodified university wordmark from reference-site media"
+    }
+  ],
+  "capture": {
+    "file": "assets/media/manus-metagloves-pro.png",
+    "source": "https://cdn.prod.website-files.com/6617b472be5db819f4dbdf45/671277c3cb0e01e6d1f5ecc3_e97857803b728ca18442fc5e336dba73_product-mp-03.png",
+    "reference": "https://www.manus-meta.com/products/metagloves-pro",
+    "kind": "unmodified official MANUS Metagloves Pro manufacturer product image",
+    "usage": "Illustrates the glove equipment family; not a photograph of the complete DexArena collection setup. Manufacturer attribution is visible on the homepage."
+  },
+  "scoopTomatoAlternate": {
+    "status": "unused alternate; original assets/tasks/task-02.jpg restored at the owner's request",
+    "file": "assets/tasks/scoop-tomato-preview.png",
+    "source": "SoftHandGrasping/data/teleop_lerobot_100/sharpa_hand/env_AngledMobileBaseSharpaScoopTomato-v1__obj_000/replay/source_534846340ff615a/raw_states.pkl",
+    "env_id": "AngledMobileBaseSharpaScoopTomato-v1",
+    "seed": 155,
+    "frame_index": 280,
+    "recording_git_sha": "e1093440a12e1f0e5ccb06fead207bb82790438c",
+    "raw_state_sha256": "23cf0d6d8cd57f72c2724b7226c91aec47c0d095732114a02c9ef18b7dc0bf10",
+    "camera": {
+      "eye": [
+        -0.65,
+        -0.75,
+        0.75
+      ],
+      "target": [
+        -0.12,
+        -0.16,
+        0.05
+      ],
+      "width": 1280,
+      "height": 900,
+      "fov": 0.8
+    },
+    "kind": "authentic recorded simulator state rendered with an additional presentation camera; no object, robot or collision modifications",
+    "usage": "Demonstration illustration only, not evidence for manuscript policy scores. Original task-02.jpg is retained for recovery."
+  },
+  "fonts": {
+    "provider": "Google Fonts",
+    "families": [
+      "Inter",
+      "Manrope",
+      "JetBrains Mono"
+    ],
+    "format": "Latin variable WOFF2",
+    "license": "SIL Open Font License 1.1; files bundled in assets/fonts",
+    "request": "https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Manrope:wght@400..700&family=JetBrains+Mono:wght@400..600&display=swap"
+  },
+  "usage": "University identities identify author affiliations only; no sponsorship or endorsement is implied. Logo artwork is unmodified and displayed at its original aspect ratio.",
+  "heroVideos": [
+    {
+      "file": "assets/media/hero-scene-drawer.mp4",
+      "poster": "assets/media/hero-scene-drawer.jpg",
+      "env_id": "DrawerPlugOpen-v1",
+      "source": "SoftHandGrasping/data/teleop_pending/session_20260903_180856_21130a_DrawerPlugOpen-v1/episode_0108/video.mp4",
+      "source_hash": "source_9c7e70e0cbd4d7d",
+      "seed": 108,
+      "recorded_final_success": true,
+      "episode_sha256": "9c7e70e0cbd4d7d15a4d938f37dbc0009161dcb5dc9bf95f474f3b7f1820c373",
+      "selection": "Matched by episode SHA-256 to teleop_lerobot_100; replay-successful subset",
+      "presentation": {
+        "scene_background": "robocasa_l3_s1",
+        "resolution": [
+          1280,
+          800
+        ],
+        "camera": {
+          "eye": [
+            -1.08,
+            -0.24,
+            1.1
+          ],
+          "target": [
+            0.185,
+            0.18,
+            0.23
+          ],
+          "fov": 0.88
+        },
+        "fps": 20,
+        "frames": 106,
+        "terminal_hold_seconds": 1,
+        "speed": "normal recorded control rate",
+        "physics_steps": 0
+      },
+      "usage": "Original successful human demonstration states re-rendered in a native kitchen; not policy-score evidence or a new collision-scene action replay.",
+      "previous_file": "assets/media/hero-success-drawer.mp4",
+      "previous_poster": "assets/media/hero-success-drawer.jpg",
+      "raw_state_sha256": "544f07c1504bb1f5c3519768001cea0f6dfbcf993c6c0e1148665f54b49cbf50"
+    },
+    {
+      "file": "assets/media/hero-scene-rail.mp4",
+      "poster": "assets/media/hero-scene-rail.jpg",
+      "env_id": "SharpaAngledMobileRailInsert-v1",
+      "source": "SoftHandGrasping/data/teleop_pending/session_20260904_131159_19611a_SharpaAngledMobileRailInsert-v1/episode_0260/video.mp4",
+      "source_hash": "source_e89547971fe81da",
+      "seed": 260,
+      "recorded_final_success": true,
+      "episode_sha256": "e89547971fe81daa2fab10dac4cab2badba91893b4487e40b4aac0e69e67440d",
+      "selection": "Matched by episode SHA-256 to teleop_lerobot_100; replay-successful subset",
+      "presentation": {
+        "scene_background": "robocasa_l3_s1",
+        "resolution": [
+          1280,
+          800
+        ],
+        "camera": {
+          "eye": [
+            -0.96,
+            0.72,
+            1.15
+          ],
+          "target": [
+            -0.13,
+            -0.06,
+            0.1
+          ],
+          "fov": 0.85
+        },
+        "fps": 20,
+        "frames": 150,
+        "terminal_hold_seconds": 1,
+        "speed": "normal recorded control rate",
+        "physics_steps": 0
+      },
+      "usage": "Original successful human demonstration states re-rendered in a native kitchen; not policy-score evidence or a new collision-scene action replay.",
+      "previous_file": "assets/media/hero-success-rail.mp4",
+      "previous_poster": "assets/media/hero-success-rail.jpg",
+      "raw_state_sha256": "03c6f5b9baee2f7c331effef4f4834711ec4f47e056b0c21520ca44e1e3ca40b"
+    },
+    {
+      "file": "assets/media/hero-scene-laptop.mp4",
+      "poster": "assets/media/hero-scene-laptop.jpg",
+      "env_id": "SharpaAngledOpenLaptop-v1",
+      "source": "SoftHandGrasping/data/teleop_pending/session_20260902_133857_8bf647_SharpaAngledOpenLaptop-v1/episode_0046/video.mp4",
+      "source_hash": "source_03b2322c3390d92",
+      "seed": 46,
+      "recorded_final_success": true,
+      "episode_sha256": "03b2322c3390d92a84642d62651a636d59e49d0ba7bbf3e3c8fae7585235a4b2",
+      "selection": "Matched by episode SHA-256 to teleop_lerobot_100; replay-successful subset",
+      "presentation": {
+        "scene_background": "robocasa_l3_s1",
+        "resolution": [
+          1280,
+          800
+        ],
+        "camera": {
+          "eye": [
+            -1.1,
+            0.15,
+            1.1
+          ],
+          "target": [
+            -0.07,
+            0,
+            0.15
+          ],
+          "fov": 0.85
+        },
+        "fps": 20,
+        "frames": 122,
+        "terminal_hold_seconds": 1,
+        "speed": "normal recorded control rate",
+        "physics_steps": 0
+      },
+      "usage": "Original successful human demonstration states re-rendered in a native kitchen; not policy-score evidence or a new collision-scene action replay.",
+      "previous_file": "assets/media/hero-success-laptop.mp4",
+      "previous_poster": "assets/media/hero-success-laptop.jpg",
+      "raw_state_sha256": "3732873dedc3fab47da6060a3d75a8674c13ad93b23130b588a56695e87f3e2b"
+    }
+  ],
+  "replayVideo": {
+    "file": "assets/media/hero-scene-replay.mp4",
+    "poster": "assets/media/hero-scene-replay.jpg",
+    "env_id": "SharpaPackageOpeningStandalone-v1",
+    "source": "SoftHandGrasping/data/teleop_pending/session_20260924_205742_aa2040/episode_0000/video.mp4",
+    "seed": 0,
+    "recorded_final_success": true,
+    "episode_sha256": "70b8ac7876bfed689f6239c8877717f4d29a1626f21365bfd48f1f44b96bdf2b",
+    "raw_state_sha256": "7b1e05b5b4581311cf2cdf0f84d4da7166f699e66025eb215f1dc7284bb6e7c6",
+    "usage": "Package-opening recorded demonstration, rendered in robocasa_l3_s1 for the pipeline illustration; not a policy rollout or proof of new-scene action-replay success.",
+    "previous_file": "assets/media/hero-package-opening.mp4",
+    "presentation": {
+      "scene_background": "robocasa_l3_s1",
+      "camera": {
+        "eye": [
+          -1.08,
+          0,
+          1.12
+        ],
+        "target": [
+          -0.12,
+          0.02,
+          0.27
+        ],
+        "fov": 0.88
+      },
+      "resolution": [
+        1280,
+        800
+      ],
+      "fps": 20,
+      "rendered_frames": 767,
+      "terminal_hold_seconds": 1,
+      "physics_steps": 0
+    }
+  }
+}

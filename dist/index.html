@@ -1,0 +1,191 @@
+<!doctype html><html lang="en"><head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="A unified benchmark for long-horizon bimanual dexterous manipulation."><meta name="theme-color" content="#f8f9fa">
+    <meta property="og:title" content="DexArena — Long-Horizon Dexterous Manipulation"><meta property="og:description" content="A unified benchmark for long-horizon bimanual dexterous manipulation.">
+    <title>DexArena — Long-Horizon Dexterous Manipulation</title><link rel="icon" href="/DexArena/assets/favicon.svg" type="image/svg+xml">
+    <link rel="preload" href="/DexArena/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/DexArena/assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="/DexArena/assets/site.css"><link rel="stylesheet" href="/DexArena/assets/layout.css"><link rel="stylesheet" href="/DexArena/assets/refinement.css"><script src="/DexArena/assets/site.js" defer></script>
+  <link rel="canonical" href="https://qhf7.github.io/DexArena/"><meta property="og:url" content="https://qhf7.github.io/DexArena/"></head><body class="home-page"><header class="site-nav is-solid" data-nav>
+    <div class="site-nav__pill">
+      <div class="site-nav__left">
+        <a class="wordmark" href="/DexArena/" aria-label="DexArena home"><span class="wordmark__mark"><i></i><i></i><i></i></span><b>DexArena</b></a>
+        <nav class="site-nav__desktop" aria-label="Primary"><a class="site-nav__link is-active" href="/DexArena/">Project</a><a class="site-nav__link " href="/DexArena/tasks/">Tasks</a><a class="site-nav__link " href="/DexArena/leaderboard/">Leaderboard</a><a class="site-nav__link " href="/DexArena/evaluation/">Evaluation</a><a class="site-nav__link " href="/DexArena/docs/">Docs</a><a class="site-nav__link " href="/DexArena/report/">Report</a><a class="site-nav__link " href="/DexArena/community/">Community</a></nav>
+      </div>
+      <div class="site-nav__actions">
+        <button class="nav-search" type="button" data-open-search aria-label="Search documentation and tasks">Search <kbd>⌘ K</kbd></button>
+        <a class="nav-paper " href="/DexArena/paper/" >Paper ↗</a>
+        <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" data-menu><span></span><span></span></button>
+      </div>
+      <nav class="site-nav__drawer" data-drawer aria-label="Mobile"><a class="site-nav__link is-active" href="/DexArena/">Project</a><a class="site-nav__link " href="/DexArena/tasks/">Tasks</a><a class="site-nav__link " href="/DexArena/leaderboard/">Leaderboard</a><a class="site-nav__link " href="/DexArena/evaluation/">Evaluation</a><a class="site-nav__link " href="/DexArena/docs/">Docs</a><a class="site-nav__link " href="/DexArena/report/">Report</a><a class="site-nav__link " href="/DexArena/community/">Community</a><a class="site-nav__link " href="/DexArena/paper/">Paper</a></nav>
+    </div>
+  </header><main>
+<section class="cover" aria-label="DexArena highlights">
+  <div class="cover-track" data-carousel-track>
+    <article class="cover-slide is-active" data-slide>
+      <div class="cover-card">
+        <div class="cover-mosaic" aria-label="DexArena demonstrations across three different tasks">
+          <div class="cover-mosaic__item cover-mosaic__item--main">
+            <video autoplay muted loop playsinline preload="metadata" poster="/DexArena/assets/media/hero-scene-drawer.jpg"><source src="/DexArena/assets/media/hero-scene-drawer.mp4" type="video/mp4"></video>
+            <span>Open drawer</span>
+          </div>
+          <div class="cover-mosaic__item">
+            <video autoplay muted loop playsinline preload="metadata" poster="/DexArena/assets/media/hero-scene-laptop.jpg"><source src="/DexArena/assets/media/hero-scene-laptop.mp4" type="video/mp4"></video>
+            <span>Open laptop</span>
+          </div>
+          <div class="cover-mosaic__item">
+            <video autoplay muted loop playsinline preload="metadata" poster="/DexArena/assets/media/hero-scene-rail.jpg"><source src="/DexArena/assets/media/hero-scene-rail.mp4" type="video/mp4"></video>
+            <span>Insert rail</span>
+          </div>
+        </div>
+        <div class="cover-scrim"></div><div class="cover-copy">
+          <span class="cover-kicker">Unified benchmark · 10 + 30 tasks</span>
+          <h1>DexArena</h1><h2>Dexterity over long horizons.</h2>
+          <p>Execute precise skills, generalize across scenes, and compose behavior into complete bimanual tasks.</p>
+          <a class="arrow-link on-dark" href="#overview"><span>Learn more</span><b>↗</b></a>
+        </div>
+      </div>
+    </article>
+    <article class="cover-slide" data-slide>
+      <div class="cover-card cover-card--scene">
+        <img src="/DexArena/assets/media/cabinet-scene.png" alt="DexArena cabinet task rendered in a RoboCasa scene">
+        <div class="cover-scrim"></div><div class="cover-copy">
+          <span class="cover-kicker">Cross-scene evaluation · 90 combinations</span>
+          <h1>Same skill.<br>New scene.</h1>
+          <h2>Change the scene. Keep the task.</h2>
+          <p>Evaluate all 30 canonical stages on three native scene surfaces with fixed policy cameras.</p>
+          <a class="arrow-link on-dark" href="/DexArena/docs/randomization/"><span>Explore randomization</span><b>↗</b></a>
+        </div>
+      </div>
+    </article>
+    <article class="cover-slide" data-slide>
+      <div class="cover-card cover-card--task">
+        <img src="/DexArena/assets/media/package-scene.png" alt="Two dexterous hands opening a package and retrieving an apple in a native kitchen scene">
+        <div class="cover-scrim"></div><div class="cover-copy">
+          <span class="cover-kicker">Featured task · Bimanual dexterity</span>
+          <h1>Two hands.<br>One task.</h1><h2>Open the package. Retrieve the apple.</h2>
+          <p>Coordinate both hands to open the flaps, then grasp and place the apple: two connected stages with physical success conditions.</p>
+          <a class="arrow-link on-dark" href="/DexArena/tasks/package-opening/"><span>Explore Package Opening</span><b>↗</b></a>
+        </div>
+      </div>
+    </article>
+  </div>
+  <div class="cover-controls">
+    <button class="carousel-arrow carousel-arrow--prev" type="button" data-prev aria-label="Previous slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5.5 8.5 12 15 18.5"/><path d="M9 12h11"/></svg></button>
+    <div class="cover-dots"><button type="button" data-dot="0" aria-label="Go to slide 1" class="active"></button><button type="button" data-dot="1" aria-label="Go to slide 2" class=""></button><button type="button" data-dot="2" aria-label="Go to slide 3" class=""></button></div>
+    <button class="carousel-arrow carousel-arrow--next" type="button" data-next aria-label="Next slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5.5 6.5 6.5L9 18.5"/><path d="M15 12H4"/></svg></button>
+  </div>
+</section>
+
+<section class="project-intro section" id="overview">
+  <div class="section-label">Project</div>
+  <div class="project-title reveal"><h2><span class="text-accent">DexArena:</span> A Unified Benchmark for Long-Horizon Dexterous Manipulation</h2>
+    <p>DexArena pairs exact stage slices with their parent long-horizon environments, so isolated skill execution and end-to-end composition can be evaluated without changing the underlying physical setting.</p>
+  </div>
+  <div class="project-links reveal"><a class="arrow-link " href="/DexArena/paper/"><span>Paper</span><b>↗</b></a><a class="arrow-link " href="/DexArena/tasks/"><span>Task catalog</span><b>↗</b></a><a class="arrow-link " href="/DexArena/leaderboard/"><span>Leaderboard</span><b>↗</b></a><a class="arrow-link " href="/DexArena/docs/"><span>Documentation</span><b>↗</b></a></div>
+</section>
+
+<section class="section benchmark-overview" id="benchmark-overview">
+  <div class="section-head reveal"><span>The benchmark at a glance</span><h2><span class="text-accent">Dexterous skills,</span> connected into complete behaviors.</h2></div>
+  <div class="overview-prose reveal"><p>Long-horizon manipulation asks a robot to do more than repeat an isolated movement. It must coordinate its fingers and arms, interact precisely with articulated objects, and carry the outcome of one skill into the next. DexArena makes these abilities measurable in a shared physical setting.</p><p>The benchmark brings together <b>10 long-horizon tasks and 30 stage-level tasks</b>, spanning six motion categories and household, laboratory and industrial-style scenarios. Each stage is an exact slice of its parent sequence, with matching objects, initialization rules and physical success conditions.</p></div>
+  <figure class="overview-figure reveal"><a href="/DexArena/assets/paper/dexarena-overview.png" target="_blank" rel="noreferrer" aria-label="Open Figure 1: DexArena overview at full resolution"><img src="/DexArena/assets/paper/dexarena-overview.png" alt="Figure 1: DexArena overview, connecting long-horizon tasks, interactive objects, dexterous embodiments, six skill categories, task composition and diverse scenarios" loading="lazy" width="1800" height="1040"></a><figcaption><b>Figure 1 · DexArena overview.</b> Multi-stage tasks, interactive objects, dexterous embodiments and diverse scenarios in one benchmark. <a href="/DexArena/assets/paper/dexarena-overview.png" target="_blank" rel="noreferrer">View full resolution ↗</a></figcaption></figure>
+  <div class="overview-prose reveal"><p>A common interface supports a parallel-jaw gripper, Sharpa Hand, Wuji Hand and XHand. The canonical demonstration release uses Panda arms with Sharpa hands: <b>3,000 replay-successful episodes</b>, with recorded scene states for restoration and offline rendering.</p><p>Six policy baselines are evaluated along three complementary axes: <b>skill execution, visual generalization and long-horizon composition</b>. Separating these questions reveals whether a policy has learned a contact-rich skill, can transfer it to a different scene, and can reliably use it as part of a complete task.</p></div>
+  <div class="overview-links"><a class="arrow-link " href="/DexArena/tasks/"><span>Explore the tasks</span><b>↗</b></a><a class="arrow-link " href="/DexArena/leaderboard/"><span>Compare the baselines</span><b>↗</b></a><a class="arrow-link " href="/DexArena/docs/quick-evaluation/"><span>Start evaluating</span><b>↗</b></a></div>
+</section>
+
+<section class="home-tasks section-wide">
+  <div class="section-head centered reveal"><span>Simulation tasks</span><h2>Ten sequences. Thirty measurable stages.</h2><p>From kitchen preparation to precision assembly, each long-horizon task is decomposed into physically grounded stages.</p></div>
+  <div class="marquee-shell"><div class="marquee-row "><div class="marquee-track"><a class="marquee-card" href="/DexArena/tasks/meal-preparation/" aria-hidden="false">
+    <img src="/DexArena/assets/tasks/task-00.jpg" alt=""><span>Meal Preparation</span>
+  </a><a class="marquee-card" href="/DexArena/tasks/cabinet-pour/" aria-hidden="false">
+    <img src="/DexArena/assets/tasks/task-03.jpg" alt=""><span>Cabinet & Pouring</span>
+  </a><a class="marquee-card" href="/DexArena/tasks/drawer-plug/" aria-hidden="false">
+    <img src="/DexArena/assets/tasks/task-07.jpg" alt=""><span>Drawer & Plug</span>
+  </a><a class="marquee-card" href="/DexArena/tasks/nut-bolt/" aria-hidden="false">
+    <img src="/DexArena/assets/tasks/task-10.jpg" alt=""><span>Nut & Bolt</span>
+  </a><a class="marquee-card" href="/DexArena/tasks/office-desk/" aria-hidden="false">
+    <img src="/DexArena/assets/tasks/task-13.jpg" alt=""><span>Office Desk</span>
+  </a><a class="marquee-card" href="/DexArena/tasks/meal-preparation/" aria-hidden="true">
+    <img src="/DexArena/assets/tasks/task-00.jpg" alt=""><span>Meal Preparation</span>
+  </a><a class="marquee-card" href="/DexArena/tasks/cabinet-pour/" aria-hidden="true">
+    <img src="/DexArena/assets/tasks/task-03.jpg" alt=""><span>Cabinet & Pouring</span>
+  </a><a class="marquee-card" href="/DexArena/tasks/drawer-plug/" aria-hidden="true">
+    <img src="/DexArena/assets/tasks/task-07.jpg" alt=""><span>Drawer & Plug</span>
+  </a><a class="marquee-card" href="/DexArena/tasks/nut-bolt/" aria-hidden="true">
+    <img src="/DexArena/assets/tasks/task-10.jpg" alt=""><span>Nut & Bolt</span>
+  </a><a class="marquee-card" href="/DexArena/tasks/office-desk/" aria-hidden="true">
+    <img src="/DexArena/assets/tasks/task-13.jpg" alt=""><span>Office Desk</span>
+  </a></div></div><div class="marquee-row is-reverse"><div class="marquee-track"><a class="marquee-card" href="/DexArena/tasks/furniture-assembly/" aria-hidden="false">
+    <img src="/DexArena/assets/tasks/task-16.jpg" alt=""><span>Furniture Assembly</span>
+  </a><a class="marquee-card" href="/DexArena/tasks/pipette-transfer/" aria-hidden="false">
+    <img src="/DexArena/assets/tasks/task-19.jpg" alt=""><span>Pipette Transfer</span>
+  </a><a class="marquee-card" href="/DexArena/tasks/juice-preparation/" aria-hidden="false">
+    <img src="/DexArena/assets/tasks/task-21.jpg" alt=""><span>Juice Preparation</span>
+  </a><a class="marquee-card" href="/DexArena/tasks/package-opening/" aria-hidden="false">
+    <img src="/DexArena/assets/tasks/task-26.jpg" alt=""><span>Package Opening</span>
+  </a><a class="marquee-card" href="/DexArena/tasks/table-cleaning/" aria-hidden="false">
+    <img src="/DexArena/assets/tasks/task-28.jpg" alt=""><span>Table Cleaning</span>
+  </a><a class="marquee-card" href="/DexArena/tasks/furniture-assembly/" aria-hidden="true">
+    <img src="/DexArena/assets/tasks/task-16.jpg" alt=""><span>Furniture Assembly</span>
+  </a><a class="marquee-card" href="/DexArena/tasks/pipette-transfer/" aria-hidden="true">
+    <img src="/DexArena/assets/tasks/task-19.jpg" alt=""><span>Pipette Transfer</span>
+  </a><a class="marquee-card" href="/DexArena/tasks/juice-preparation/" aria-hidden="true">
+    <img src="/DexArena/assets/tasks/task-21.jpg" alt=""><span>Juice Preparation</span>
+  </a><a class="marquee-card" href="/DexArena/tasks/package-opening/" aria-hidden="true">
+    <img src="/DexArena/assets/tasks/task-26.jpg" alt=""><span>Package Opening</span>
+  </a><a class="marquee-card" href="/DexArena/tasks/table-cleaning/" aria-hidden="true">
+    <img src="/DexArena/assets/tasks/task-28.jpg" alt=""><span>Table Cleaning</span>
+  </a></div></div></div>
+  <div class="center-link"><a class="arrow-link " href="/DexArena/tasks/"><span>View all task definitions</span><b>↗</b></a></div>
+</section>
+
+<section class="stat-band">
+  <div><strong>10</strong><span>long-horizon tasks</span></div><div><strong>30</strong><span>canonical stage tasks</span></div>
+  <div><strong>3,000</strong><span>replay-validated episodes</span></div><div><strong>90</strong><span>task × native-scene combinations</span></div>
+</section>
+
+<section class="section capability-section">
+  <div class="section-head reveal"><span>Benchmark design</span><h2>Measure the transition <span class="text-accent text-accent--teal">from a skill</span> <span class="text-accent text-accent--violet">to a behavior.</span></h2></div>
+  <div class="capability-grid">
+    <article class="capability-card reveal"><div class="capability-media"><img src="/DexArena/assets/tasks/task-12.jpg" alt="Dexterous hand turning a nut on a bolt" loading="lazy"></div><div class="capability-body"><b>01</b><h3>Skill execution</h3><p>Persistent physical predicates distinguish stable completion from transient contact.</p><a href="/DexArena/tasks/nut-bolt/">Explore a precise skill ↗</a></div></article>
+<article class="capability-card reveal"><div class="capability-media capability-scenes"><img src="/DexArena/assets/media/native-scene-2.png" alt="Pipette task in native kitchen scene 2" loading="lazy"><img src="/DexArena/assets/media/native-scene-1.png" alt="Pipette task in native kitchen scene 1" loading="lazy"><img src="/DexArena/assets/media/native-scene-6.png" alt="Pipette task in native kitchen scene 6" loading="lazy"></div><div class="capability-body"><b>02</b><h3>Visual generalization</h3><p>Keep task definitions fixed while changing the native kitchen environment.</p><a href="/DexArena/docs/randomization/">Compare scene settings ↗</a></div></article>
+    <article class="capability-card reveal"><div class="capability-media capability-sequence"><div><img src="/DexArena/assets/tasks/task-16.jpg" alt="Furniture assembly stage 1: lay panel flat" loading="lazy"><span>01</span></div><div><img src="/DexArena/assets/tasks/task-17.jpg" alt="Furniture assembly stage 2: insert rail" loading="lazy"><span>02</span></div><div><img src="/DexArena/assets/tasks/task-18.jpg" alt="Furniture assembly stage 3: fasten screw" loading="lazy"><span>03</span></div></div><div class="capability-body"><b>03</b><h3>Long-horizon composition</h3><p>Execute connected stages in sequence, preserving the physical state between them.</p><a href="/DexArena/tasks/furniture-assembly/">Follow a complete sequence ↗</a></div></article>
+  </div>
+</section>
+
+<section class="feature-split section-wide">
+  <div class="feature-media reveal"><img src="/DexArena/assets/media/package-scene.png" alt="Bimanual package-opening task"></div>
+  <div class="feature-copy reveal"><span>Embodiment</span><h2>29 dimensions with one hand. 58 with two.</h2>
+    <p>The released canonical data uses Panda arms with 22-DoF Sharpa hands and absolute joint-position targets: 7 arm + 22 hand joints per side.</p>
+    <ul><li>Single-arm and bimanual variants</li><li>Shared task and success interfaces</li><li>Parallel-jaw, Sharpa, Wuji, and XHand simulation support</li></ul>
+    <a class="arrow-link " href="/DexArena/docs/getting-started/"><span>Read the interface guide</span><b>↗</b></a>
+  </div>
+</section>
+
+<section class="section data-section">
+  <div class="section-head reveal"><span>Human demonstrations</span><h2>Recorded, reviewed, restored, replayed.</h2><p>The data pipeline retains the simulator state needed for deterministic restoration and offline multi-view rendering.</p></div>
+  <ol class="collection-flow">
+    <li class="reveal"><div class="flow-media flow-media--official"><img src="/DexArena/assets/media/manus-metagloves-pro.png" alt="MANUS Metagloves Pro, official manufacturer product image" loading="lazy"><a href="https://www.manus-meta.com/products/metagloves-pro" target="_blank" rel="noreferrer" class="official-image-credit">MANUS · Official product image ↗</a></div><div class="flow-body"><span>01 · Capture</span><h3>Recorded</h3><p>Human wrist and finger motion becomes robot joint targets at 20 Hz.</p></div></li>
+    <li class="reveal"><div class="flow-media"><img src="/DexArena/assets/tasks/task-00.jpg" alt="A lunch-box opening demonstration for review" loading="lazy"></div><div class="flow-body"><span>02 · Quality check</span><h3>Reviewed</h3><p>Review the episode and retain demonstrations that complete the task.</p></div></li>
+    <li class="reveal"><div class="flow-media"><img src="/DexArena/assets/media/native-scene-1.png" alt="Robot and pipette objects restored in a native scene" loading="lazy"></div><div class="flow-body"><span>03 · State restoration</span><h3>Restored</h3><p>Recover saved simulator states for offline multi-view rendering.</p></div></li>
+    <li class="reveal"><div class="flow-media"><video autoplay muted loop playsinline preload="metadata" poster="/DexArena/assets/media/hero-scene-replay.jpg"><source src="/DexArena/assets/media/hero-scene-replay.mp4" type="video/mp4"></video></div><div class="flow-body"><span>04 · Action replay</span><h3>Replayed</h3><p>Replay recorded actions and select 100 successful episodes per stage.</p></div></li>
+  </ol><div class="flow-footer"><span><b>3,000</b> demonstrations <i>·</i> <b>9.1 h</b> <i>·</i> <b>20 Hz</b></span><a class="arrow-link " href="/DexArena/docs/data/"><span>Explore the data pipeline</span><b>↗</b></a></div>
+</section>
+
+<section class="scene-section section-wide">
+  <div class="scene-heading"><div class="section-head reveal"><span>Generalization</span><h2>One task. Three native scenes.</h2><p>The same pipette workstation in blue stone, light wood and warm wood kitchens. Evaluate all 30 stages across these three native backgrounds.</p></div><div class="scene-matrix"><b>30 × 3</b><span>90 task–scene combinations</span></div></div>
+  <div class="native-scene-grid"><article class="native-scene-card reveal"><img src="/DexArena/assets/media/native-scene-2.png" alt="Blue kitchen: the same pipette task with unchanged object layout" loading="lazy"><div><h3>Blue kitchen</h3><span>Stone island</span><code>robocasa_l3_s2</code></div></article><article class="native-scene-card reveal"><img src="/DexArena/assets/media/native-scene-1.png" alt="Light wood kitchen: the same pipette task with unchanged object layout" loading="lazy"><div><h3>Light wood kitchen</h3><span>Wood island</span><code>robocasa_l3_s1</code></div></article><article class="native-scene-card reveal"><img src="/DexArena/assets/media/native-scene-6.png" alt="Warm wood kitchen: the same pipette task with unchanged object layout" loading="lazy"><div><h3>Warm wood kitchen</h3><span>Stone island</span><code>robocasa_l3_s6</code></div></article></div>
+  <div class="flow-footer"><p>Fixed policy cameras and shared task definitions. Optional LabUtopia laboratory for further studies.</p><a class="arrow-link " href="/DexArena/docs/randomization/"><span>Cross-scene protocol</span><b>↗</b></a></div>
+</section>
+
+<section class="leaderboard-cta section">
+  <div class="section-head reveal"><span>Experimental results</span><h2>Learning a skill is only the beginning.</h2><p>Six baselines evaluated on execution, visual generalization and long-horizon composition. All scores below are reported in the supplied manuscript.</p></div>
+  <div class="finding-grid"><article><span>Stage execution</span><b>61.4<span>%</span></b><h3>GR00T leads in the training scene.</h3><p>Average success over 30 stages. ACT reaches 58.0%; RLPD reaches 54.3%.</p></article><article><span>Visual generalization</span><b>49.2<span>%</span></b><h3>π0.5 leads across held-out scenes.</h3><p>49.2 ± 2.3% across three kitchens; ACT reaches 45.4 ± 3.6%.</p></article><article><span>Full task completion</span><b>1.6<span>%</span></b><h3>Composition remains difficult.</h3><p>π0.5 averages 1.6% across ten complete sequences; ACT reaches 1.2%.</p></article></div>
+  <div class="leaderboard-cta__card reveal"><div><span>Paper baselines</span><h2>Explore every result.</h2><p>Compare PPO, RLPD, ACT, Diffusion Policy, GR00T and π0.5 across all stages and complete sequences.</p></div><a class="arrow-link on-dark" href="/DexArena/leaderboard/"><span>Open leaderboard</span><b>↗</b></a></div>
+</section></main><footer class="site-footer">
+    <div class="footer-top"><a class="wordmark wordmark--footer" href="/DexArena/"><span class="wordmark__mark"><i></i><i></i><i></i></span><b>DexArena</b></a>
+      <div class="footer-description"><p>A unified benchmark for long-horizon bimanual dexterous manipulation.</p><a class="footer-community" href="/DexArena/community/#wechat">PAIR · WeChat official account →</a></div>
+      <div class="footer-links"><a href="/DexArena/paper/">Paper</a><a href="/DexArena/tasks/">Tasks</a><a href="/DexArena/leaderboard/">Leaderboard</a><a href="/DexArena/evaluation/">Evaluation</a><a href="/DexArena/docs/">Docs</a><a href="/DexArena/report/">Report</a><a href="/DexArena/community/">Community</a></div>
+    </div>
+    <div class="footer-bottom"><span>Research preview · 2026</span><a href="/DexArena/docs/resources/">Resources & release status</a><span>Built on SAPIEN / ManiSkill</span></div>
+  </footer><div class="route-progress" aria-hidden="true"></div></body></html>

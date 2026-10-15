@@ -1,0 +1,1931 @@
+{
+  "source": "main.tex",
+  "sourceDescription": "DexArena ICLR 2027 manuscript source supplied by the benchmark authors",
+  "models": [
+    {
+      "name": "PPO",
+      "family": "Demo-guided RL"
+    },
+    {
+      "name": "RLPD",
+      "family": "Demo-guided RL"
+    },
+    {
+      "name": "ACT",
+      "family": "Imitation learning"
+    },
+    {
+      "name": "Diffusion Policy",
+      "family": "Imitation learning"
+    },
+    {
+      "name": "GR00T",
+      "family": "VLA"
+    },
+    {
+      "name": "π0.5",
+      "family": "VLA"
+    }
+  ],
+  "protocol": {
+    "episodes": 50,
+    "scenes": 3,
+    "stageTasks": 30,
+    "longHorizonTasks": 10
+  },
+  "stage": {
+    "label": "tab:stage-level-tasks-performance",
+    "rows": [
+      {
+        "name": "OpenLunchBox",
+        "values": [
+          {
+            "mean": 74
+          },
+          {
+            "mean": 100
+          },
+          {
+            "mean": 100
+          },
+          {
+            "mean": 96
+          },
+          {
+            "mean": 100
+          },
+          {
+            "mean": 100
+          }
+        ]
+      },
+      {
+        "name": "PlaceBread",
+        "values": [
+          {
+            "mean": 12
+          },
+          {
+            "mean": 86
+          },
+          {
+            "mean": 88
+          },
+          {
+            "mean": 20
+          },
+          {
+            "mean": 60
+          },
+          {
+            "mean": 70
+          }
+        ]
+      },
+      {
+        "name": "ScoopTomato",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 44
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 12
+          },
+          {
+            "mean": 32
+          }
+        ]
+      },
+      {
+        "name": "OpenCabinet",
+        "values": [
+          {
+            "mean": 62
+          },
+          {
+            "mean": 100
+          },
+          {
+            "mean": 94
+          },
+          {
+            "mean": 88
+          },
+          {
+            "mean": 92
+          },
+          {
+            "mean": 98
+          }
+        ]
+      },
+      {
+        "name": "PickBottle",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 14
+          },
+          {
+            "mean": 68
+          },
+          {
+            "mean": 18
+          },
+          {
+            "mean": 78
+          },
+          {
+            "mean": 54
+          }
+        ]
+      },
+      {
+        "name": "UnscrewCap",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 2
+          },
+          {
+            "mean": 62
+          },
+          {
+            "mean": 50
+          },
+          {
+            "mean": 62
+          },
+          {
+            "mean": 46
+          }
+        ]
+      },
+      {
+        "name": "PourBeads",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 96
+          },
+          {
+            "mean": 100
+          },
+          {
+            "mean": 32
+          },
+          {
+            "mean": 78
+          },
+          {
+            "mean": 52
+          }
+        ]
+      },
+      {
+        "name": "OpenDrawer",
+        "values": [
+          {
+            "mean": 98
+          },
+          {
+            "mean": 100
+          },
+          {
+            "mean": 98
+          },
+          {
+            "mean": 98
+          },
+          {
+            "mean": 98
+          },
+          {
+            "mean": 98
+          }
+        ]
+      },
+      {
+        "name": "PickCharger",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 62
+          },
+          {
+            "mean": 92
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 78
+          },
+          {
+            "mean": 78
+          }
+        ]
+      },
+      {
+        "name": "InsertPlug",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 16
+          },
+          {
+            "mean": 12
+          },
+          {
+            "mean": 6
+          },
+          {
+            "mean": 12
+          }
+        ]
+      },
+      {
+        "name": "PickBolt",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 28
+          },
+          {
+            "mean": 8
+          },
+          {
+            "mean": 22
+          },
+          {
+            "mean": 44
+          },
+          {
+            "mean": 12
+          }
+        ]
+      },
+      {
+        "name": "SeatNut",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 34
+          },
+          {
+            "mean": 12
+          },
+          {
+            "mean": 6
+          },
+          {
+            "mean": 26
+          },
+          {
+            "mean": 2
+          }
+        ]
+      },
+      {
+        "name": "TurnNut",
+        "values": [
+          {
+            "mean": 76
+          },
+          {
+            "mean": 100
+          },
+          {
+            "mean": 96
+          },
+          {
+            "mean": 100
+          },
+          {
+            "mean": 100
+          },
+          {
+            "mean": 100
+          }
+        ]
+      },
+      {
+        "name": "OpenLaptop",
+        "values": [
+          {
+            "mean": 100
+          },
+          {
+            "mean": 100
+          },
+          {
+            "mean": 100
+          },
+          {
+            "mean": 88
+          },
+          {
+            "mean": 100
+          },
+          {
+            "mean": 82
+          }
+        ]
+      },
+      {
+        "name": "TypeKeys",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 32
+          },
+          {
+            "mean": 0
+          }
+        ]
+      },
+      {
+        "name": "ClickMouse",
+        "values": [
+          {
+            "mean": 96
+          },
+          {
+            "mean": 100
+          },
+          {
+            "mean": 14
+          },
+          {
+            "mean": 92
+          },
+          {
+            "mean": 98
+          },
+          {
+            "mean": 62
+          }
+        ]
+      },
+      {
+        "name": "LayFlatPanel",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 96
+          },
+          {
+            "mean": 78
+          },
+          {
+            "mean": 24
+          },
+          {
+            "mean": 64
+          },
+          {
+            "mean": 0
+          }
+        ]
+      },
+      {
+        "name": "InsertRail",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 22
+          },
+          {
+            "mean": 2
+          },
+          {
+            "mean": 16
+          },
+          {
+            "mean": 8
+          }
+        ]
+      },
+      {
+        "name": "FastenScrew",
+        "values": [
+          {
+            "mean": 100
+          },
+          {
+            "mean": 100
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 84
+          },
+          {
+            "mean": 94
+          }
+        ]
+      },
+      {
+        "name": "AspirateLiquid",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 40
+          },
+          {
+            "mean": 2
+          },
+          {
+            "mean": 8
+          },
+          {
+            "mean": 26
+          }
+        ]
+      },
+      {
+        "name": "DispenseLiquid",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 2
+          },
+          {
+            "mean": 8
+          },
+          {
+            "mean": 0
+          }
+        ]
+      },
+      {
+        "name": "OpenFridge",
+        "values": [
+          {
+            "mean": 90
+          },
+          {
+            "mean": 98
+          },
+          {
+            "mean": 100
+          },
+          {
+            "mean": 88
+          },
+          {
+            "mean": 94
+          },
+          {
+            "mean": 96
+          }
+        ]
+      },
+      {
+        "name": "AppleToBlender",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 92
+          },
+          {
+            "mean": 42
+          },
+          {
+            "mean": 54
+          },
+          {
+            "mean": 38
+          }
+        ]
+      },
+      {
+        "name": "CloseFridge",
+        "values": [
+          {
+            "mean": 100
+          },
+          {
+            "mean": 100
+          },
+          {
+            "mean": 100
+          },
+          {
+            "mean": 100
+          },
+          {
+            "mean": 98
+          },
+          {
+            "mean": 100
+          }
+        ]
+      },
+      {
+        "name": "PlaceLid",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 78
+          },
+          {
+            "mean": 26
+          },
+          {
+            "mean": 26
+          },
+          {
+            "mean": 42
+          },
+          {
+            "mean": 16
+          }
+        ]
+      },
+      {
+        "name": "PressButton",
+        "values": [
+          {
+            "mean": 26
+          },
+          {
+            "mean": 100
+          },
+          {
+            "mean": 66
+          },
+          {
+            "mean": 72
+          },
+          {
+            "mean": 64
+          },
+          {
+            "mean": 68
+          }
+        ]
+      },
+      {
+        "name": "OpenPackage",
+        "values": [
+          {
+            "mean": 2
+          },
+          {
+            "mean": 92
+          },
+          {
+            "mean": 44
+          },
+          {
+            "mean": 2
+          },
+          {
+            "mean": 64
+          },
+          {
+            "mean": 58
+          }
+        ]
+      },
+      {
+        "name": "ExtractApple",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 42
+          },
+          {
+            "mean": 88
+          },
+          {
+            "mean": 22
+          },
+          {
+            "mean": 100
+          },
+          {
+            "mean": 82
+          }
+        ]
+      },
+      {
+        "name": "PickDebris",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 2
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          }
+        ]
+      },
+      {
+        "name": "DumpDustpan",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 92
+          },
+          {
+            "mean": 70
+          },
+          {
+            "mean": 82
+          },
+          {
+            "mean": 78
+          }
+        ]
+      }
+    ],
+    "reportedAverage": [
+      {
+        "mean": 27.9
+      },
+      {
+        "mean": 54.3
+      },
+      {
+        "mean": 58
+      },
+      {
+        "mean": 39.2
+      },
+      {
+        "mean": 61.4
+      },
+      {
+        "mean": 52.1
+      }
+    ],
+    "calculatedAverage": [
+      27.9,
+      54.3,
+      58,
+      39.2,
+      61.4,
+      52.1
+    ]
+  },
+  "generalization": {
+    "label": "tab:generalization-performance",
+    "rows": [
+      {
+        "name": "OpenLunchBox",
+        "values": [
+          {
+            "mean": 35.3,
+            "std": 14.5
+          },
+          {
+            "mean": 33.3,
+            "std": 57.7
+          },
+          {
+            "mean": 100,
+            "std": 0
+          },
+          {
+            "mean": 35.3,
+            "std": 31.6
+          },
+          {
+            "mean": 100,
+            "std": 0
+          },
+          {
+            "mean": 99.3,
+            "std": 1.2
+          }
+        ]
+      },
+      {
+        "name": "PlaceBread",
+        "values": [
+          {
+            "mean": 10,
+            "std": 3.5
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 40,
+            "std": 30
+          },
+          {
+            "mean": 8.7,
+            "std": 4.6
+          },
+          {
+            "mean": 24,
+            "std": 26.2
+          },
+          {
+            "mean": 71.3,
+            "std": 7
+          }
+        ]
+      },
+      {
+        "name": "ScoopTomato",
+        "values": [
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 23.3,
+            "std": 9
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 6.7,
+            "std": 6.1
+          },
+          {
+            "mean": 18.7,
+            "std": 3.1
+          }
+        ]
+      },
+      {
+        "name": "OpenCabinet",
+        "values": [
+          {
+            "mean": 8.7,
+            "std": 9
+          },
+          {
+            "mean": 63.3,
+            "std": 54.9
+          },
+          {
+            "mean": 93.3,
+            "std": 6.4
+          },
+          {
+            "mean": 84,
+            "std": 11.1
+          },
+          {
+            "mean": 78.7,
+            "std": 17.9
+          },
+          {
+            "mean": 97.3,
+            "std": 2.3
+          }
+        ]
+      },
+      {
+        "name": "PickBottle",
+        "values": [
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 76,
+            "std": 8
+          },
+          {
+            "mean": 4,
+            "std": 5.3
+          },
+          {
+            "mean": 46,
+            "std": 36.7
+          },
+          {
+            "mean": 69.3,
+            "std": 6.4
+          }
+        ]
+      },
+      {
+        "name": "UnscrewCap",
+        "values": [
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 4,
+            "std": 3.5
+          },
+          {
+            "mean": 1.3,
+            "std": 2.3
+          },
+          {
+            "mean": 9.3,
+            "std": 14.5
+          },
+          {
+            "mean": 33.3,
+            "std": 11
+          }
+        ]
+      },
+      {
+        "name": "PourBeads",
+        "values": [
+          {
+            "mean": 0.7,
+            "std": 1.2
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 42,
+            "std": 22.3
+          },
+          {
+            "mean": 6,
+            "std": 10.4
+          },
+          {
+            "mean": 16.7,
+            "std": 17.5
+          },
+          {
+            "mean": 36,
+            "std": 5.3
+          }
+        ]
+      },
+      {
+        "name": "OpenDrawer",
+        "values": [
+          {
+            "mean": 97.3,
+            "std": 4.6
+          },
+          {
+            "mean": 95.3,
+            "std": 4.2
+          },
+          {
+            "mean": 82.7,
+            "std": 10.1
+          },
+          {
+            "mean": 4,
+            "std": 5.3
+          },
+          {
+            "mean": 90,
+            "std": 10.6
+          },
+          {
+            "mean": 100,
+            "std": 0
+          }
+        ]
+      },
+      {
+        "name": "PickCharger",
+        "values": [
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 5.3,
+            "std": 9.2
+          },
+          {
+            "mean": 88,
+            "std": 5.3
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 64.7,
+            "std": 19.6
+          },
+          {
+            "mean": 88,
+            "std": 0
+          }
+        ]
+      },
+      {
+        "name": "InsertPlug",
+        "values": [
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0.7,
+            "std": 1.2
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 2,
+            "std": 3.5
+          },
+          {
+            "mean": 1.3,
+            "std": 1.2
+          }
+        ]
+      },
+      {
+        "name": "PickBolt",
+        "values": [
+          {
+            "mean": 0.7,
+            "std": 1.2
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 8.7,
+            "std": 5
+          },
+          {
+            "mean": 2,
+            "std": 3.5
+          },
+          {
+            "mean": 21.3,
+            "std": 13.3
+          },
+          {
+            "mean": 18,
+            "std": 2
+          }
+        ]
+      },
+      {
+        "name": "SeatNut",
+        "values": [
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 2.7,
+            "std": 2.3
+          },
+          {
+            "mean": 0.7,
+            "std": 1.2
+          },
+          {
+            "mean": 2,
+            "std": 3.5
+          },
+          {
+            "mean": 3.3,
+            "std": 2.3
+          }
+        ]
+      },
+      {
+        "name": "TurnNut",
+        "values": [
+          {
+            "mean": 26.7,
+            "std": 11
+          },
+          {
+            "mean": 11.3,
+            "std": 16.3
+          },
+          {
+            "mean": 44,
+            "std": 19.7
+          },
+          {
+            "mean": 11.3,
+            "std": 12.7
+          },
+          {
+            "mean": 80,
+            "std": 19.7
+          },
+          {
+            "mean": 87.3,
+            "std": 5
+          }
+        ]
+      },
+      {
+        "name": "OpenLaptop",
+        "values": [
+          {
+            "mean": 99.3,
+            "std": 1.2
+          },
+          {
+            "mean": 48,
+            "std": 50.1
+          },
+          {
+            "mean": 84.7,
+            "std": 18.1
+          },
+          {
+            "mean": 88.7,
+            "std": 3.1
+          },
+          {
+            "mean": 95.3,
+            "std": 8.1
+          },
+          {
+            "mean": 66.7,
+            "std": 5
+          }
+        ]
+      },
+      {
+        "name": "TypeKeys",
+        "values": [
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 17.3,
+            "std": 17
+          },
+          {
+            "mean": 0,
+            "std": 0
+          }
+        ]
+      },
+      {
+        "name": "ClickMouse",
+        "values": [
+          {
+            "mean": 98,
+            "std": 3.5
+          },
+          {
+            "mean": 6.7,
+            "std": 11.5
+          },
+          {
+            "mean": 12.7,
+            "std": 4.6
+          },
+          {
+            "mean": 68.7,
+            "std": 15
+          },
+          {
+            "mean": 100,
+            "std": 0
+          },
+          {
+            "mean": 64.7,
+            "std": 3.1
+          }
+        ]
+      },
+      {
+        "name": "LayFlatPanel",
+        "values": [
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 54,
+            "std": 27.5
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 34.7,
+            "std": 28.4
+          },
+          {
+            "mean": 0,
+            "std": 0
+          }
+        ]
+      },
+      {
+        "name": "InsertRail",
+        "values": [
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 6,
+            "std": 10.4
+          },
+          {
+            "mean": 9.3,
+            "std": 3.1
+          }
+        ]
+      },
+      {
+        "name": "FastenScrew",
+        "values": [
+          {
+            "mean": 86,
+            "std": 24.2
+          },
+          {
+            "mean": 70.7,
+            "std": 50.8
+          },
+          {
+            "mean": 85.3,
+            "std": 11.5
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 20,
+            "std": 26.2
+          },
+          {
+            "mean": 94,
+            "std": 3.5
+          }
+        ]
+      },
+      {
+        "name": "AspirateLiquid",
+        "values": [
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 8.7,
+            "std": 8.1
+          },
+          {
+            "mean": 1.3,
+            "std": 1.2
+          },
+          {
+            "mean": 2,
+            "std": 2
+          },
+          {
+            "mean": 34,
+            "std": 6.9
+          }
+        ]
+      },
+      {
+        "name": "DispenseLiquid",
+        "values": [
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 2,
+            "std": 2
+          },
+          {
+            "mean": 4,
+            "std": 0
+          }
+        ]
+      },
+      {
+        "name": "OpenFridge",
+        "values": [
+          {
+            "mean": 65.3,
+            "std": 22
+          },
+          {
+            "mean": 78.7,
+            "std": 35.2
+          },
+          {
+            "mean": 92.7,
+            "std": 9.5
+          },
+          {
+            "mean": 68,
+            "std": 33.3
+          },
+          {
+            "mean": 70,
+            "std": 45.1
+          },
+          {
+            "mean": 96,
+            "std": 3.5
+          }
+        ]
+      },
+      {
+        "name": "AppleToBlender",
+        "values": [
+          {
+            "mean": 0.7,
+            "std": 1.2
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 71.3,
+            "std": 14.2
+          },
+          {
+            "mean": 7.3,
+            "std": 12.7
+          },
+          {
+            "mean": 18,
+            "std": 2
+          },
+          {
+            "mean": 38.7,
+            "std": 4.2
+          }
+        ]
+      },
+      {
+        "name": "CloseFridge",
+        "values": [
+          {
+            "mean": 100,
+            "std": 0
+          },
+          {
+            "mean": 100,
+            "std": 0
+          },
+          {
+            "mean": 99.3,
+            "std": 1.2
+          },
+          {
+            "mean": 66,
+            "std": 47.3
+          },
+          {
+            "mean": 92,
+            "std": 8.7
+          },
+          {
+            "mean": 100,
+            "std": 0
+          }
+        ]
+      },
+      {
+        "name": "PlaceLid",
+        "values": [
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 18,
+            "std": 11.1
+          },
+          {
+            "mean": 1.3,
+            "std": 2.3
+          },
+          {
+            "mean": 28.7,
+            "std": 12.9
+          },
+          {
+            "mean": 16,
+            "std": 2
+          }
+        ]
+      },
+      {
+        "name": "PressButton",
+        "values": [
+          {
+            "mean": 18,
+            "std": 5.3
+          },
+          {
+            "mean": 18.7,
+            "std": 32.3
+          },
+          {
+            "mean": 54,
+            "std": 19.3
+          },
+          {
+            "mean": 52.7,
+            "std": 40.6
+          },
+          {
+            "mean": 42.7,
+            "std": 10.1
+          },
+          {
+            "mean": 62,
+            "std": 7.2
+          }
+        ]
+      },
+      {
+        "name": "OpenPackage",
+        "values": [
+          {
+            "mean": 2,
+            "std": 0
+          },
+          {
+            "mean": 2.7,
+            "std": 4.6
+          },
+          {
+            "mean": 36.7,
+            "std": 22.1
+          },
+          {
+            "mean": 1.3,
+            "std": 2.3
+          },
+          {
+            "mean": 35.3,
+            "std": 22.1
+          },
+          {
+            "mean": 30.7,
+            "std": 24.8
+          }
+        ]
+      },
+      {
+        "name": "ExtractApple",
+        "values": [
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 78.7,
+            "std": 3.1
+          },
+          {
+            "mean": 3.3,
+            "std": 3.1
+          },
+          {
+            "mean": 54.7,
+            "std": 39.5
+          },
+          {
+            "mean": 70,
+            "std": 26.5
+          }
+        ]
+      },
+      {
+        "name": "PickDebris",
+        "values": [
+          {
+            "mean": 1.3,
+            "std": 2.3
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 1.3,
+            "std": 1.2
+          },
+          {
+            "mean": 0,
+            "std": 0
+          }
+        ]
+      },
+      {
+        "name": "DumpDustpan",
+        "values": [
+          {
+            "mean": 0.7,
+            "std": 1.2
+          },
+          {
+            "mean": 0,
+            "std": 0
+          },
+          {
+            "mean": 59.3,
+            "std": 17.9
+          },
+          {
+            "mean": 1.3,
+            "std": 2.3
+          },
+          {
+            "mean": 88.7,
+            "std": 2.3
+          },
+          {
+            "mean": 68,
+            "std": 4
+          }
+        ]
+      }
+    ],
+    "reportedAverage": [
+      {
+        "mean": 21.7,
+        "std": 3.5
+      },
+      {
+        "mean": 17.8,
+        "std": 10.9
+      },
+      {
+        "mean": 45.4,
+        "std": 3.6
+      },
+      {
+        "mean": 17.2,
+        "std": 5.7
+      },
+      {
+        "mean": 41.7,
+        "std": 14.2
+      },
+      {
+        "mean": 49.2,
+        "std": 2.3
+      }
+    ],
+    "calculatedAverage": [
+      21.7,
+      17.8,
+      45.4,
+      17.2,
+      41.7,
+      49.2
+    ]
+  },
+  "longHorizon": {
+    "label": "tab:long-horizon-performance",
+    "rows": [
+      {
+        "name": "Meal preparation",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          }
+        ]
+      },
+      {
+        "name": "Cabinet and pouring",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 2
+          }
+        ]
+      },
+      {
+        "name": "Drawer and plug",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          }
+        ]
+      },
+      {
+        "name": "Nut and bolt",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          }
+        ]
+      },
+      {
+        "name": "Office desk",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          }
+        ]
+      },
+      {
+        "name": "Furniture assembly",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 8
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          }
+        ]
+      },
+      {
+        "name": "Pipette transfer",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          }
+        ]
+      },
+      {
+        "name": "Juice preparation",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          }
+        ]
+      },
+      {
+        "name": "Package opening",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 4
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 14
+          }
+        ]
+      },
+      {
+        "name": "Table cleaning",
+        "values": [
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          },
+          {
+            "mean": 0
+          }
+        ]
+      }
+    ],
+    "reportedAverage": [
+      {
+        "mean": 0
+      },
+      {
+        "mean": 0
+      },
+      {
+        "mean": 1.2
+      },
+      {
+        "mean": 0
+      },
+      {
+        "mean": 0
+      },
+      {
+        "mean": 1.6
+      }
+    ],
+    "calculatedAverage": [
+      0,
+      0,
+      1.2,
+      0,
+      0,
+      1.6
+    ]
+  }
+}
