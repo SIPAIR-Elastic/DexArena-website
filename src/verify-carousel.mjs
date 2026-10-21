@@ -4,11 +4,13 @@ import {runInNewContext} from 'node:vm';
 // Exercise production handlers, including media lifecycles, without browser dependencies.
 export function verifyCarousel(js){
   const source=js.slice(js.indexOf('const track='),js.indexOf('const filterButtons='));
-  function harness({reducedMotion=false,withObserver=true,rejectPlayback=false}={}){
+  function harness({reducedMotion=false,withObserver=true,withResizeObserver=true,rejectPlayback=false}={}){
     const events=()=>({handlers:{},addEventListener(name,fn){(this.handlers[name]??=[]).push(fn)},emit(name,event={}){for(const fn of this.handlers[name]??[])fn(event)}});
     const attributes=()=>({attributes:{},setAttribute(name,value){this.attributes[name]=value}});
     const classes=initial=>{const values=new Set(initial);return {contains:v=>values.has(v),remove:v=>values.delete(v),toggle(v,on){on?values.add(v):values.delete(v)}}};
-    let document,cover,track,flushes=0,clock=1000,rejectionsCaught=0;
+    let document,cover,track,flushes=0,clock=1000,rejectionsCaught=0,fontReady,resizeObserver;
+    const frames=[];
+    const flushFrames=()=>{while(frames.length){const batch=frames.splice(0);batch.forEach(fn=>fn())}};
     const video=()=>({...events(),...attributes(),paused:true,muted:false,plays:0,
       pause(){this.paused=true},
       play(){this.plays++;this.paused=rejectPlayback;return {catch(fn){if(rejectPlayback){rejectionsCaught++;fn(new Error('Playback blocked'))}}}}
@@ -18,7 +20,7 @@ export function verifyCarousel(js){
       const link={focus(){document.activeElement=this;cover.emit('focusin')}};
       const copy={inert:false},videos=id===0?[video(),video(),video()]:[];
       return {...attributes(),dataset:{},classList:classes(id===0?['is-active']:[]),offsetWidth:1200,id,
-        get offsetLeft(){return 120+track.children.indexOf(this)*1216},
+        get offsetLeft(){return 120+track.children.indexOf(this)*(this.offsetWidth+16)},
         cloneNode(){return slide(id)},
         querySelector(selector){return selector==='.cover-card'?buttonSlot:selector==='.cover-copy'?copy:selector==='h2'?{textContent:`Slide ${id+1}`} :selector==='.cover-copy a'?link:null},
         querySelectorAll:selector=>selector==='video'?videos:[],
@@ -31,17 +33,22 @@ export function verifyCarousel(js){
     track={...events(),style:{},children:[],closest:()=>cover,prepend(s){this.children.unshift(s)},append(s){this.children.push(s)},querySelectorAll(){return this.children},getBoundingClientRect(){flushes++;return {}},contains(el){return this.children.some(s=>s.link===el||s.buttonSlot.button===el)}};
     cover={...events(),...attributes(),dataset:{},getBoundingClientRect(){return {}},querySelector:selector=>selector==='[data-carousel-pause]'?pause:null,contains(el){return [pause,previous,next,...dots].includes(el)||track.contains(el)}};
     track.children=[slide(0),slide(1),slide(2)];
-    document={...events(),hidden:false,activeElement:null,createElement:()=>({...events(),...attributes()}),querySelector:selector=>selector==='[data-carousel-track]'?track:selector==='[data-prev]'?previous:selector==='[data-next]'?next:null,querySelectorAll:()=>dots};
+    document={...events(),hidden:false,activeElement:null,fonts:{ready:{then(fn){fontReady=fn}}},createElement:()=>({...events(),...attributes()}),querySelector:selector=>selector==='[data-carousel-track]'?track:selector==='[data-prev]'?previous:selector==='[data-next]'?next:null,querySelectorAll:()=>dots};
     const motion={...events(),matches:reducedMotion};
     const timers=new Map();let timerId=0,observer;
     const window={...events(),innerWidth:1440};
-    const context={document,window,matchMedia:()=>motion,requestAnimationFrame:fn=>fn(),
+    const context={document,window,matchMedia:()=>motion,requestAnimationFrame:fn=>frames.push(fn),
       setTimeout:(fn,delay)=>{timers.set(++timerId,{fn,delay});return timerId},clearTimeout:id=>timers.delete(id),Date:{now:()=>clock}};
     if(withObserver){
       window.IntersectionObserver=true;
       context.IntersectionObserver=class{constructor(fn,options){this.fn=fn;this.options=options;observer=this}observe(target){this.target=target}};
     }
+    if(withResizeObserver){
+      window.ResizeObserver=true;
+      context.ResizeObserver=class{constructor(fn){this.fn=fn;this.targets=[];resizeObserver=this}observe(target){this.targets.push(target)}};
+    }
     runInNewContext(source,context);
+    flushFrames();
     const active=()=>dots.findIndex(d=>d.attributes['aria-pressed']==='true');
     const peek=direction=>track.children.find(s=>s.classList.contains(`is-${direction}-preview`)).buttonSlot.button;
     const settle=()=>track.emit('transitionend',{target:track,propertyName:'transform'});
@@ -57,7 +64,9 @@ export function verifyCarousel(js){
     };
     const viewport=value=>observer.fn([{target:cover,isIntersecting:value}]);
     const tick=delay=>{for(const [id,timer] of [...timers])if(timer.delay===delay){timers.delete(id);timer.fn()}};
-    return {document,window,cover,track,dots,previous,next,pause,pauseLabel,motion,active,peek,settle,videos,playing,rotation,check,viewport,tick,
+    return {document,window,cover,track,dots,previous,next,pause,pauseLabel,motion,active,peek,settle,videos,playing,rotation,check,viewport,tick,flushFrames,
+      resize(){resizeObserver.fn(resizeObserver.targets.map(target=>({target})))},
+      fontsReady(){fontReady()},get resizeTargets(){return resizeObserver.targets},get pendingFrames(){return frames.length},
       clearFocus(){document.activeElement=null;cover.emit('focusout');tick(0)},
       advanceClock(){clock+=500},get flushes(){return flushes},get rejectionsCaught(){return rejectionsCaught}};
   }
@@ -144,4 +153,42 @@ export function verifyCarousel(js){
   const blocked=harness({rejectPlayback:true});blocked.viewport(true);
   assert(blocked.rejectionsCaught>=3,'Autoplay rejection must be caught without breaking controls');
   blocked.next.emit('click');blocked.settle();blocked.check(1);
+
+  const geometry=harness();geometry.viewport(true);
+  assert.equal(geometry.resizeTargets.length,7,'Watch the cover, track and every rendered slide');
+  const originalPosition=geometry.track.style.transform;
+  const originalFlushes=geometry.flushes;
+  geometry.resize();geometry.resize();
+  assert.equal(geometry.pendingFrames,1,'Coalesce geometry notifications into one animation frame');
+  geometry.flushFrames();
+  assert.equal(geometry.flushes,originalFlushes,'An initial unchanged observer event must not reset the slide');
+  assert.equal(geometry.track.style.transform,originalPosition);
+  geometry.pause.emit('click');
+  geometry.dots[2].emit('click');geometry.settle();geometry.flushFrames();geometry.check(2);
+  const pausedGeometryPosition=geometry.track.style.transform;
+  geometry.window.innerWidth=1600;geometry.track.children.forEach(slide=>slide.offsetWidth=1400);
+  geometry.resize();
+  assert.equal(geometry.track.style.transform,pausedGeometryPosition,'Recentering is deferred to a frame');
+  geometry.flushFrames();geometry.check(2);
+  const centered=()=>{
+    const activeSlide=geometry.track.children.find(slide=>slide.classList.contains('is-active'));
+    const expected=activeSlide.offsetLeft-(geometry.window.innerWidth-activeSlide.offsetWidth)/2;
+    assert.equal(geometry.track.style.transform,`translate3d(${-expected}px,0,0)`);
+  };
+  centered();
+  assert.equal(geometry.cover.dataset.paused,'true','Resizing must preserve the playback choice');
+  assert.equal(geometry.rotation().length,0);assert.equal(geometry.playing().length,0);
+  const stableFlushes=geometry.flushes;geometry.resize();geometry.flushFrames();
+  assert.equal(geometry.flushes,stableFlushes,'Transform writes must not create a recentering feedback loop');
+  geometry.pause.emit('click');geometry.next.emit('click');
+  // A non-geometric notification during the clone transition must not settle it.
+  geometry.resize();geometry.flushFrames();
+  assert.equal(geometry.track.children.find(slide=>slide.classList.contains('is-active')).dataset.clone,'true');
+  geometry.settle();geometry.flushFrames();geometry.check(0);centered();
+  geometry.window.innerWidth=1700;geometry.window.emit('load');geometry.flushFrames();centered();
+  geometry.window.innerWidth=1750;geometry.fontsReady();geometry.flushFrames();centered();
+  geometry.window.innerWidth=1800;geometry.window.emit('resize');geometry.flushFrames();centered();
+  const legacy=harness({withResizeObserver:false});legacy.viewport(true);
+  legacy.window.innerWidth=1600;legacy.window.emit('load');legacy.flushFrames();
+  assert.equal(legacy.track.style.transform,'translate3d(-1136px,0,0)','Load fallback recenters when ResizeObserver is unavailable');
 }

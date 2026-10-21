@@ -214,7 +214,7 @@ function layout({title,description,active,body,pageClass=""}) {
     <title>${esc(title)}</title><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
     <link rel="preload" href="/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${["paper-page","home-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}${["home-page","evaluation-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/experience.css">':""}<script src="/assets/site.js" defer></script>${["home-page","evaluation-page"].includes(pageClass)?'<script src="/assets/experience.js" defer></script>':""}
+    <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${["paper-page","home-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}${["home-page","evaluation-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/experience.css">':""}${pageClass==="home-page"?'<link rel="stylesheet" href="/assets/carousel.css">':""}<script src="/assets/site.js" defer></script>${["home-page","evaluation-page"].includes(pageClass)?'<script src="/assets/experience.js" defer></script>':""}
   </head><body class="${pageClass}">${header(active)}<main>${body}</main>${footer()}<div class="route-progress" aria-hidden="true"></div></body></html>`;
 }
 
@@ -237,8 +237,7 @@ function marqueeRow(items,reverse=false) {
 }
 
 const homeBody = `
-<section class="cover" aria-label="DexArena highlights" aria-roledescription="carousel">
-  <div class="cover-deck"><span>DexArena <i>/</i> Embodied intelligence</span><span>Precision. Generalization. Composition.</span></div>
+<section class="cover" aria-label="DexArena highlights" aria-roledescription="carousel" data-carousel-theme="glass">
   <div class="cover-track" data-carousel-track>
     <article class="cover-slide is-active" data-slide>
       <div class="cover-card cover-card--benchmark">
@@ -257,11 +256,10 @@ const homeBody = `
           </div>
         </div>
         <div class="cover-scrim"></div><div class="cover-copy">
-          <span class="cover-kicker">A benchmark for embodied intelligence</span>
+          <span class="cover-kicker">Long-horizon dexterous manipulation</span>
           <h1>DexArena</h1><h2>Dexterity over long horizons.</h2>
           <p>Execute precise skills, generalize across scenes, and compose behavior into complete bimanual tasks.</p>
           ${arrowLink("#overview","Discover the research","on-dark")}
-          <span class="cover-footnote">10 sequences <i>·</i> 30 measurable stages</span>
         </div>
       </div>
     </article>
@@ -290,7 +288,6 @@ const homeBody = `
     </article>
   </div>
   <div class="cover-controls">
-    <div class="cover-caption"><span>Inside the benchmark</span><small>Recorded motion. Physical success conditions.</small></div>
     <div class="cover-pagination">
     <button class="carousel-arrow carousel-arrow--prev" type="button" data-prev aria-label="Previous slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5.5 8.5 12 15 18.5"/><path d="M9 12h11"/></svg></button>
     <div class="cover-dots">${["Benchmark","Generalization","Bimanual tasks"].map((label,i)=>`<button type="button" data-dot="${i}" aria-label="Go to slide ${i+1}: ${label}" class="${i===0?"active":""}"><span>${String(i+1).padStart(2,"0")}</span><small>${label}</small></button>`).join("")}</div>
@@ -526,6 +523,7 @@ await copyFile(join(root,"src","paper.css"),join(dist,"assets","paper.css"));
 await copyFile(join(root,"src","refinement.css"),join(dist,"assets","refinement.css"));
 await copyFile(join(root,"src","report.css"),join(dist,"assets","report.css"));
 await copyFile(join(root,"src","experience.css"),join(dist,"assets","experience.css"));
+await copyFile(join(root,"src","carousel.css"),join(dist,"assets","carousel.css"));
 await copyFile(join(root,"src","experience.js"),join(dist,"assets","experience.js"));
 await Promise.all([copyFile(join(root,"src","site.css"),join(dist,"assets","site.css")),copyFile(join(root,"src","layout.css"),join(dist,"assets","layout.css")),copyFile(join(root,"src","site.js"),join(dist,"assets","site.js"))]);
 

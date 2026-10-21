@@ -54,6 +54,7 @@ if(track){
   const motionPreference=matchMedia("(prefers-reduced-motion: reduce)");
   let index=0,renderedIndex=1,pendingReset=null,timer=null,gesture=null,hovered=false,moving=false,settleTimer=null,ignoreClickUntil=0,focusAfterMove=false;
   let userPaused=false,reducedMotionOverride=false,inView=!("IntersectionObserver" in window),pageSuspended=false;
+  let positionedGeometry="",geometryPending=false;
   const motionPaused=()=>userPaused||(motionPreference.matches&&!reducedMotionOverride);
   const mediaVisible=()=>inView&&!document.hidden&&!pageSuspended;
   cover.setAttribute("aria-roledescription","carousel");
@@ -97,7 +98,9 @@ if(track){
   });
   function position(instant=false){
     const slide=renderedSlides[renderedIndex];
-    const target=slide.offsetLeft-(window.innerWidth-slide.offsetWidth)/2;
+    const left=slide.offsetLeft,width=slide.offsetWidth,viewport=window.innerWidth;
+    const target=left-(viewport-width)/2;
+    positionedGeometry=`${viewport}:${left}:${width}`;
     if(instant) track.style.transition="none";
     track.style.transform=`translate3d(${-target}px,0,0)`;
     if(instant){
@@ -117,6 +120,19 @@ if(track){
     });
     dots.forEach((d,i)=>{d.classList.toggle("active",i===index);d.setAttribute("aria-pressed",String(i===index))});
     syncVideos();
+  }
+  function scheduleGeometry(){
+    if(geometryPending)return;
+    geometryPending=true;
+    requestAnimationFrame(()=>{
+      geometryPending=false;
+      const slide=renderedSlides[renderedIndex];
+      const geometry=`${window.innerWidth}:${slide.offsetLeft}:${slide.offsetWidth}`;
+      // ResizeObserver also delivers an initial notification. Do not interrupt
+      // navigation unless the geometry used for centering has actually changed.
+      if(geometry===positionedGeometry)return;
+      settle();position(true);
+    });
   }
   function settle(){
     clearTimeout(settleTimer);moving=false;
@@ -174,7 +190,14 @@ if(track){
   cover.addEventListener("mouseleave",()=>{hovered=false;restart()});
   cover.addEventListener("focusin",()=>restart());
   cover.addEventListener("focusout",()=>setTimeout(restart,0));
-  window.addEventListener("resize",()=>{settle();position(true)});
+  window.addEventListener("resize",scheduleGeometry);
+  window.addEventListener("load",scheduleGeometry);
+  document.fonts?.ready?.then(scheduleGeometry);
+  if("ResizeObserver" in window){
+    // Transform-only updates do not resize these boxes, preventing feedback.
+    const geometryObserver=new ResizeObserver(scheduleGeometry);
+    [cover,track,...renderedSlides].forEach(element=>geometryObserver.observe(element));
+  }
   motionPreference.addEventListener("change",()=>{reducedMotionOverride=false;settle();syncMotion()});
   document.addEventListener("visibilitychange",syncMotion);
   window.addEventListener("pagehide",()=>{pageSuspended=true;syncMotion()});

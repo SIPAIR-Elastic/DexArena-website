@@ -15,6 +15,10 @@ seven affiliations, official institutional marks where available, PAIR links,
 abstract, Figures 1 and 3, findings and citation. It shares a renderer with
 `/paper/` so metadata stays consistent. The standalone paper URL is preserved.
 The black/blue/white header and numbered carousel controls are DexArena-specific.
+The immersive carousel combines full-frame scene media and adjacent previews
+with light, iOS-inspired frosted captions, rounded surfaces and a floating dock.
+Its styles are isolated in `src/carousel.css`; benchmark and results layouts
+remain independent in `src/experience.css`.
 
 The carousel keeps the original rendered demonstrations and adds explicit
 pause/play, keyboard-operable adjacent previews, and background/offscreen media

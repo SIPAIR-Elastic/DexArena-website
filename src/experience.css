@@ -4,54 +4,6 @@
 .editorial-link>span{transition:transform .2s}.editorial-link:hover>span{transform:translate(2px,-2px)}
 .editorial-link:hover{text-decoration:underline;text-underline-offset:5px}
 
-/* A quiet instrument frame. The demonstrations, not decoration, provide motion. */
-.home-page .cover{--cover-height:clamp(730px,96svh,940px);background:#f8f9fa}
-.cover-deck{position:absolute;top:98px;left:50%;width:min(1280px,calc(100% - 64px));transform:translateX(-50%);display:flex;justify-content:space-between;gap:20px;font:500 9px/1.5 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:#667180}
-.cover-deck>span:first-child{color:#1d2b40}.cover-deck i{font-style:normal;padding-inline:12px;color:#a3afbf}
-.cover-track{gap:20px;transition:transform .85s cubic-bezier(.22,.68,.12,1)}
-.cover-slide{flex-basis:min(1280px,calc(100vw - 112px));padding:134px 0 110px}
-.cover-slide:first-child{margin-left:max(56px,calc((100vw - min(1280px,calc(100vw - 112px)))/2))}
-.cover-card{background:#0d141e;border-radius:10px;border:1px solid #26303d;box-shadow:0 14px 32px -24px #102b58b3}
-.cover-card:after{content:"";pointer-events:none;position:absolute;z-index:2;inset:12px;border:1px solid #ffffff0f;border-radius:2px}
-.cover-slide:not(.is-active) .cover-card{filter:saturate(.45) brightness(.68);transition:filter .55s}
-.cover-slide.is-active .cover-card{filter:none;transition:filter .55s}
-.cover-scrim{background:linear-gradient(90deg,#09121ef5 0%,#09121ec7 28%,#09121e38 60%,#09121e00 85%)}
-.cover-copy{max-width:58%;padding:clamp(28px,4.3vw,62px);justify-content:center;transition:opacity .42s .12s,transform .6s .1s}
-.cover-slide:not(.is-active) .cover-copy{opacity:0;transform:translateY(10px);transition:opacity .25s,transform .25s}
-.cover-kicker{flex:none;max-width:100%;margin:0 0 30px;padding:0 0 0 12px;border-radius:0;border-left:2px solid #89b5fa;background:none;color:#b5c9e8;font-size:9px;line-height:1.7;letter-spacing:.06em}
-.cover-copy h1,.cover-copy .cover-title{margin:0;color:#fff;font-family:var(--display);font-size:clamp(52px,5.9vw,84px);font-weight:500;line-height:1.03;letter-spacing:-.065em;text-wrap:balance}
-.cover-copy h2{margin:24px 0 0;font-size:clamp(23px,2.6vw,36px);line-height:1.18;letter-spacing:-.04em;font-weight:400;max-width:14ch}
-.cover-copy p:not(.cover-title){max-width:38ch;margin:18px 0 28px;font-size:13px;line-height:1.85;color:#c4cdd9}
-.cover-copy .arrow-link{border:0;border-bottom:1px solid #93b8ed99;border-radius:0;padding:10px 0;min-width:0;gap:32px;font-weight:500;background:transparent;box-shadow:none}
-.cover-copy .arrow-link:hover{background:none;border-color:#fff;transform:none;box-shadow:none}
-.cover-copy .arrow-link b{color:#9fc3fa;font-weight:400;transition:transform .2s}.cover-copy .arrow-link:hover b{transform:translate(2px,-2px)}
-.cover-footnote{position:absolute;left:clamp(28px,4.3vw,62px);bottom:24px;font:9px/1.6 var(--mono);color:#91a2b8;letter-spacing:.03em}
-.cover-footnote i{font-style:normal;padding:0 8px;color:#5d7699}
-.cover-card--benchmark .cover-mosaic{left:39%;grid-template-columns:minmax(0,1.22fr) minmax(0,.82fr);gap:2px;background:#1b2736}
-.cover-card--benchmark .cover-scrim{width:47%;background:linear-gradient(90deg,#0d141e 80%,#0d141e00)}
-.cover-card--benchmark .cover-copy{max-width:42%;padding-right:22px}
-.cover-card--benchmark .cover-copy h1{font-size:clamp(46px,5.3vw,76px)}
-.cover-card--benchmark .cover-copy h2{font-size:clamp(23px,2.55vw,36px);max-width:12ch}
-.cover-mosaic video{filter:saturate(.77) contrast(1.03);transform:none}
-.cover-mosaic__item span{right:10px;bottom:12px;padding:6px 8px;border:1px solid #ffffff2e;border-radius:3px;background:#0d1623bf;font:8px/1.6 var(--mono);color:#ecf2fb;backdrop-filter:blur(8px)}
-.cover-controls{width:min(1280px,calc(100vw - 112px));bottom:26px;gap:24px}
-.cover-caption>span{font:500 9px/1.5 var(--mono);letter-spacing:.08em;color:#1b2d47}.cover-caption>small{font-size:10px;color:#6c7684}
-.cover-pagination{gap:18px}.cover-dots{gap:20px;align-self:stretch;align-items:stretch}
-.cover-dots button,.cover-dots button.active{position:relative;height:48px;min-width:112px;display:grid;grid-template-columns:18px auto;gap:6px;padding:9px 0;border:0;border-bottom:1px solid #d4dce6;border-radius:0;background:none;text-align:left;color:#7b8594}
-.cover-dots button>span{font:9px/1.6 var(--mono)}.cover-dots button>small{font:500 11px/1.6 var(--font)}
-.cover-dots button.active{background:none;color:#174ea6;border-color:#a7c3eb}.cover-dots button:hover{background:none;color:#174ea6}
-.cover-dots button.active:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:#1967d2;transform-origin:left;transform:scaleX(1)}
-.cover[data-rotating="true"] .cover-dots button.active:after{animation:cover-time 8s linear both}
-@keyframes cover-time{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-.cover-controls .carousel-arrow{width:38px;height:38px;flex:none;border:1px solid #d7dfe9;border-radius:50%;background:#fff;box-shadow:none;color:#27405f}
-.cover-controls .carousel-arrow:hover{background:#edf3fc;border-color:#8eaddb;box-shadow:none}
-.carousel-playback{display:flex;gap:8px;align-items:center;padding:10px 0 10px 6px;min-width:59px;border:0;background:none;font:10px var(--font);color:#5d6a7c;cursor:pointer}
-.carousel-playback i{width:8px;height:10px;border-inline:2px solid currentColor}
-.cover[data-paused="true"] .carousel-playback i{width:0;height:0;border:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:7px solid currentColor}
-.carousel-playback:hover{color:#1967d2}.cover-peek-cue{border-radius:50%;width:30px;height:30px;margin-top:-15px;left:10px;border-color:#ffffff44;background:#0a1627c2}.is-prev-preview .cover-peek-cue{right:10px}
-.cover-peek-trigger:hover{background:#ffffff04;box-shadow:inset 0 0 0 1px #afc8f2}
-.cover-peek-trigger:hover .cover-peek-cue{transform:translateX(2px);background:#174ea6}.is-prev-preview .cover-peek-trigger:hover .cover-peek-cue{transform:translateX(-2px)}
-
 /* Scope is a relationship between tasks, data and scenes, not four counters. */
 .benchmark-scope{padding-block:48px 44px}
 .scope-heading{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:end;margin-bottom:32px}
@@ -121,25 +73,10 @@
 .scope-stage-map figcaption>span:last-child,.scope-stage-groups>a>span,.scope-data-footer,.scope-equation,.scope-scene-matrix>div>span,.scope-scene-matrix figcaption,.finding-tab-index,.finding-tab-detail,.finding-axis,.finding-insight>span,.finding-comparison figcaption>span:last-child,.finding-comparison>p,.finding-score>small,.findings-source{color:#5e6c80}
 @keyframes finding-in{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 
-@media(min-width:1101px){.cover-card--benchmark .cover-copy h2{font-size:34px}}
 @media(max-width:1100px){
- .cover-deck{width:calc(100% - 80px)}.cover-caption{display:none}.cover-controls{justify-content:center}.cover-dots button>small{display:block}
- .cover-copy{max-width:63%}.cover-card--benchmark .cover-copy{max-width:43%;padding-left:30px}.cover-card--benchmark .cover-copy h1{font-size:52px}.cover-card--benchmark .cover-copy h2{font-size:28px}.cover-card--benchmark .cover-copy p:not(.cover-title){font-size:12px}
  .scope-layout,.scope-heading{gap:36px}.scope-stage-groups{gap:5px}.scope-scenes{gap:16px}.findings-tabs>button{padding-right:18px}.findings-tabs>button+button{padding-left:18px}.finding-panel{gap:36px}
 }
 @media(max-width:760px){
- .home-page .cover{--cover-height:max(720px,96svh)}.cover-deck{top:85px;width:calc(100% - 48px);font-size:8px}.cover-deck>span:last-child{display:none}
- .cover-slide{flex-basis:calc(100vw - 48px);padding:112px 0 97px}.cover-slide:first-child{margin-left:24px}.cover-track{gap:14px}.cover-card{border-radius:7px}.cover-card:after{inset:8px}
- .cover-copy{max-width:100%;padding:28px;justify-content:flex-end;padding-bottom:38px}.cover-copy h1,.cover-copy .cover-title{font-size:clamp(44px,11.5vw,76px);line-height:1.04}
- .cover-kicker{font-size:8px;margin-bottom:20px;max-width:28ch}.cover-copy h2{font-size:25px;line-height:1.2;max-width:18ch;margin-top:18px}.cover-copy p:not(.cover-title){font-size:12px;margin:14px 0 20px;line-height:1.8}
- .cover-scrim{background:linear-gradient(0deg,#081321f5 0%,#081321c9 42%,#0813211a 85%)}
- .cover-card--benchmark .cover-mosaic{left:0;bottom:42%;grid-template-columns:1.3fr 1fr}
- .cover-card--benchmark .cover-copy{max-width:100%;padding:28px 28px 42px;top:29%}.cover-card--benchmark .cover-copy h1{font-size:clamp(44px,12vw,70px)}.cover-card--benchmark .cover-copy h2{font-size:26px;max-width:17ch;margin-top:14px}
- .cover-card--benchmark .cover-scrim{width:100%;background:linear-gradient(0deg,#0d141e 5%,#0d141e 36%,#0d141eaa 55%,#0d141e00 75%)}
- .cover-card--benchmark .cover-copy p:not(.cover-title){max-width:36ch;font-size:12px;margin-top:12px;margin-bottom:16px}.cover-mosaic__item span{font-size:7px;right:6px;bottom:8px;padding:4px 6px}
- .cover-footnote{left:28px;bottom:16px;font-size:8px}.cover-controls{width:calc(100% - 48px);bottom:24px;gap:0}.cover-pagination{width:100%;gap:10px;justify-content:space-between}
- .cover-dots{gap:12px;flex:1;justify-content:center}.cover-dots button,.cover-dots button.active{min-width:34px;height:38px;display:block;text-align:center;padding:10px 0}.cover-dots button>small{display:none}.cover-dots button>span{font-size:10px}.cover-controls .carousel-arrow{width:32px;height:32px}.cover-controls .carousel-arrow svg{width:16px;height:16px}
- .carousel-playback{min-width:20px;width:24px;padding:10px 2px;justify-content:center}.carousel-playback>span{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden}
  .benchmark-scope{padding-block:36px}.scope-heading{grid-template-columns:1fr;gap:18px;margin-bottom:26px}.scope-heading h2{font-size:31px}.scope-heading h2 br{display:none}.scope-heading>p{font-size:12px;max-width:48ch}
  .scope-layout{grid-template-columns:1fr;gap:30px;padding-block:24px}.scope-primary{gap:20px}.scope-primary dd{font-size:60px}.scope-primary dt{font-size:10px}.scope-primary p{font-size:10px}.scope-stage-groups{gap:8px}.scope-stage-map{margin-top:24px}.scope-stage-map figcaption{font-size:8px}
  .scope-evidence{border-top:1px solid #c8d3e1;padding-top:25px}.scope-data dd{font-size:54px}.scope-scenes{grid-template-columns:1fr 1.1fr;gap:25px}.scope-scenes dd{font-size:44px}.scope-data-footer{font-size:8px;gap:8px 10px}.scope-data-footer>a{margin-left:0}
@@ -147,5 +84,5 @@
  .finding-panel{grid-template-columns:1fr;gap:28px;padding-block:28px}.finding-story h3{font-size:29px;margin-top:16px;max-width:22ch}.finding-story>p{font-size:12px;max-width:none}.finding-insight{margin:20px 0}.finding-comparison li{grid-template-columns:82px minmax(0,1fr) 77px;gap:9px;min-height:42px}.finding-method,.finding-score{font-size:10px}.finding-comparison figcaption{font-size:9px}.finding-axis{margin-left:91px;margin-right:86px}
  .findings-source{display:block;font-size:9px}.findings-source>a{display:inline-block;margin-top:8px}.finding-comparison>p{font-size:10px}
 }
-@media(max-width:360px){.cover-copy,.cover-card--benchmark .cover-copy{padding-inline:22px}.cover-kicker{font-size:7px}.cover-card--benchmark .cover-copy h1{font-size:42px}.cover-card--benchmark .cover-copy h2{font-size:23px}.cover-card--benchmark .cover-copy p:not(.cover-title){font-size:11px;line-height:1.7}.cover-footnote{left:22px;font-size:7px}.scope-stage-groups{gap:5px}.scope-stage-map figcaption>span:last-child{font-size:7px}.scope-scenes{gap:16px}.finding-tab-label{font-size:9px}.findings-tabs strong{font-size:30px}.finding-comparison li{grid-template-columns:78px minmax(0,1fr) 72px;gap:8px}.finding-axis{margin-left:86px;margin-right:80px}}
-@media(prefers-reduced-motion:reduce){.cover-track,.cover-copy,.cover-card,.cover-dots button,.editorial-link>span{transition:none!important}.cover[data-rotating="true"] .cover-dots button.active:after,.finding-bar>i{animation:none}.cover-slide:not(.is-active) .cover-copy{transform:none}}
+@media(max-width:360px){.scope-stage-groups{gap:5px}.scope-stage-map figcaption>span:last-child{font-size:7px}.scope-scenes{gap:16px}.finding-tab-label{font-size:9px}.findings-tabs strong{font-size:30px}.finding-comparison li{grid-template-columns:78px minmax(0,1fr) 72px;gap:8px}.finding-axis{margin-left:86px;margin-right:80px}}
+@media(prefers-reduced-motion:reduce){.editorial-link>span{transition:none!important}.finding-bar>i{animation:none}}
