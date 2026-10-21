@@ -10,6 +10,7 @@ import {reportCoverage,reportConferences} from './report.mjs';
 import {verifyCarousel} from './verify-carousel.mjs';
 import {verifyTaskMedia} from './verify-task-media.mjs';
 import {verifyPresentation} from './verify-presentation.mjs';
+import {verifyNavigation} from './verify-navigation.mjs';
 import {createHash} from 'node:crypto';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
@@ -28,8 +29,11 @@ const paths=[];
 async function walk(dir){for(const e of await readdir(dir,{withFileTypes:true})){const p=join(dir,e.name);if(e.isDirectory())await walk(p);else if(e.name.endsWith('.html'))paths.push(p)}}
 await walk(dist);assert.equal(paths.length,34);
 let links=0;
+const navigationCss=await readFile(join(dist,'assets/navigation.css'),'utf8');
+const navigationJs=await readFile(join(dist,'assets/navigation.js'),'utf8');
 for(const file of paths){
   const html=await readFile(file,'utf8');
+  verifyNavigation({html,css:navigationCss,js:navigationJs});
   assert(!html.includes('undefined'),`Missing content in ${file}`);
   assert(!/\p{Script=Han}/u.test(html),`Visitor-facing Chinese in ${file}`);
   assert(!html.includes('lang="zh'),`Non-English locale in ${file}`);
@@ -120,7 +124,8 @@ assert(/\.cover \.cover-dots button\.active\{width:20px;background:#202124\}/.te
 assert.equal([...home.matchAll(/data-dot="\d"[^>]*><\/button>/g)].length,3,'Pagination is dots, not numbered buttons');
 verifyPresentation({home,evaluation:await readFile(join(dist,'evaluation/index.html'),'utf8'),paper:data,js:await readFile(join(root,'src/experience.js'),'utf8')});
 assert(home.includes('class="carousel-arrow carousel-arrow--prev"')&&home.includes('class="carousel-arrow carousel-arrow--next"'));
-assert.equal([...home.matchAll(/<svg viewBox="0 0 24 24" aria-hidden="true">/g)].length,2);
+const carouselMarkup=home.slice(home.indexOf('<section class="cover"'),home.indexOf('<div class="home-paper"'));
+assert.equal([...carouselMarkup.matchAll(/<svg viewBox="0 0 24 24" aria-hidden="true">/g)].length,2);
 assert(home.includes('/assets/media/manus-metagloves-pro.png')&&home.includes('Official product image'));
 assert((await stat(join(dist,'assets/media/manus-metagloves-pro.png'))).size>0);
 const docsOverview=await readFile(join(dist,'docs/index.html'),'utf8');

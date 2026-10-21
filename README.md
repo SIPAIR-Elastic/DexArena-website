@@ -15,6 +15,12 @@ seven affiliations, official institutional marks where available, PAIR links,
 abstract, Figures 1 and 3, findings and citation. It shares a renderer with
 `/paper/` so metadata stays consistent. The standalone paper URL is preserved.
 The black/blue/white header retains DexArena's navigation and visual identity.
+Its floating precision dock adds a sliding hover/focus indicator, a compact
+scroll state and restrained cobalt accents. The responsive drawer supports
+Escape/outside-click dismissal, focus containment and return, short-screen
+scrolling and resize cleanup. Search closes the drawer before opening. Header
+styles and behavior are isolated in `src/navigation.css` and `src/navigation.js`;
+reduced-motion preferences disable decorative movement.
 The immersive carousel combines full-frame scene media, adjacent previews and
 oversized typography directly over the image, without caption cards. Pagination
 matches the reference's separate circular chevrons and three small dots with an
@@ -68,7 +74,7 @@ Requires Node.js 22 or later. No npm dependencies are needed.
 npm run build
 ```
 
-This generates 34 pages, runs the benchmark content and carousel regression checks,
+This generates 34 pages, runs benchmark content, navigation and carousel checks,
 builds navigation, media, fonts and search at the Render root path `/`, and verifies
 the final deployment links. The published output is in `dist/`. Canonical,
 sharing and sitemap URLs use the Render service URL.

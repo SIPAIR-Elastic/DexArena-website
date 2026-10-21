@@ -180,18 +180,20 @@ function methodProfiles(){
 
 function header(active="") {
   const links = nav.map(([href,label,id]) => `<a class="site-nav__link ${active===id?"is-active":""}" href="${href}"${active===id?' aria-current="page"':""}>${label}</a>`).join("");
-  return `<header class="site-nav is-solid" data-nav>
+  const drawerLinks = [...nav,["/paper/","Paper","paper"]].map(([href,label,id],index)=>`<a class="site-nav__link ${active===id?"is-active":""}" href="${href}"${active===id?' aria-current="page"':""}><span class="nav-destination"><small aria-hidden="true">${String(index+1).padStart(2,"0")}</small><span>${label}</span></span><span class="nav-destination-arrow" aria-hidden="true">↗</span></a>`).join("");
+  return `<header class="site-nav is-solid" data-nav data-nav-theme="precision">
+    <button class="nav-backdrop" type="button" data-nav-dismiss aria-label="Close navigation menu" tabindex="-1" hidden></button>
     <div class="site-nav__pill">
       <div class="site-nav__left">
-        <a class="wordmark" href="/" aria-label="DexArena home"><span class="wordmark__mark"><i></i><i></i><i></i></span><b>DexArena</b></a>
-        <nav class="site-nav__desktop" aria-label="Primary">${links}</nav>
+        <a class="wordmark" href="/" aria-label="DexArena home"><span class="wordmark__mark" aria-hidden="true"><i></i><i></i><i></i></span><span class="wordmark__type"><b>DexArena</b><small>Dexterous intelligence</small></span></a>
+        <nav class="site-nav__desktop" data-nav-desktop aria-label="Primary"><span class="nav-indicator" data-nav-indicator aria-hidden="true"></span>${links}</nav>
       </div>
       <div class="site-nav__actions">
-        <button class="nav-search" type="button" data-open-search aria-label="Search documentation and tasks">Search <kbd>⌘ K</kbd></button>
-        <a class="nav-paper ${active==="paper"?"is-active":""}" href="/paper/" ${active==="paper"?'aria-current="page"':""}>Paper ↗</a>
-        <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" data-menu><span></span><span></span></button>
+        <button class="nav-search" type="button" data-open-search aria-label="Search documentation and tasks"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search</span><kbd data-search-shortcut>Ctrl K</kbd></button>
+        <a class="nav-paper ${active==="paper"?"is-active":""}" href="/paper/" ${active==="paper"?'aria-current="page"':""}><span>Read paper</span><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a>
+        <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-mobile-nav" data-menu><span></span><span></span></button>
       </div>
-      <nav class="site-nav__drawer" data-drawer aria-label="Mobile">${links}<a class="site-nav__link ${active==="paper"?"is-active":""}" href="/paper/">Paper</a></nav>
+      <nav class="site-nav__drawer" id="site-mobile-nav" data-drawer aria-label="Mobile" aria-hidden="true" inert><span class="nav-drawer-heading">Explore DexArena</span><div class="nav-drawer-links">${drawerLinks}</div><a class="nav-drawer-footer" href="/docs/getting-started/"><span>Build with DexArena</span><span>Getting started ↗</span></a></nav>
     </div>
   </header>`;
 }
@@ -214,7 +216,7 @@ function layout({title,description,active,body,pageClass=""}) {
     <title>${esc(title)}</title><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
     <link rel="preload" href="/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${["paper-page","home-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}${["home-page","evaluation-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/experience.css">':""}${pageClass==="home-page"?'<link rel="stylesheet" href="/assets/carousel.css">':""}<script src="/assets/site.js" defer></script>${["home-page","evaluation-page"].includes(pageClass)?'<script src="/assets/experience.js" defer></script>':""}
+    <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${["paper-page","home-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}${["home-page","evaluation-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/experience.css">':""}${pageClass==="home-page"?'<link rel="stylesheet" href="/assets/carousel.css">':""}<link rel="stylesheet" href="/assets/navigation.css"><script src="/assets/navigation.js" defer></script><script src="/assets/site.js" defer></script>${["home-page","evaluation-page"].includes(pageClass)?'<script src="/assets/experience.js" defer></script>':""}
   </head><body class="${pageClass}">${header(active)}<main>${body}</main>${footer()}<div class="route-progress" aria-hidden="true"></div></body></html>`;
 }
 
@@ -524,6 +526,8 @@ await copyFile(join(root,"src","refinement.css"),join(dist,"assets","refinement.
 await copyFile(join(root,"src","report.css"),join(dist,"assets","report.css"));
 await copyFile(join(root,"src","experience.css"),join(dist,"assets","experience.css"));
 await copyFile(join(root,"src","carousel.css"),join(dist,"assets","carousel.css"));
+await copyFile(join(root,"src","navigation.css"),join(dist,"assets","navigation.css"));
+await copyFile(join(root,"src","navigation.js"),join(dist,"assets","navigation.js"));
 await copyFile(join(root,"src","experience.js"),join(dist,"assets","experience.js"));
 await Promise.all([copyFile(join(root,"src","site.css"),join(dist,"assets","site.css")),copyFile(join(root,"src","layout.css"),join(dist,"assets","layout.css")),copyFile(join(root,"src","site.js"),join(dist,"assets","site.js"))]);
 

@@ -13,18 +13,6 @@ function syncScroll(){
 window.addEventListener("scroll",syncScroll,{passive:true});
 syncScroll();
 
-const menu=document.querySelector("[data-menu]");
-const drawer=document.querySelector("[data-drawer]");
-menu?.addEventListener("click",()=>{
-  const open=drawer.classList.toggle("open");
-  menu.setAttribute("aria-expanded",String(open));
-  menu.setAttribute("aria-label",open?"Close menu":"Open menu");
-  document.body.classList.toggle("menu-open",open);
-});
-drawer?.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{
-  drawer.classList.remove("open");menu?.setAttribute("aria-expanded","false");document.body.classList.remove("menu-open");
-}));
-
 const reveals=document.querySelectorAll(".reveal");
 if("IntersectionObserver" in window){
   const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{
@@ -351,6 +339,7 @@ if(searchTriggers.length){
   }
   async function openSearch(){
     if(dialog.open)return;
+    document.dispatchEvent(new Event("dexarena:close-navigation"));
     previousFocus=document.activeElement;dialog.showModal();document.body.classList.add("search-open");input.focus();render();
     if(entries)return;
     try{
