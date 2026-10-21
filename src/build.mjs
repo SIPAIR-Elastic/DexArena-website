@@ -237,7 +237,7 @@ function marqueeRow(items,reverse=false) {
 }
 
 const homeBody = `
-<section class="cover" aria-label="DexArena highlights" aria-roledescription="carousel" data-carousel-theme="glass">
+<section class="cover" aria-label="DexArena highlights" aria-roledescription="carousel" data-carousel-theme="cinematic">
   <div class="cover-track" data-carousel-track>
     <article class="cover-slide is-active" data-slide>
       <div class="cover-card cover-card--benchmark">
@@ -289,12 +289,12 @@ const homeBody = `
   </div>
   <div class="cover-controls">
     <div class="cover-pagination">
-    <button class="carousel-arrow carousel-arrow--prev" type="button" data-prev aria-label="Previous slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5.5 8.5 12 15 18.5"/><path d="M9 12h11"/></svg></button>
-    <div class="cover-dots">${["Benchmark","Generalization","Bimanual tasks"].map((label,i)=>`<button type="button" data-dot="${i}" aria-label="Go to slide ${i+1}: ${label}" class="${i===0?"active":""}"><span>${String(i+1).padStart(2,"0")}</span><small>${label}</small></button>`).join("")}</div>
-    <button class="carousel-arrow carousel-arrow--next" type="button" data-next aria-label="Next slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5.5 6.5 6.5L9 18.5"/><path d="M15 12H4"/></svg></button>
-    <button class="carousel-playback" type="button" data-carousel-pause aria-pressed="false" aria-label="Pause automatic slide rotation"><i aria-hidden="true"></i><span data-carousel-pause-label>Pause</span></button>
+    <button class="carousel-arrow carousel-arrow--prev" type="button" data-prev aria-label="Previous slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <div class="cover-dots">${["Benchmark","Generalization","Bimanual tasks"].map((label,i)=>`<button type="button" data-dot="${i}" aria-label="Go to slide ${i+1}: ${label}" class="${i===0?"active":""}"></button>`).join("")}</div>
+    <button class="carousel-arrow carousel-arrow--next" type="button" data-next aria-label="Next slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
     </div>
   </div>
+  <button class="carousel-playback" type="button" data-carousel-pause aria-pressed="false" aria-label="Pause automatic slide rotation"><i aria-hidden="true"></i><span data-carousel-pause-label>Pause</span></button>
 </section>
 
 <div class="home-paper" id="overview" aria-label="DexArena paper">${renderPaperBody({home:true})}</div>

@@ -113,9 +113,11 @@ for(const entry of searchIndex){
   assert((await stat(join(dist,entry.url,'index.html'))).isFile());
 }
 const home=await readFile(join(dist,'index.html'),'utf8');
-assert(home.includes('data-carousel-theme="glass"')&&home.includes('/assets/carousel.css'),'Homepage uses the immersive glass carousel');
+assert(home.includes('data-carousel-theme="cinematic"')&&home.includes('/assets/carousel.css'),'Homepage uses full-canvas cinematic typography');
 const carouselStyle=await readFile(join(dist,'assets/carousel.css'),'utf8');
-assert(carouselStyle.includes('backdrop-filter:blur(')&&carouselStyle.includes('.cover .cover-mosaic{inset:0;'),'Keep full-frame imagery and glass captions');
+assert(carouselStyle.includes('.cover .cover-mosaic{inset:0;')&&/\.cover \.cover-copy\{[^}]*background:none[^}]*backdrop-filter:none/.test(carouselStyle),'Keep full-frame imagery and text without a caption box');
+assert(/\.cover \.cover-dots button\.active\{width:20px;background:#202124\}/.test(carouselStyle),'Reference-style active capsule');
+assert.equal([...home.matchAll(/data-dot="\d"[^>]*><\/button>/g)].length,3,'Pagination is dots, not numbered buttons');
 verifyPresentation({home,evaluation:await readFile(join(dist,'evaluation/index.html'),'utf8'),paper:data,js:await readFile(join(root,'src/experience.js'),'utf8')});
 assert(home.includes('class="carousel-arrow carousel-arrow--prev"')&&home.includes('class="carousel-arrow carousel-arrow--next"'));
 assert.equal([...home.matchAll(/<svg viewBox="0 0 24 24" aria-hidden="true">/g)].length,2);

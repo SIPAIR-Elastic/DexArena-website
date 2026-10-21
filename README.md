@@ -14,9 +14,11 @@ The complete paper content follows the homepage carousel: title, 15 authors,
 seven affiliations, official institutional marks where available, PAIR links,
 abstract, Figures 1 and 3, findings and citation. It shares a renderer with
 `/paper/` so metadata stays consistent. The standalone paper URL is preserved.
-The black/blue/white header and numbered carousel controls are DexArena-specific.
-The immersive carousel combines full-frame scene media and adjacent previews
-with light, iOS-inspired frosted captions, rounded surfaces and a floating dock.
+The black/blue/white header retains DexArena's navigation and visual identity.
+The immersive carousel combines full-frame scene media, adjacent previews and
+oversized typography directly over the image, without caption cards. Pagination
+matches the reference's separate circular chevrons and three small dots with an
+active capsule; pause/play is kept separately in the image corner.
 Its styles are isolated in `src/carousel.css`; benchmark and results layouts
 remain independent in `src/experience.css`.
 
