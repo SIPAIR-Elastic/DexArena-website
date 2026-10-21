@@ -5,7 +5,7 @@
     <title>DexArena — Long-Horizon Dexterous Manipulation</title><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
     <link rel="preload" href="/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css"><link rel="stylesheet" href="/assets/paper.css"><link rel="stylesheet" href="/assets/refinement.css"><script src="/assets/site.js" defer></script>
+    <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css"><link rel="stylesheet" href="/assets/paper.css"><link rel="stylesheet" href="/assets/refinement.css"><link rel="stylesheet" href="/assets/experience.css"><script src="/assets/site.js" defer></script><script src="/assets/experience.js" defer></script>
   <link rel="canonical" href="https://dexarena.onrender.com/"><meta property="og:url" content="https://dexarena.onrender.com/"></head><body class="home-page"><header class="site-nav is-solid" data-nav>
     <div class="site-nav__pill">
       <div class="site-nav__left">
@@ -20,29 +20,31 @@
       <nav class="site-nav__drawer" data-drawer aria-label="Mobile"><a class="site-nav__link is-active" href="/" aria-current="page">Project</a><a class="site-nav__link " href="/tasks/">Tasks</a><a class="site-nav__link " href="/leaderboard/">Leaderboard</a><a class="site-nav__link " href="/evaluation/">Evaluation</a><a class="site-nav__link " href="/docs/">Docs</a><a class="site-nav__link " href="/report/">Report</a><a class="site-nav__link " href="/community/">Community</a><a class="site-nav__link " href="/paper/">Paper</a></nav>
     </div>
   </header><main>
-<section class="cover" aria-label="DexArena highlights">
+<section class="cover" aria-label="DexArena highlights" aria-roledescription="carousel">
+  <div class="cover-deck"><span>DexArena <i>/</i> Embodied intelligence</span><span>Precision. Generalization. Composition.</span></div>
   <div class="cover-track" data-carousel-track>
     <article class="cover-slide is-active" data-slide>
-      <div class="cover-card">
+      <div class="cover-card cover-card--benchmark">
         <div class="cover-mosaic" aria-label="DexArena demonstrations across three different tasks">
           <div class="cover-mosaic__item cover-mosaic__item--main">
-            <video autoplay muted loop playsinline preload="metadata" poster="/assets/media/hero-scene-drawer.jpg"><source src="/assets/media/hero-scene-drawer.mp4" type="video/mp4"></video>
+            <video muted loop playsinline preload="metadata" poster="/assets/media/hero-scene-drawer.jpg"><source src="/assets/media/hero-scene-drawer.mp4" type="video/mp4"></video>
             <span>Open drawer</span>
           </div>
           <div class="cover-mosaic__item">
-            <video autoplay muted loop playsinline preload="metadata" poster="/assets/media/hero-scene-laptop.jpg"><source src="/assets/media/hero-scene-laptop.mp4" type="video/mp4"></video>
+            <video muted loop playsinline preload="metadata" poster="/assets/media/hero-scene-laptop.jpg"><source src="/assets/media/hero-scene-laptop.mp4" type="video/mp4"></video>
             <span>Open laptop</span>
           </div>
           <div class="cover-mosaic__item">
-            <video autoplay muted loop playsinline preload="metadata" poster="/assets/media/hero-scene-rail.jpg"><source src="/assets/media/hero-scene-rail.mp4" type="video/mp4"></video>
+            <video muted loop playsinline preload="metadata" poster="/assets/media/hero-scene-rail.jpg"><source src="/assets/media/hero-scene-rail.mp4" type="video/mp4"></video>
             <span>Insert rail</span>
           </div>
         </div>
         <div class="cover-scrim"></div><div class="cover-copy">
-          <span class="cover-kicker">Unified benchmark · 10 + 30 tasks</span>
+          <span class="cover-kicker">A benchmark for embodied intelligence</span>
           <h1>DexArena</h1><h2>Dexterity over long horizons.</h2>
           <p>Execute precise skills, generalize across scenes, and compose behavior into complete bimanual tasks.</p>
-          <a class="arrow-link on-dark" href="#overview"><span>Learn more</span><b>↗</b></a>
+          <a class="arrow-link on-dark" href="#overview"><span>Discover the research</span><b>↗</b></a>
+          <span class="cover-footnote">10 sequences <i>·</i> 30 measurable stages</span>
         </div>
       </div>
     </article>
@@ -51,7 +53,7 @@
         <img src="/assets/media/cabinet-scene.png" alt="DexArena cabinet task rendered in a RoboCasa scene">
         <div class="cover-scrim"></div><div class="cover-copy">
           <span class="cover-kicker">Cross-scene evaluation · 90 combinations</span>
-          <h1>Same skill.<br>New scene.</h1>
+          <p class="cover-title">Same skill.<br>New scene.</p>
           <h2>Change the scene. Keep the task.</h2>
           <p>Evaluate all 30 canonical stages on three native scene surfaces with fixed policy cameras.</p>
           <a class="arrow-link on-dark" href="/docs/randomization/"><span>Explore randomization</span><b>↗</b></a>
@@ -63,7 +65,7 @@
         <img src="/assets/media/package-scene.png" alt="Two dexterous hands opening a package and retrieving an apple in a native kitchen scene">
         <div class="cover-scrim"></div><div class="cover-copy">
           <span class="cover-kicker">Featured task · Bimanual dexterity</span>
-          <h1>Two hands.<br>One task.</h1><h2>Open the package. Retrieve the apple.</h2>
+          <p class="cover-title">Two hands.<br>One task.</p><h2>Open the package. Retrieve the apple.</h2>
           <p>Coordinate both hands to open the flaps, then grasp and place the apple: two connected stages with physical success conditions.</p>
           <a class="arrow-link on-dark" href="/tasks/package-opening/"><span>Explore Package Opening</span><b>↗</b></a>
         </div>
@@ -71,11 +73,12 @@
     </article>
   </div>
   <div class="cover-controls">
-    <div class="cover-caption"><span>Explore DexArena</span><small>Skills. Scenes. Sequences.</small></div>
+    <div class="cover-caption"><span>Inside the benchmark</span><small>Recorded motion. Physical success conditions.</small></div>
     <div class="cover-pagination">
     <button class="carousel-arrow carousel-arrow--prev" type="button" data-prev aria-label="Previous slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5.5 8.5 12 15 18.5"/><path d="M9 12h11"/></svg></button>
     <div class="cover-dots"><button type="button" data-dot="0" aria-label="Go to slide 1: Benchmark" class="active"><span>01</span><small>Benchmark</small></button><button type="button" data-dot="1" aria-label="Go to slide 2: Generalization" class=""><span>02</span><small>Generalization</small></button><button type="button" data-dot="2" aria-label="Go to slide 3: Bimanual tasks" class=""><span>03</span><small>Bimanual tasks</small></button></div>
     <button class="carousel-arrow carousel-arrow--next" type="button" data-next aria-label="Next slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5.5 6.5 6.5L9 18.5"/><path d="M15 12H4"/></svg></button>
+    <button class="carousel-playback" type="button" data-carousel-pause aria-pressed="false" aria-label="Pause automatic slide rotation"><i aria-hidden="true"></i><span data-carousel-pause-label>Pause</span></button>
     </div>
   </div>
 </section>
@@ -186,10 +189,20 @@
   <div class="center-link"><a class="arrow-link " href="/tasks/"><span>View all task definitions</span><b>↗</b></a></div>
 </section>
 
-<section class="stat-band">
-  <div><strong>10</strong><span>long-horizon tasks</span></div><div><strong>30</strong><span>canonical stage tasks</span></div>
-  <div><strong>3,000</strong><span>replay-validated episodes</span></div><div><strong>90</strong><span>task × native-scene combinations</span></div>
-</section>
+<section class="benchmark-scope section" id="benchmark-scale" aria-labelledby="scope-title">
+    <div class="scope-heading"><div><span class="editorial-label">Benchmark architecture</span><h2 id="scope-title">Every stage has a place<br>in a larger task.</h2></div><p>Matched environments connect isolated skills to complete sequences. The same definitions carry through data collection and cross-scene evaluation.</p></div>
+    <div class="scope-layout">
+      <div class="scope-structure">
+        <div class="scope-primary"><div><dl><dt>Long-horizon tasks</dt><dd data-scope-value="sequences">10</dd></dl><p>Complete, dependent sequences</p></div><div><dl><dt>Canonical stage tasks</dt><dd data-scope-value="stages">30</dd></dl><p>Physically grounded success conditions</p></div></div>
+        <figure class="scope-stage-map"><figcaption><span>Sequence → stage structure</span><span>2–5 stages per task</span></figcaption><div class="scope-stage-groups"><a href="/tasks/meal-preparation/" aria-label="Meal Preparation: 3 stages" title="Meal Preparation · 3 stages"><span>01</span><i aria-hidden="true"><b></b><b></b><b></b></i></a><a href="/tasks/cabinet-pour/" aria-label="Cabinet &amp; Pouring: 4 stages" title="Cabinet &amp; Pouring · 4 stages"><span>02</span><i aria-hidden="true"><b></b><b></b><b></b><b></b></i></a><a href="/tasks/drawer-plug/" aria-label="Drawer &amp; Plug: 3 stages" title="Drawer &amp; Plug · 3 stages"><span>03</span><i aria-hidden="true"><b></b><b></b><b></b></i></a><a href="/tasks/nut-bolt/" aria-label="Nut &amp; Bolt: 3 stages" title="Nut &amp; Bolt · 3 stages"><span>04</span><i aria-hidden="true"><b></b><b></b><b></b></i></a><a href="/tasks/office-desk/" aria-label="Office Desk: 3 stages" title="Office Desk · 3 stages"><span>05</span><i aria-hidden="true"><b></b><b></b><b></b></i></a><a href="/tasks/furniture-assembly/" aria-label="Furniture Assembly: 3 stages" title="Furniture Assembly · 3 stages"><span>06</span><i aria-hidden="true"><b></b><b></b><b></b></i></a><a href="/tasks/pipette-transfer/" aria-label="Pipette Transfer: 2 stages" title="Pipette Transfer · 2 stages"><span>07</span><i aria-hidden="true"><b></b><b></b></i></a><a href="/tasks/juice-preparation/" aria-label="Juice Preparation: 5 stages" title="Juice Preparation · 5 stages"><span>08</span><i aria-hidden="true"><b></b><b></b><b></b><b></b><b></b></i></a><a href="/tasks/package-opening/" aria-label="Package Opening: 2 stages" title="Package Opening · 2 stages"><span>09</span><i aria-hidden="true"><b></b><b></b></i></a><a href="/tasks/table-cleaning/" aria-label="Table Cleaning: 2 stages" title="Table Cleaning · 2 stages"><span>10</span><i aria-hidden="true"><b></b><b></b></i></a></div><p>Each column is one task. Each segment is one measurable stage.</p></figure>
+        <a class="editorial-link" href="/tasks/">Explore the task definitions <span aria-hidden="true">↗</span></a>
+      </div>
+      <div class="scope-evidence">
+        <div class="scope-data"><div class="scope-data-heading"><dl><dt>Replay-validated episodes</dt><dd data-scope-value="episodes">3,000</dd></dl><span class="scope-equation"><b>100</b> per stage<br>× 30 stages</span></div><p>Human demonstrations selected after successful action replay, with simulator states retained for restoration.</p><div class="scope-data-footer"><span>9.1 h of demonstrations</span><span>20 Hz recording</span><a href="/docs/data/">Data protocol ↗</a></div></div>
+        <div class="scope-scenes"><div><dl><dt>Stage–scene combinations</dt><dd data-scope-value="combinations">90</dd></dl><p>30 stages. 3 native kitchens.<br>Fixed tasks, different surroundings.</p><a class="editorial-link" href="/docs/randomization/">Scene protocol <span aria-hidden="true">↗</span></a></div><figure class="scope-scene-matrix" aria-label="30 stages evaluated in each of three native kitchens, giving 90 stage–scene combinations"><div><span>Blue stone</span><i class="scope-scene-row scope-scene-row--0" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></i></div><div><span>Light wood</span><i class="scope-scene-row scope-scene-row--1" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></i></div><div><span>Warm wood</span><i class="scope-scene-row scope-scene-row--2" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></i></div><figcaption>Each mark = one stage–scene pair</figcaption></figure></div>
+      </div>
+    </div>
+  </section>
 
 <section class="section capability-section">
   <div class="section-head reveal"><span>Benchmark design</span><h2>Measure the transition <span class="text-accent text-accent--teal">from a skill</span> <span class="text-accent text-accent--violet">to a behavior.</span></h2></div>
@@ -227,7 +240,20 @@
 
 <section class="leaderboard-cta section">
   <div class="section-head reveal"><span>Experimental results</span><h2>Learning a skill is only the beginning.</h2><p>Six baselines evaluated on execution, visual generalization and long-horizon composition. All scores below are reported in the supplied manuscript.</p></div>
-  <div class="finding-grid"><article><span>Stage execution</span><b>61.4<span>%</span></b><h3>GR00T leads in the training scene.</h3><p>Average success over 30 stages. ACT reaches 58.0%; RLPD reaches 54.3%.</p></article><article><span>Visual generalization</span><b>49.2<span>%</span></b><h3>π0.5 leads across held-out scenes.</h3><p>49.2 ± 2.3% across three kitchens; ACT reaches 45.4 ± 3.6%.</p></article><article><span>Full task completion</span><b>1.6<span>%</span></b><h3>Composition remains difficult.</h3><p>π0.5 averages 1.6% across ten complete sequences; ACT reaches 1.2%.</p></article></div>
+  <div class="findings-digest" data-findings>
+    <div class="findings-tabs" data-findings-tabs aria-label="Compare evaluation tracks"><button type="button" id="finding-tab-stage" data-finding-tab="stage"><span class="finding-tab-index">01</span><span class="finding-tab-label">Stage execution</span><strong>61.4<small>%</small></strong><span class="finding-tab-detail">Best average success</span></button><button type="button" id="finding-tab-generalization" data-finding-tab="generalization"><span class="finding-tab-index">02</span><span class="finding-tab-label">Visual generalization</span><strong>49.2<small>%</small></strong><span class="finding-tab-detail">Best average success</span></button><button type="button" id="finding-tab-longHorizon" data-finding-tab="longHorizon"><span class="finding-tab-index">03</span><span class="finding-tab-label">Full task completion</span><strong>1.6<small>%</small></strong><span class="finding-tab-detail">Best average success</span></button></div>
+    <section class="finding-panel" id="finding-panel-stage" data-finding-panel="stage" aria-labelledby="finding-tab-stage">
+        <div class="finding-story"><span class="editorial-label">01 / 30 stages · training scene</span><h3>Strong individual skills.</h3><p>GR00T records the highest average success in the training scene. ACT and RLPD follow, but no method consistently solves every stage.</p><div class="finding-insight"><strong>+3.4<small> pp</small></strong><span>advantage over ACT</span></div><a class="editorial-link" href="/leaderboard/#results-stage">Stage-level results <span aria-hidden="true">↗</span></a></div>
+        <figure class="finding-comparison"><figcaption><span>Average success by policy</span><span>Success (%) · 0–100</span></figcaption><div class="finding-axis" aria-hidden="true"><span>0</span><span>50</span><span>100</span></div><ol><li class="is-leading" data-finding-method="GR00T" data-finding-score="61.4"><span class="finding-method">GR00T</span><span class="finding-bar" aria-hidden="true"><i style="--success:61.4%"></i></span><span class="finding-score">61.4<span class="sr-only"> percent success</span></span></li><li class="" data-finding-method="ACT" data-finding-score="58.0"><span class="finding-method">ACT</span><span class="finding-bar" aria-hidden="true"><i style="--success:58%"></i></span><span class="finding-score">58.0<span class="sr-only"> percent success</span></span></li><li class="" data-finding-method="RLPD" data-finding-score="54.3"><span class="finding-method">RLPD</span><span class="finding-bar" aria-hidden="true"><i style="--success:54.3%"></i></span><span class="finding-score">54.3<span class="sr-only"> percent success</span></span></li><li class="" data-finding-method="π0.5" data-finding-score="52.1"><span class="finding-method">π0.5</span><span class="finding-bar" aria-hidden="true"><i style="--success:52.1%"></i></span><span class="finding-score">52.1<span class="sr-only"> percent success</span></span></li><li class="" data-finding-method="Diffusion Policy" data-finding-score="39.2"><span class="finding-method">Diffusion Policy</span><span class="finding-bar" aria-hidden="true"><i style="--success:39.2%"></i></span><span class="finding-score">39.2<span class="sr-only"> percent success</span></span></li><li class="" data-finding-method="PPO" data-finding-score="27.9"><span class="finding-method">PPO</span><span class="finding-bar" aria-hidden="true"><i style="--success:27.9%"></i></span><span class="finding-score">27.9<span class="sr-only"> percent success</span></span></li></ol><p>50 evaluation episodes per stage. Scores are averaged over 30 canonical stages.</p></figure>
+      </section><section class="finding-panel" id="finding-panel-generalization" data-finding-panel="generalization" aria-labelledby="finding-tab-generalization">
+        <div class="finding-story"><span class="editorial-label">02 / 30 stages × 3 native scenes</span><h3>A different scene changes the ranking.</h3><p>π0.5 leads across three held-out kitchens. Its average is 2.9 percentage points below the training-scene result; the same policy is evaluated without adaptation.</p><div class="finding-insight"><strong>+3.8<small> pp</small></strong><span>advantage over ACT</span></div><a class="editorial-link" href="/leaderboard/#results-generalization">Cross-scene results <span aria-hidden="true">↗</span></a></div>
+        <figure class="finding-comparison"><figcaption><span>Average success by policy</span><span>Success (%) · 0–100</span></figcaption><div class="finding-axis" aria-hidden="true"><span>0</span><span>50</span><span>100</span></div><ol><li class="is-leading" data-finding-method="π0.5" data-finding-score="49.2"><span class="finding-method">π0.5</span><span class="finding-bar" aria-hidden="true"><i style="--success:49.2%"></i></span><span class="finding-score">49.2<small> ± 2.3</small><span class="sr-only"> percent success</span></span></li><li class="" data-finding-method="ACT" data-finding-score="45.4"><span class="finding-method">ACT</span><span class="finding-bar" aria-hidden="true"><i style="--success:45.4%"></i></span><span class="finding-score">45.4<small> ± 3.6</small><span class="sr-only"> percent success</span></span></li><li class="" data-finding-method="GR00T" data-finding-score="41.7"><span class="finding-method">GR00T</span><span class="finding-bar" aria-hidden="true"><i style="--success:41.7%"></i></span><span class="finding-score">41.7<small> ± 14.2</small><span class="sr-only"> percent success</span></span></li><li class="" data-finding-method="PPO" data-finding-score="21.7"><span class="finding-method">PPO</span><span class="finding-bar" aria-hidden="true"><i style="--success:21.7%"></i></span><span class="finding-score">21.7<small> ± 3.5</small><span class="sr-only"> percent success</span></span></li><li class="" data-finding-method="RLPD" data-finding-score="17.8"><span class="finding-method">RLPD</span><span class="finding-bar" aria-hidden="true"><i style="--success:17.8%"></i></span><span class="finding-score">17.8<small> ± 10.9</small><span class="sr-only"> percent success</span></span></li><li class="" data-finding-method="Diffusion Policy" data-finding-score="17.2"><span class="finding-method">Diffusion Policy</span><span class="finding-bar" aria-hidden="true"><i style="--success:17.2%"></i></span><span class="finding-score">17.2<small> ± 5.7</small><span class="sr-only"> percent success</span></span></li></ol><p>50 episodes per stage per scene. ± denotes standard deviation across three scene averages, not a confidence interval.</p></figure>
+      </section><section class="finding-panel" id="finding-panel-longHorizon" data-finding-panel="longHorizon" aria-labelledby="finding-tab-longHorizon">
+        <div class="finding-story"><span class="editorial-label">03 / 10 sequences · no stage resets</span><h3>The sequence remains the challenge.</h3><p>π0.5 and ACT report non-zero average success on complete sequences. Successful individual stages do not yet translate into reliable end-to-end behavior.</p><div class="finding-insight"><strong>2<small> / 6</small></strong><span>methods with non-zero sequence success</span></div><a class="editorial-link" href="/leaderboard/#results-longHorizon">Complete-sequence results <span aria-hidden="true">↗</span></a></div>
+        <figure class="finding-comparison"><figcaption><span>Average success by policy</span><span>Success (%) · 0–100</span></figcaption><div class="finding-axis" aria-hidden="true"><span>0</span><span>50</span><span>100</span></div><ol><li class="is-leading" data-finding-method="π0.5" data-finding-score="1.6"><span class="finding-method">π0.5</span><span class="finding-bar" aria-hidden="true"><i style="--success:1.6%"></i></span><span class="finding-score">1.6<span class="sr-only"> percent success</span></span></li><li class="" data-finding-method="ACT" data-finding-score="1.2"><span class="finding-method">ACT</span><span class="finding-bar" aria-hidden="true"><i style="--success:1.2%"></i></span><span class="finding-score">1.2<span class="sr-only"> percent success</span></span></li><li class="" data-finding-method="PPO" data-finding-score="0.0"><span class="finding-method">PPO</span><span class="finding-bar" aria-hidden="true"><i style="--success:0%"></i></span><span class="finding-score">0.0<span class="sr-only"> percent success</span></span></li><li class="" data-finding-method="RLPD" data-finding-score="0.0"><span class="finding-method">RLPD</span><span class="finding-bar" aria-hidden="true"><i style="--success:0%"></i></span><span class="finding-score">0.0<span class="sr-only"> percent success</span></span></li><li class="" data-finding-method="Diffusion Policy" data-finding-score="0.0"><span class="finding-method">Diffusion Policy</span><span class="finding-bar" aria-hidden="true"><i style="--success:0%"></i></span><span class="finding-score">0.0<span class="sr-only"> percent success</span></span></li><li class="" data-finding-method="GR00T" data-finding-score="0.0"><span class="finding-method">GR00T</span><span class="finding-bar" aria-hidden="true"><i style="--success:0%"></i></span><span class="finding-score">0.0<span class="sr-only"> percent success</span></span></li></ol><p>50 episodes per complete task. Success requires reaching the final task condition without resets between stages.</p></figure>
+      </section>
+    <div class="findings-source"><span>Manuscript baseline results · 6 methods · Not a live submission ranking</span><a href="/leaderboard/protocol/">How to read these results ↗</a></div>
+  </div>
   <div class="leaderboard-cta__card reveal"><div><span>Paper baselines</span><h2>Explore every result.</h2><p>Compare PPO, RLPD, ACT, Diffusion Policy, GR00T and π0.5 across all stages and complete sequences.</p></div><a class="arrow-link on-dark" href="/leaderboard/"><span>Open leaderboard</span><b>↗</b></a></div>
 </section></main><footer class="site-footer">
     <div class="footer-top"><a class="wordmark wordmark--footer" href="/"><span class="wordmark__mark"><i></i><i></i><i></i></span><b>DexArena</b></a>

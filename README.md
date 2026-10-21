@@ -16,6 +16,16 @@ abstract, Figures 1 and 3, findings and citation. It shares a renderer with
 `/paper/` so metadata stays consistent. The standalone paper URL is preserved.
 The black/blue/white header and numbered carousel controls are DexArena-specific.
 
+The carousel keeps the original rendered demonstrations and adds explicit
+pause/play, keyboard-operable adjacent previews, and background/offscreen media
+pause. Reduced-motion visitors see static posters unless they explicitly play.
+The benchmark architecture section maps ten sequences to thirty stages and
+shows the 30 × 3 scene matrix; counts are static, never animated from zero.
+The results digest compares all six baselines across three keyboard-accessible
+tracks, generated directly from `src/paper-results.json`. Bars share a 0–100%
+scale and scene uncertainty is identified explicitly. All comparisons remain
+readable without JavaScript. The same digest is used on the Evaluation page.
+
 ## Render deployment
 
 The configured service uses Build Command `yarn` and Start Command `yarn start`.

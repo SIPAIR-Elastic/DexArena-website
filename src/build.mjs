@@ -7,6 +7,7 @@ import { paperBody, paperBibtex, renderPaperBody } from "./paper-page.mjs";
 import { communityBody } from "./community.mjs";
 import { reportBody } from "./report.mjs";
 import { algorithmLink, algorithmDirectory, algorithmReferenceSection } from "./references.mjs";
+import { benchmarkScope, findingsDigest } from "./presentation.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(root, "dist");
@@ -156,7 +157,7 @@ function researchFigure(file,alt,caption) {
   return `<figure class="research-figure"><a href="/assets/paper/${file}" target="_blank" rel="noreferrer" aria-label="Open ${esc(alt)} at full resolution"><img src="/assets/paper/${file}" alt="${esc(alt)}" loading="lazy"></a><figcaption>${caption} <a href="/assets/paper/${file}" target="_blank" rel="noreferrer">Full resolution ↗</a></figcaption></figure>`;
 }
 function findings() {
-  return `<div class="finding-grid"><article><span>Stage execution</span><b>61.4<span>%</span></b><h3>GR00T leads in the training scene.</h3><p>Average success over 30 stages. ACT reaches 58.0%; RLPD reaches 54.3%.</p></article><article><span>Visual generalization</span><b>49.2<span>%</span></b><h3>π0.5 leads across held-out scenes.</h3><p>49.2 ± 2.3% across three kitchens; ACT reaches 45.4 ± 3.6%.</p></article><article><span>Full task completion</span><b>1.6<span>%</span></b><h3>Composition remains difficult.</h3><p>π0.5 averages 1.6% across ten complete sequences; ACT reaches 1.2%.</p></article></div>`;
+  return findingsDigest(paper);
 }
 
 function rankingChart(trackId) {
@@ -213,7 +214,7 @@ function layout({title,description,active,body,pageClass=""}) {
     <title>${esc(title)}</title><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
     <link rel="preload" href="/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${["paper-page","home-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}<script src="/assets/site.js" defer></script>
+    <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${["paper-page","home-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}${["home-page","evaluation-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/experience.css">':""}<script src="/assets/site.js" defer></script>${["home-page","evaluation-page"].includes(pageClass)?'<script src="/assets/experience.js" defer></script>':""}
   </head><body class="${pageClass}">${header(active)}<main>${body}</main>${footer()}<div class="route-progress" aria-hidden="true"></div></body></html>`;
 }
 
@@ -236,29 +237,31 @@ function marqueeRow(items,reverse=false) {
 }
 
 const homeBody = `
-<section class="cover" aria-label="DexArena highlights">
+<section class="cover" aria-label="DexArena highlights" aria-roledescription="carousel">
+  <div class="cover-deck"><span>DexArena <i>/</i> Embodied intelligence</span><span>Precision. Generalization. Composition.</span></div>
   <div class="cover-track" data-carousel-track>
     <article class="cover-slide is-active" data-slide>
-      <div class="cover-card">
+      <div class="cover-card cover-card--benchmark">
         <div class="cover-mosaic" aria-label="DexArena demonstrations across three different tasks">
           <div class="cover-mosaic__item cover-mosaic__item--main">
-            <video autoplay muted loop playsinline preload="metadata" poster="/assets/media/hero-scene-drawer.jpg"><source src="/assets/media/hero-scene-drawer.mp4" type="video/mp4"></video>
+            <video muted loop playsinline preload="metadata" poster="/assets/media/hero-scene-drawer.jpg"><source src="/assets/media/hero-scene-drawer.mp4" type="video/mp4"></video>
             <span>Open drawer</span>
           </div>
           <div class="cover-mosaic__item">
-            <video autoplay muted loop playsinline preload="metadata" poster="/assets/media/hero-scene-laptop.jpg"><source src="/assets/media/hero-scene-laptop.mp4" type="video/mp4"></video>
+            <video muted loop playsinline preload="metadata" poster="/assets/media/hero-scene-laptop.jpg"><source src="/assets/media/hero-scene-laptop.mp4" type="video/mp4"></video>
             <span>Open laptop</span>
           </div>
           <div class="cover-mosaic__item">
-            <video autoplay muted loop playsinline preload="metadata" poster="/assets/media/hero-scene-rail.jpg"><source src="/assets/media/hero-scene-rail.mp4" type="video/mp4"></video>
+            <video muted loop playsinline preload="metadata" poster="/assets/media/hero-scene-rail.jpg"><source src="/assets/media/hero-scene-rail.mp4" type="video/mp4"></video>
             <span>Insert rail</span>
           </div>
         </div>
         <div class="cover-scrim"></div><div class="cover-copy">
-          <span class="cover-kicker">Unified benchmark · 10 + 30 tasks</span>
+          <span class="cover-kicker">A benchmark for embodied intelligence</span>
           <h1>DexArena</h1><h2>Dexterity over long horizons.</h2>
           <p>Execute precise skills, generalize across scenes, and compose behavior into complete bimanual tasks.</p>
-          ${arrowLink("#overview","Learn more","on-dark")}
+          ${arrowLink("#overview","Discover the research","on-dark")}
+          <span class="cover-footnote">10 sequences <i>·</i> 30 measurable stages</span>
         </div>
       </div>
     </article>
@@ -267,7 +270,7 @@ const homeBody = `
         <img src="/assets/media/cabinet-scene.png" alt="DexArena cabinet task rendered in a RoboCasa scene">
         <div class="cover-scrim"></div><div class="cover-copy">
           <span class="cover-kicker">Cross-scene evaluation · 90 combinations</span>
-          <h1>Same skill.<br>New scene.</h1>
+          <p class="cover-title">Same skill.<br>New scene.</p>
           <h2>Change the scene. Keep the task.</h2>
           <p>Evaluate all 30 canonical stages on three native scene surfaces with fixed policy cameras.</p>
           ${arrowLink("/docs/randomization/","Explore randomization","on-dark")}
@@ -279,7 +282,7 @@ const homeBody = `
         <img src="/assets/media/package-scene.png" alt="Two dexterous hands opening a package and retrieving an apple in a native kitchen scene">
         <div class="cover-scrim"></div><div class="cover-copy">
           <span class="cover-kicker">Featured task · Bimanual dexterity</span>
-          <h1>Two hands.<br>One task.</h1><h2>Open the package. Retrieve the apple.</h2>
+          <p class="cover-title">Two hands.<br>One task.</p><h2>Open the package. Retrieve the apple.</h2>
           <p>Coordinate both hands to open the flaps, then grasp and place the apple: two connected stages with physical success conditions.</p>
           ${arrowLink("/tasks/package-opening/","Explore Package Opening","on-dark")}
         </div>
@@ -287,11 +290,12 @@ const homeBody = `
     </article>
   </div>
   <div class="cover-controls">
-    <div class="cover-caption"><span>Explore DexArena</span><small>Skills. Scenes. Sequences.</small></div>
+    <div class="cover-caption"><span>Inside the benchmark</span><small>Recorded motion. Physical success conditions.</small></div>
     <div class="cover-pagination">
     <button class="carousel-arrow carousel-arrow--prev" type="button" data-prev aria-label="Previous slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5.5 8.5 12 15 18.5"/><path d="M9 12h11"/></svg></button>
     <div class="cover-dots">${["Benchmark","Generalization","Bimanual tasks"].map((label,i)=>`<button type="button" data-dot="${i}" aria-label="Go to slide ${i+1}: ${label}" class="${i===0?"active":""}"><span>${String(i+1).padStart(2,"0")}</span><small>${label}</small></button>`).join("")}</div>
     <button class="carousel-arrow carousel-arrow--next" type="button" data-next aria-label="Next slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5.5 6.5 6.5L9 18.5"/><path d="M15 12H4"/></svg></button>
+    <button class="carousel-playback" type="button" data-carousel-pause aria-pressed="false" aria-label="Pause automatic slide rotation"><i aria-hidden="true"></i><span data-carousel-pause-label>Pause</span></button>
     </div>
   </div>
 </section>
@@ -309,10 +313,7 @@ const homeBody = `
   <div class="center-link">${arrowLink("/tasks/","View all task definitions")}</div>
 </section>
 
-<section class="stat-band">
-  <div><strong>10</strong><span>long-horizon tasks</span></div><div><strong>30</strong><span>canonical stage tasks</span></div>
-  <div><strong>3,000</strong><span>replay-validated episodes</span></div><div><strong>90</strong><span>task × native-scene combinations</span></div>
-</section>
+${benchmarkScope(tasks,paper.protocol)}
 
 <section class="section capability-section">
   <div class="section-head reveal"><span>Benchmark design</span><h2>Measure the transition <span class="text-accent text-accent--teal">from a skill</span> <span class="text-accent text-accent--violet">to a behavior.</span></h2></div>
@@ -524,6 +525,8 @@ await writeFile(join(dist,"assets","docs","dexarena-citation.bib"),paperBibtex);
 await copyFile(join(root,"src","paper.css"),join(dist,"assets","paper.css"));
 await copyFile(join(root,"src","refinement.css"),join(dist,"assets","refinement.css"));
 await copyFile(join(root,"src","report.css"),join(dist,"assets","report.css"));
+await copyFile(join(root,"src","experience.css"),join(dist,"assets","experience.css"));
+await copyFile(join(root,"src","experience.js"),join(dist,"assets","experience.js"));
 await Promise.all([copyFile(join(root,"src","site.css"),join(dist,"assets","site.css")),copyFile(join(root,"src","layout.css"),join(dist,"assets","layout.css")),copyFile(join(root,"src","site.js"),join(dist,"assets","site.js"))]);
 
 const searchEntries=pages.map(([file,html])=>{

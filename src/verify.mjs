@@ -9,6 +9,7 @@ import {algorithmReferences} from './references.mjs';
 import {reportCoverage,reportConferences} from './report.mjs';
 import {verifyCarousel} from './verify-carousel.mjs';
 import {verifyTaskMedia} from './verify-task-media.mjs';
+import {verifyPresentation} from './verify-presentation.mjs';
 import {createHash} from 'node:crypto';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
@@ -112,6 +113,7 @@ for(const entry of searchIndex){
   assert((await stat(join(dist,entry.url,'index.html'))).isFile());
 }
 const home=await readFile(join(dist,'index.html'),'utf8');
+verifyPresentation({home,evaluation:await readFile(join(dist,'evaluation/index.html'),'utf8'),paper:data,js:await readFile(join(root,'src/experience.js'),'utf8')});
 assert(home.includes('class="carousel-arrow carousel-arrow--prev"')&&home.includes('class="carousel-arrow carousel-arrow--next"'));
 assert.equal([...home.matchAll(/<svg viewBox="0 0 24 24" aria-hidden="true">/g)].length,2);
 assert(home.includes('/assets/media/manus-metagloves-pro.png')&&home.includes('Official product image'));

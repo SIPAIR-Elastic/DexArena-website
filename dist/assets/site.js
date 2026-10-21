@@ -35,6 +35,9 @@ if("IntersectionObserver" in window){
 
 const track=document.querySelector("[data-carousel-track]");
 if(track){
+  const cover=track.closest(".cover")||track;
+  const pauseButton=cover.querySelector("[data-carousel-pause]");
+  const pauseLabel=pauseButton?.querySelector("[data-carousel-pause-label]");
   const slides=[...track.querySelectorAll("[data-slide]")];
   const dots=[...document.querySelectorAll("[data-dot]")];
   const firstClone=slides[0].cloneNode(true);
@@ -50,6 +53,35 @@ if(track){
   const renderedSlides=[...track.querySelectorAll("[data-slide]")];
   const motionPreference=matchMedia("(prefers-reduced-motion: reduce)");
   let index=0,renderedIndex=1,pendingReset=null,timer=null,gesture=null,hovered=false,moving=false,settleTimer=null,ignoreClickUntil=0,focusAfterMove=false;
+  let userPaused=false,reducedMotionOverride=false,inView=!("IntersectionObserver" in window),pageSuspended=false;
+  const motionPaused=()=>userPaused||(motionPreference.matches&&!reducedMotionOverride);
+  const mediaVisible=()=>inView&&!document.hidden&&!pageSuspended;
+  cover.setAttribute("aria-roledescription","carousel");
+  // Cloned previews retain their media, but only the currently presented slide plays.
+  const media=renderedSlides.flatMap((slide,i)=>{
+    slide.setAttribute("role","group");
+    slide.setAttribute("aria-roledescription","slide");
+    slide.setAttribute("aria-label",`${(i-1+slides.length)%slides.length+1} of ${slides.length}`);
+    return [...slide.querySelectorAll("video")].map(video=>{
+      video.setAttribute("aria-hidden","true");video.tabIndex=-1;
+      const item={slide,video};
+      video.addEventListener("playing",()=>{
+        // A pending play() can finish after the visitor changes slides or pauses.
+        if(motionPaused()||!mediaVisible()||slide!==renderedSlides[renderedIndex])video.pause();
+      });
+      return item;
+    });
+  });
+  function syncVideos(){
+    media.forEach(({slide,video})=>{
+      if(motionPaused()||!mediaVisible()||slide!==renderedSlides[renderedIndex]){video.pause();return}
+      video.muted=true;
+      if(video.paused){
+        const attempt=video.play();
+        attempt?.catch(()=>{}); // Posters remain available when playback is blocked.
+      }
+    });
+  }
   // Native button overlays only intercept the two adjacent previews, never the active CTA.
   const previewButtons=renderedSlides.map(slide=>{
     const button=document.createElement("button");
@@ -84,6 +116,7 @@ if(track){
       button.setAttribute("aria-label",`Show ${previous?"previous":"next"} slide: ${s.querySelector("h2").textContent}`);
     });
     dots.forEach((d,i)=>{d.classList.toggle("active",i===index);d.setAttribute("aria-pressed",String(i===index))});
+    syncVideos();
   }
   function settle(){
     clearTimeout(settleTimer);moving=false;
@@ -105,7 +138,26 @@ if(track){
   track.addEventListener("transitionend",e=>{
     if(e.target===track&&e.propertyName==="transform")settle();
   });
-  function restart(){clearInterval(timer);if(!hovered&&!track.contains(document.activeElement)&&!motionPreference.matches)timer=setInterval(()=>go(index+1),6500)}
+  function restart(){
+    clearTimeout(timer);timer=null;
+    const paused=motionPaused();
+    cover.dataset.paused=String(paused);
+    pauseButton?.setAttribute("aria-pressed",String(paused));
+    pauseButton?.setAttribute("aria-label",paused?"Play automatic slide rotation and demonstration videos":"Pause automatic slide rotation and demonstration videos");
+    if(pauseLabel)pauseLabel.textContent=paused?"Play":"Pause";
+    cover.dataset.rotating="false";
+    if(!paused&&mediaVisible()&&!hovered&&!cover.contains(document.activeElement)){
+      // Reset the eight-second progress cue whenever rotation actually restarts.
+      cover.getBoundingClientRect();cover.dataset.rotating="true";
+      timer=setTimeout(()=>go(index+1),8000);
+    }
+  }
+  function syncMotion(){syncVideos();restart()}
+  pauseButton?.addEventListener("click",()=>{
+    if(motionPaused()){userPaused=false;reducedMotionOverride=motionPreference.matches}
+    else{userPaused=true;reducedMotionOverride=false}
+    syncMotion();
+  });
   document.querySelector("[data-prev]")?.addEventListener("click",()=>go(index-1));
   document.querySelector("[data-next]")?.addEventListener("click",()=>go(index+1));
   dots.forEach(d=>d.addEventListener("click",()=>go(Number(d.dataset.dot))));
@@ -118,13 +170,22 @@ if(track){
   track.addEventListener("pointercancel",()=>{gesture=null});
   track.addEventListener("pointerleave",()=>{gesture=null});
   track.addEventListener("click",e=>{if(Date.now()<ignoreClickUntil){e.preventDefault();e.stopImmediatePropagation()}},true);
-  track.addEventListener("mouseenter",()=>{hovered=true;clearInterval(timer)});
-  track.addEventListener("mouseleave",()=>{hovered=false;restart()});
-  track.addEventListener("focusin",()=>clearInterval(timer));
-  track.addEventListener("focusout",()=>setTimeout(restart,0));
+  cover.addEventListener("mouseenter",()=>{hovered=true;restart()});
+  cover.addEventListener("mouseleave",()=>{hovered=false;restart()});
+  cover.addEventListener("focusin",()=>restart());
+  cover.addEventListener("focusout",()=>setTimeout(restart,0));
   window.addEventListener("resize",()=>{settle();position(true)});
-  motionPreference.addEventListener("change",()=>{settle();restart()});
-  position(true);restart();
+  motionPreference.addEventListener("change",()=>{reducedMotionOverride=false;settle();syncMotion()});
+  document.addEventListener("visibilitychange",syncMotion);
+  window.addEventListener("pagehide",()=>{pageSuspended=true;syncMotion()});
+  window.addEventListener("pageshow",()=>{pageSuspended=false;syncMotion()});
+  if("IntersectionObserver" in window){
+    const observer=new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{if(entry.target===cover)inView=entry.isIntersecting});syncMotion();
+    },{threshold:.12});
+    observer.observe(cover);
+  }
+  position(true);syncMotion();
 }
 
 const filterButtons=[...document.querySelectorAll("[data-task-filter]")];
