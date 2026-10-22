@@ -3,7 +3,7 @@ import {readFile,writeFile,readdir,stat} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {dirname,join,relative,resolve} from 'node:path';
 import assert from 'node:assert/strict';
-import {docsPublished,paperPublished} from '../src/publication.mjs';
+import {docsPublished,paperPublished,isRetiredRoute} from '../src/publication.mjs';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const dist=join(root,'dist');
@@ -69,6 +69,8 @@ for(const file of files.filter(file=>file.endsWith('.css'))){
   for(const match of (await readFile(file,'utf8')).matchAll(/url\(\s*(?:"([^"]*)"|'([^']*)'|([^)]*))\s*\)/g))await checkTarget((match[1]??match[2]??match[3]).trim(),file);
 }
 for(const entry of search)await checkTarget(entry.url,join(dist,'index.html'));
+assert(search.every(entry=>!isRetiredRoute(new URL(entry.url,site).pathname.slice(base.length-1))),'Retired pages must not be searchable');
+assert(!urls.some(url=>isRetiredRoute(new URL(url).pathname.slice(base.length-1))),'Retired pages must not appear in the sitemap');
 assert(runtime.includes(`fetch("${base}assets/search-index.json")`),'Search fetch must use the project path');
 const paperHtml=await readFile(join(dist,'paper','index.html'),'utf8');
 if(paperPublished)assert(paperHtml.includes(`data-copy-text="${site.href}paper/"`),'Shared paper URL must use the public site address');

@@ -28,7 +28,7 @@ const classes=node=>(node.attributes.class||'').split(/\s+/);
 const plainText=html=>html.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
 const route=href=>new URL(href,'https://dexarena.invalid').pathname.replace(/\/$/,'')||'/';
 const asset=(value,name)=>new RegExp(`/assets/${name.replaceAll('.','\\.')}(?:[?#].*)?$`).test(value||'');
-const expectedLinks=[['/','Project'],['/tasks/','Tasks'],['/leaderboard/','Leaderboard'],['/evaluation/','Evaluation'],['/docs/','Docs'],['/report/','Report'],['/community/','Community'],['/code/','Code']]
+const expectedLinks=[['/','Project'],['/tasks/','Tasks'],['/leaderboard/','Leaderboard'],['/evaluation/','Evaluation'],['/docs/','Docs'],['/report/','Report'],['/code/','Code']]
   .filter(([href])=>docsPublished||route(href)!=='/docs');
 
 export function verifyNavigation({html,css,js}){
@@ -83,12 +83,16 @@ export function verifyNavigation({html,css,js}){
   checkDestinations(desktopLinks,expectedLinks);
   checkDestinations(drawerLinks,[...expectedLinks,['/paper/','Paper']]);
   checkDestinations(drawerFooter,[['/paper/','Read the paper']]);
-  assert.deepEqual(desktopLinks.map(link=>route(link.attributes.href)),expectedLinks.map(([href])=>route(href)),'Desktop Code entry follows Community in the published destination order');
+  assert.deepEqual(desktopLinks.map(link=>route(link.attributes.href)),expectedLinks.map(([href])=>route(href)),'Desktop Code entry follows Report in the published destination order');
   assert.deepEqual(drawerLinks.map(link=>route(link.attributes.href)),[...expectedLinks,['/paper/','Paper']].map(([href])=>route(href)),'Mobile destinations preserve the published order, including Code');
   assert.equal(tagged(drawer.content,a=>has(a,'data-code-status')).length,0,'Mobile navigation footer does not repeat a pending-code badge');
   assert(!/code\s+coming\s+soon/i.test(plainText(drawerFooter[0].content)),'Mobile footer leads to the paper instead of a static code notice');
   const siteFooters=elements(html,'footer');
   assert.equal(siteFooters.length,1,'One shared site footer');
+  for(const link of [...elements(header.content,'a'),...elements(siteFooters[0].content,'a')]){
+    assert(!/^\/community(?:\/|$)/.test(route(link.attributes.href||'')),'Community has no header or footer destination');
+    assert(!/\bCommunity\b/i.test(plainText(link.content)),'Header and footer do not retain a Community link label');
+  }
   assert.equal(tagged(siteFooters[0].content,a=>has(a,'data-code-status')).length,0,'Site footer does not repeat a pending-code badge');
   assert(!/code\s+coming\s+soon/i.test(plainText(siteFooters[0].content)),'Code coming soon is a dedicated page, not repeated footer text');
   const paperActions=elements(header.content,'a').filter(node=>classes(node).includes('nav-paper'));

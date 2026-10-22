@@ -1,5 +1,4 @@
 import { paperTitle, paperAuthors, openReview } from "./paper-page.mjs";
-import { pairAccount } from "./community.mjs";
 import { paperPublished } from "./publication.mjs";
 
 // English editorial summaries, not official English translations or new research claims.
@@ -33,7 +32,6 @@ export const reportCoverage = [
     summary: "Weinan E discusses shared scientific infrastructure and the changing relationship between computation, experiments and research organization in his PAIR keynote.",
     url: "https://www.mittrchina.com/news/detail/17065",
     dateEvidence: "https://bydrug.pharmcube.com/news/detail/be880f36af9af4996bd4484e3aa1c7cb",
-    wechatUrl: "https://mp.weixin.qq.com/s?__biz=MzA3NTIyODUzNA==&mid=2649806767&idx=1&sn=8d0c7267f816c46bc3c76fc36c33ab41",
     label: "Read coverage", type: "media"
   },
   {
@@ -67,12 +65,12 @@ export const reportConferences = [
 const external = (url, label) => `<a href="${url.replaceAll('&','&amp;')}" target="_blank" rel="noreferrer">${label} <span aria-hidden="true">↗</span></a>`;
 const coverageRow = item => `<article class="coverage-row" id="${item.id}">
   <div class="coverage-date"><time datetime="${item.date}">${item.dateLabel}</time><span>${item.category}</span></div>
-  <div class="coverage-copy"><span class="report-eyebrow">${item.topic}</span><h3>${external(item.url,item.title)}</h3><p class="report-byline">${item.byline}</p><p>${item.summary}</p><div class="publication-links">${external(item.url,item.label)}${item.wechatUrl?external(item.wechatUrl,"Publisher's WeChat article"):""}<span class="source-language">Source in Chinese</span></div></div>
+  <div class="coverage-copy"><span class="report-eyebrow">${item.topic}</span><h3>${external(item.url,item.title)}</h3><p class="report-byline">${item.byline}</p><p>${item.summary}</p><div class="publication-links">${external(item.url,item.label)}<span class="source-language">Source in Chinese</span></div></div>
 </article>`;
 
 export const reportBody = `
 <section class="page-hero page-hero--report"><div><span>Papers & ecosystem</span><h1>Report</h1><p>Research, institute coverage and conversations shaping embodied intelligence.</p></div></section>
-<nav class="report-section-nav" aria-label="Report sections"><div><a href="#research">Research</a><a href="#coverage">PAIR coverage</a><a href="#conferences">Conferences</a><a href="#community-reports">Community reports</a></div></nav>
+<nav class="report-section-nav" aria-label="Report sections"><div><a href="#research">Research</a><a href="#coverage">PAIR coverage</a><a href="#conferences">Conferences</a><a href="#independent-studies">Independent studies</a></div></nav>
 <section class="section report-section" id="research">
   <div class="report-section-heading"><div><span class="report-eyebrow">01 · Research</span><h2>From precise skills to complete behavior.</h2></div><p>The benchmark paper and its accompanying technical notes.</p></div>
   <article class="publication-row report-paper-card">
@@ -96,11 +94,10 @@ export const reportBody = `
   <div class="report-section-heading"><div><span class="report-eyebrow">02 · PAIR coverage</span><h2>Ideas beyond the benchmark.</h2></div><p>Selected institute announcements and independent coverage of PAIR's research conversations.</p></div>
   <p class="report-note coverage-intro">English editorial summaries link to the original publications. These are institute and conference updates, not independent evaluations of DexArena. Dates below identify coverage, not the conference dates.</p>
   <div class="coverage-list">${reportCoverage.map(coverageRow).join('')}</div>
-  <div class="report-account"><div><b>Follow PAIR on WeChat</b><p>Research updates and institute announcements from the official account.</p></div><code>${pairAccount.id}</code><a href="/community/#wechat">Account & follow guide →</a></div>
 </section>
 <section class="section report-section" id="conferences">
   <div class="report-section-heading"><div><span class="report-eyebrow">03 · Conferences</span><h2>Meetings and academic milestones.</h2></div><p>Conference coverage and the benchmark's publication status, kept clearly separate.</p></div>
   <div class="conference-grid">${reportConferences.map(item=>`<article class="conference-card"><div class="conference-top"><span class="report-eyebrow">${item.kind}</span><span class="conference-status">${item.status}</span></div><h3>${item.title}</h3><time datetime="${item.datetime}">${item.date}</time><p class="conference-place">${item.place}</p><p>${item.summary}</p><div class="publication-links">${external(item.url,item.recap?"Institute announcement":"Submission record")}${item.recap?external(item.recap,"Conference recap"):external(item.conferenceUrl,"Conference website")}</div></article>`).join('')}</div>
 </section>
-<section class="section report-section" id="community-reports"><div class="community-report-panel"><div><span class="report-eyebrow">04 · Report from the community</span><h2>Share a reproducible result.</h2><p>Working with DexArena? Share a research report, a policy analysis or a reproducible benchmark study through the PAIR account. Include a public paper or project link, task scope, protocol and supporting artifacts.</p></div><div class="community-report-actions"><a href="/community/#wechat">Community & contact →</a><a href="/leaderboard/protocol/">Evaluation protocol →</a></div></div><p class="report-note">No independent community studies are listed yet. Leaderboard submission intake remains a preview; sharing a report does not constitute an official leaderboard submission.</p></section>
+<section class="section report-section" id="independent-studies"><div class="research-outlook-panel"><div><span class="report-eyebrow">04 · Independent studies</span><h2>Reproducible research. Shared standards.</h2><p>Independent evaluations should identify the policy, task scope, benchmark revision and protocol, with per-episode evidence and reproducible aggregate results.</p></div><div class="research-outlook-actions"><a href="/leaderboard/protocol/">Evaluation protocol →</a><a href="/leaderboard/">Explore baseline results →</a></div></div><p class="report-note">No independent studies are listed yet. Public leaderboard submission intake is not open.</p></section>
 `;

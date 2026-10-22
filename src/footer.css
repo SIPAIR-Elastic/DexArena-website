@@ -1,14 +1,9 @@
-/* A clear research index, with readable cool-blue and cyan accents. */
+/* A clear research index, with readable cool-blue accents. */
 .site-footer{padding:58px max(var(--gutter),calc((100vw - var(--max))/2)) 26px;border-top:1px solid #283a54;background:#101a2a;color:#f5f8ff}
 .site-footer .footer-top{display:grid;grid-template-columns:minmax(280px,1.5fr) minmax(140px,.65fr) minmax(190px,.8fr);gap:clamp(32px,5vw,72px);align-items:start}
 .site-footer .wordmark--footer{width:max-content;gap:13px;color:#fff;font:650 30px/1.2 var(--display);letter-spacing:-.055em}
 .site-footer .footer-tagline{max-width:410px;margin:20px 0 22px;color:#b8c9df;font:400 15px/1.8 var(--font)}
 .site-footer .footer-tagline strong{font-weight:500;color:#edf4ff}
-.site-footer .footer-community{display:inline-flex;align-items:center;gap:10px;padding:0;color:#92dce3;font:400 12px/1.8 var(--font);text-decoration:none;transition:color .2s}
-.site-footer .footer-community b{color:#b6f0f4;font-size:13px;font-weight:650;letter-spacing:.04em}
-.site-footer .footer-community>span:last-child{font-size:16px;transition:transform .2s}
-.site-footer .footer-community:hover{color:#d8fbff}
-.site-footer .footer-community:hover>span:last-child{transform:translate(2px,-2px)}
 .site-footer .footer-eyebrow{display:block;margin:4px 0 18px;color:#8db8ef;font:550 10px/1.5 var(--font);letter-spacing:.12em;text-transform:uppercase}
 .site-footer .footer-nav-group{display:flex;flex-direction:column;align-items:stretch;gap:0}
 .site-footer .footer-nav-group>a{display:flex;align-items:center;justify-content:space-between;gap:18px;max-width:220px;padding:9px 0;border-bottom:1px solid #c3d9f414;color:#f0f5fe;font:450 14px/1.7 var(--font);transition:color .2s,border-color .2s}

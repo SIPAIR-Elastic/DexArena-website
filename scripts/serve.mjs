@@ -2,7 +2,7 @@ import {createServer} from 'node:http';
 import {createReadStream} from 'node:fs';
 import {realpath,stat} from 'node:fs/promises';
 import {extname,isAbsolute,join,relative,resolve} from 'node:path';
-import {isWithheldPaperAsset} from '../src/publication.mjs';
+import {isWithheldPaperAsset,isRetiredRoute} from '../src/publication.mjs';
 
 const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8',
   '.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8',
@@ -25,11 +25,12 @@ export async function createStaticServer(directory){
     };
     if(!['GET','HEAD'].includes(req.method)){res.setHeader('Allow','GET, HEAD');fail(405,'Method not allowed');return}
     let url,path;
-    try{url=new URL(req.url,'http://localhost');path=decodeURIComponent(url.pathname)}catch{fail(400,'Bad request');return}
+    // Origin-form targets beginning with // are paths, not a different hostname.
+    try{url=new URL(req.url.startsWith('/')?'http://localhost'+req.url:req.url,'http://localhost');path=decodeURIComponent(url.pathname)}catch{fail(400,'Bad request');return}
     if(path==='/_health'){res.writeHead(200,{'Content-Type':'text/plain; charset=utf-8','Content-Length':3,'Cache-Control':'no-store'});res.end(req.method==='HEAD'?undefined:'ok\n');return}
     if(path.includes('\0')||path.includes('\\')||path.split('/').some(part=>part.startsWith('.'))){fail(404,'Not found');return}
     // Defense in depth: old manuscript files must not be served from a stale build.
-    if(isWithheldPaperAsset(path)){fail(404,'Not found');return}
+    if(isWithheldPaperAsset(path)||isRetiredRoute(path)){fail(404,'Not found');return}
     let target=resolve(root,'.'+path);
     if(!within(root,target)){fail(404,'Not found');return}
     let info;

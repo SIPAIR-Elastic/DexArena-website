@@ -10,6 +10,11 @@ export function isWithheldPaperAsset(path){
   return !paperPublished&&paperArtifactPaths.includes(path.replace(/\/{2,}/g,'/').toLowerCase());
 }
 
+// Removed pages stay unavailable even if an old output file survives deployment.
+export function isRetiredRoute(path){
+  return /^\/community(?:\/|$)/.test(path.replace(/\/{2,}/g,'/').toLowerCase());
+}
+
 function isManuscriptLink(href){
   try{
     const url=new URL(href.replaceAll('&amp;','&'),'https://dexarena.local');

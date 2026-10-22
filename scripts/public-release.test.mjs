@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
-import {docsPublished,paperPublished,codeLink,paperLink,paperArtifactPaths,isWithheldPaperAsset,publishContent} from '../src/publication.mjs';
+import {docsPublished,paperPublished,codeLink,paperLink,paperArtifactPaths,isWithheldPaperAsset,isRetiredRoute,publishContent} from '../src/publication.mjs';
 
 const digest=value=>createHash('sha256').update(value).digest('hex');
 const htmlText=value=>value.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
@@ -91,6 +91,15 @@ test('Only the withheld manuscript paths are denied, not figures, results or unr
   }
 });
 
+test('The deleted Community route and its descendants remain retired across slash and case variants',()=>{
+  for(const path of ['/community','/community/','/community/index.html','/community/legacy.html','/community/threads/old.html','//community///index.html','/COMMUNITY/','/CoMmUnItY/threads/']){
+    assert.equal(isRetiredRoute(path),true,path);
+  }
+  for(const path of ['/','/code/','/report/','/paper/','/leaderboard/','/community-reports/','/communities/','/assets/community/cover.png']){
+    assert.equal(isRetiredRoute(path),false,path);
+  }
+});
+
 test('Figures, flowcharts, result data, external algorithms and public routes remain byte-identical',()=>{
   const sources=[
     '<a href="/assets/paper/dexarena-overview.png">Benchmark overview ↗</a>',
@@ -143,6 +152,7 @@ test('Enabling Docs independently does not publish the withheld manuscript',asyn
   assert.equal(restored.publishContent('<a href="/assets/docs/dexarena-paper.pdf">Download paper</a>'),paperLink);
   assert.equal(restored.publishContent('<a href="https://openreview.net/forum?id=9yr0F1saHs">Record</a>'),paperLink);
   assert.equal(restored.isWithheldPaperAsset(paperArtifactPaths[0]),true);
+  assert.equal(restored.isRetiredRoute('/community/'),true,'Documentation release cannot restore a deleted route');
 });
 
 test('Enabling the paper independently restores manuscript links while Docs stay hidden',async()=>{
@@ -154,20 +164,23 @@ test('Enabling the paper independently restores manuscript links while Docs stay
   assert.equal(restored.publishContent('<a href="/docs/resources/">Repository</a>'),codeLink);
   assert.equal(restored.publishContent('<a href="/docs/data/" class="arrow-link">Data →</a>'),'');
   for(const path of paperArtifactPaths)assert.equal(restored.isWithheldPaperAsset(path),false);
+  assert.equal(restored.isRetiredRoute('/community/legacy.html'),true,'Manuscript release cannot restore a deleted route');
 });
 
 test('Enabling both independent release flags preserves the original HTML',async()=>{
   const restored=await publicationVariant({docs:true,paper:true});
   const html='<section>  <a href="/docs/resources/">Repository →</a>\n<a href="/assets/docs/dexarena-paper.pdf">PDF</a><a href="https://openreview.net/forum?id=9yr0F1saHs">Record</a><h2><a href="/docs/data/">Data</a></h2></section>';
   assert.equal(restored.publishContent(html),html);
+  assert.equal(restored.isRetiredRoute('//COMMUNITY///'),true);
 });
 
 test('Withholding the public Docs entry preserves the authored documentation source',async()=>{
-  // Source snapshots from 4ce830a: publication visibility must not delete the
-  // authored documentation. Intentional future documentation edits may update
-  // these two snapshots after reviewing their source diff.
+  // The builder snapshot remains from 4ce830a. The documentation snapshot
+  // includes only the reviewed replacement of the removed account/contact row
+  // with the generic public-submission notice and evaluation protocol link.
   const documentation=await readFile(new URL('../src/documentation.mjs',import.meta.url));
-  assert.equal(digest(documentation),'a6ffb505e1e065559c53477d64336ecf5766247158bba0374968bf2de72bf6d2');
+  assert.equal(digest(documentation),'0dc493647a196bb5255da48defdbb38c1295a1a94ce9c04f3e209a2b6c38a619');
+  assert(!/wechat|weixin|gh_6279469803d5|href=["']\/community\//i.test(documentation.toString()),'A later documentation release cannot restore removed account promotion');
   const builder=await readFile(new URL('../src/build.mjs',import.meta.url),'utf8');
   const start=builder.indexOf('function docsShell(');
   const end=builder.indexOf('function reportPage()',start);

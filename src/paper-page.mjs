@@ -1,5 +1,4 @@
 // Paper metadata supplied by the project owner; not taken from the LaTeX template.
-import { pairAccount } from "./community.mjs";
 import { paperPublished } from "./publication.mjs";
 export const paperTitle = "DexArena: A Unified Benchmark for Long-Horizon Dexterous Manipulation";
 export const openReview = "https://openreview.net/forum?id=9yr0F1saHs";
@@ -38,8 +37,6 @@ ${home?'<div class="home-paper-eyebrow"><span>The research behind DexArena</span
     <div><dt>Report</dt><dd class="paper-inline-links"><a href="/assets/docs/dexarena-paper.pdf" download>Download PDF ↗</a><a href="https://openreview.net/forum?id=9yr0F1saHs" target="_blank" rel="noreferrer">OpenReview · #13718 ↗</a><a href="#citation">BibTeX ↓</a></dd></div>
     <div><dt>Repository</dt><dd><a href="/docs/resources/">Code & data release status →</a></dd></div>
     <div><dt>Leaderboard</dt><dd><a href="/leaderboard/">View benchmark results →</a></dd></div>
-    <div><dt>Institute</dt><dd><a href="/community/#wechat"><strong>${pairAccount.name}</strong> · PAIR</a></dd></div>
-    <div><dt>Community</dt><dd class="paper-inline-links"><a href="/community/#wechat">WeChat official account ↗</a><code id="paper-wechat-id">${pairAccount.id}</code><button class="text-copy-button" type="button" data-copy-text="${pairAccount.id}" data-copy-target="paper-wechat-id">Copy ID</button><span class="copy-status" role="status" aria-live="polite"></span></dd></div>
     <div><dt>License</dt><dd><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0 ↗</a></dd></div>
     <div><dt>Revisions</dt><dd><a href="https://openreview.net/forum?id=9yr0F1saHs" target="_blank" rel="noreferrer">View on OpenReview ↗</a></dd></div>
     <div><dt>Share</dt><dd><button class="text-copy-button" type="button" data-copy-text="https://dexarena-benchmark.adeptfawn4.chatgpt.site/paper/">Copy paper link</button><span class="copy-status" role="status" aria-live="polite"></span></dd></div>
@@ -48,8 +45,6 @@ ${home?'<div class="home-paper-eyebrow"><span>The research behind DexArena</span
     <div><dt>Paper</dt><dd><a href="/paper/">Read paper ↗</a><p class="paper-note">Not publicly available yet.</p></dd></div>
     <div><dt>Code</dt><dd><a class="code-resource-link" href="/code/">Benchmark release status →</a></dd></div>
     <div><dt>Leaderboard</dt><dd><a href="/leaderboard/">View benchmark results →</a></dd></div>
-    <div><dt>Institute</dt><dd><a href="/community/#wechat"><strong>${pairAccount.name}</strong> · PAIR</a></dd></div>
-    <div><dt>Community</dt><dd class="paper-inline-links"><a href="/community/#wechat">WeChat official account ↗</a><code id="paper-wechat-id">${pairAccount.id}</code><button class="text-copy-button" type="button" data-copy-text="${pairAccount.id}" data-copy-target="paper-wechat-id">Copy ID</button><span class="copy-status" role="status" aria-live="polite"></span></dd></div>
   </dl>`}
 </section>
 ${paperPublished?`<nav class="paper-section-nav" aria-label="Paper sections"><div><a href="#abstract">Abstract</a><a href="#paper-overview">Overview</a><a href="#data-pipeline">Data collection</a><a href="#paper-results">Results</a><a href="#citation">Citation</a></div></nav>
@@ -82,7 +77,7 @@ ${paperPublished?`<section class="section paper-citation" id="citation"><div cla
   url = {https://openreview.net/forum?id=9yr0F1saHs}
 }
 </code></pre><p class="citation-feedback" role="status" aria-live="polite" data-citation-status></p></div></section>
-<section class="section paper-footnotes"><details><summary>Submission transparency</summary><p>The supplied record identifies a public ICLR 2027 submission under CC BY 4.0, with ethics and submission requirements acknowledged. AI assistance was used to aid or polish writing; details are described in the paper. Reviewing administration is available in the OpenReview record.</p></details><p class="paper-note">Author metadata follows the record supplied for this project. Institutional names link to their official homepages; university marks identify affiliations only and do not imply institutional sponsorship or endorsement. PAIR's WeChat account details are supplied by the project owner. Public repository and project email links remain pending.</p></section>`:''}
+<section class="section paper-footnotes"><details><summary>Submission transparency</summary><p>The supplied record identifies a public ICLR 2027 submission under CC BY 4.0, with ethics and submission requirements acknowledged. AI assistance was used to aid or polish writing; details are described in the paper. Reviewing administration is available in the OpenReview record.</p></details><p class="paper-note">Author metadata follows the record supplied for this project. Institutional names link to their official homepages; university marks identify affiliations only and do not imply institutional sponsorship or endorsement. Public repository and project email links remain pending.</p></section>`:''}
 `;
 }
 export const paperBody = renderPaperBody();

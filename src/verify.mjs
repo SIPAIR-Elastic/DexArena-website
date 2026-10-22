@@ -4,14 +4,13 @@ import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 import {runInNewContext} from 'node:vm';
 import {paperAuthors,paperAffiliations,paperAbstract,paperBibtex,universityLogos} from './paper-page.mjs';
-import {pairAccount} from './community.mjs';
 import {algorithmReferences} from './references.mjs';
 import {reportCoverage,reportConferences} from './report.mjs';
 import {verifyCarousel} from './verify-carousel.mjs';
 import {verifyTaskMedia} from './verify-task-media.mjs';
 import {verifyPresentation} from './verify-presentation.mjs';
 import {verifyNavigation} from './verify-navigation.mjs';
-import {docsPublished,paperPublished,paperArtifactPaths} from './publication.mjs';
+import {docsPublished,paperPublished,paperArtifactPaths,isRetiredRoute} from './publication.mjs';
 import {brandAssets,brandMark} from './brand.mjs';
 import {createHash} from 'node:crypto';
 
@@ -29,7 +28,8 @@ for(const track of ['stage','generalization','longHorizon']){
 }
 const paths=[];
 async function walk(dir){for(const e of await readdir(dir,{withFileTypes:true})){const p=join(dir,e.name);if(e.isDirectory())await walk(p);else if(e.name.endsWith('.html'))paths.push(p)}}
-await walk(dist);assert.equal(paths.length,35);
+await walk(dist);assert.equal(paths.length,34);
+await assert.rejects(stat(join(dist,'community/index.html')),error=>error.code==='ENOENT','The retired Community page must be absent from the public build');
 let links=0;
 const navigationCss=await readFile(join(dist,'assets/navigation.css'),'utf8');
 const navigationJs=await readFile(join(dist,'assets/navigation.js'),'utf8');
@@ -42,6 +42,7 @@ for(const file of paths){
   assert.equal([...html.matchAll(/data-brandmark="arena-da"/g)].length,2,'One brand icon per header and footer');
   const footer=html.match(/<footer\b[^>]*>([\s\S]*?)<\/footer>/)?.[1]||'';
   assert(footer.includes('href="/code/"')&&!/Code coming soon|data-code-status|code-coming-soon/.test(footer),'Footer links to Code without repeating the pending-release status');
+  assert(!/wechat|weixin\.qq\.com|gh_[a-z\d]{10,}|href=["']\/community(?:\/|[?#"'])/i.test(html),`Removed social-account content or Community link in ${file}`);
   if(!paperPublished){
     assert(!html.includes(paperAbstract)&&!html.includes(paperAbstract.slice(0,160)),`No manuscript abstract in ${file}`);
     assert(!/id="(?:abstract|citation|paper-bibtex)"|>Abstract<|data-copy-citation|9yr0F1saHs/.test(html),`No abstract, citation or manuscript record entry in ${file}`);
@@ -131,8 +132,10 @@ viewButtons[2].handlers.click();assert(views.filter(v=>!v.hidden).every(v=>v.dat
 assert.equal([...leaderboard.matchAll(/data-result-view=/g)].length,9);
 assert.equal([...leaderboard.matchAll(/class="chart-track"/g)].length,18);
 const searchIndex=JSON.parse(await readFile(join(dist,'assets','search-index.json'),'utf8'));
-assert.equal(searchIndex.length,docsPublished?35:20);
-assert.equal(new Set(searchIndex.map(entry=>entry.url)).size,docsPublished?35:20);
+assert.equal(searchIndex.length,docsPublished?34:19);
+assert.equal(new Set(searchIndex.map(entry=>entry.url)).size,docsPublished?34:19);
+assert(searchIndex.every(entry=>!isRetiredRoute(entry.url)),'The deleted Community page is excluded from search');
+assert(!/wechat|weixin\.qq\.com|gh_[a-z\d]{10,}/i.test(JSON.stringify(searchIndex)),'Search contains no removed social-account content');
 assert(searchIndex.some(entry=>entry.url==='/code/'&&entry.text.includes('Code coming soon')),'The real Code page is searchable');
 if(!paperPublished){
   const searchText=JSON.stringify(searchIndex);
@@ -219,10 +222,10 @@ assert(home.includes('id="benchmark-overview"'));
 assert(home.includes('/assets/paper/dexarena-overview.png'));
 const report=await readFile(join(dist,'report','index.html'),'utf8');
 assert(report.includes('report-paper-card')&&!report.includes('data-diversity.png'));
-for(const id of ['research','coverage','conferences','community-reports'])assert(report.includes(`id="${id}"`));
+for(const id of ['research','coverage','conferences','independent-studies'])assert(report.includes(`id="${id}"`));
 assert(report.includes('Full author list')&&report.includes('Under review'));
 assert(report.includes('not an acceptance or a confirmed presentation'));
-assert(report.includes("Publisher's WeChat article"),'Keep publisher coverage distinct from PAIR official account');
+assert(!report.includes('report-account')&&!report.includes('community-reports'),'No retired follow/contact panels in Report');
 assert.equal(reportCoverage.length,4);
 assert.equal(reportCoverage.filter(item=>item.type==='institute-reprint').length,1);
 for(const item of reportCoverage){
@@ -246,7 +249,7 @@ assert(home.includes('<h2 class="paper-title">'));
 assert(home.includes('/assets/paper.css'));
 assert.equal([...home.matchAll(/id="paper-overview"/g)].length,1);
 assert.equal([...home.matchAll(/src="\/assets\/paper\/dexarena-overview.png"/g)].length,1,'Do not repeat Figure 1 on the homepage');
-for(const id of ['data-pipeline','paper-results','paper-wechat-id'])assert(home.includes(`id="${id}"`));
+for(const id of ['data-pipeline','paper-results'])assert(home.includes(`id="${id}"`));
 for(const html of [home,paperHtml]){
   const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
   assert.equal(ids.length,new Set(ids).size,'Paper embedding must not introduce duplicate IDs');
@@ -309,26 +312,22 @@ for(const foreground of ['#b8c9df','#edf4ff','#92dce3','#b6f0f4','#8db8ef','#f0f
   const ratio=(luminance(foreground)+.05)/(luminance('#101a2a')+.05);
   assert(ratio>=4.5,'Footer text contrast: '+foreground+' '+ratio);
 }
-const community=await readFile(join(dist,'community','index.html'),'utf8');
 for(const [foreground,background] of [['#c6dafc','#1a1d24'],['#ffffff','#1a1d24'],['#d9dee7','#1a1d24'],['#1967d2','#ffffff'],['#174ea6','#e8f0fe']]){
   const a=luminance(foreground),b=luminance(background);
   assert((Math.max(a,b)+.05)/(Math.min(a,b)+.05)>=4.5,'CTA contrast regression: '+foreground+' on '+background);
 }
 assert(refinement.includes('.leaderboard-cta__card .arrow-link.on-dark span{color:#1967d2'));
-assert(community.includes(pairAccount.name)&&community.includes(pairAccount.id));
-assert(home.includes('/community/#wechat')&&home.includes(pairAccount.id));
-if(paperPublished)assert(paperHtml.includes('/community/#wechat')&&paperHtml.includes(pairAccount.id));
-assert(!community.includes('2026-09-19'),'Do not publish the visitor follow date');
-assert(!community.includes('qr/code?'),'Do not fabricate a WeChat follow QR');
 assert(refinement.includes('--bg:#f8f9fa')&&!refinement.includes('gradient('));
-const textButton=node({copyText:pairAccount.id}),textStatus={textContent:''};
+assert(!/wechat|footer-community|community-account/i.test(refinement+await readFile(join(dist,'assets/footer.css'),'utf8')),'Remove retired account-specific styling');
+const projectLink='https://dexarena.onrender.com/';
+const textButton=node({copyText:projectLink}),textStatus={textContent:''};
 textButton.parentElement={querySelector:()=>textStatus};
-let copiedAccount='';
+let copiedLink='';
 runInNewContext(js.slice(js.indexOf('const textCopyButtons='),js.indexOf('const citationButton=')),{
-  document:{querySelectorAll:()=>[textButton]},navigator:{clipboard:{writeText:async text=>{copiedAccount=text}}}
+  document:{querySelectorAll:()=>[textButton]},navigator:{clipboard:{writeText:async text=>{copiedLink=text}}}
 });
 await textButton.handlers.click();
-assert.equal(copiedAccount,pairAccount.id);assert(textStatus.textContent.includes('Copied'));
+assert.equal(copiedLink,projectLink);assert(textStatus.textContent.includes('Copied'));
 let selectedFallback=false;
 runInNewContext(js.slice(js.indexOf('const textCopyButtons='),js.indexOf('const citationButton=')),{
   document:{querySelectorAll:()=>[textButton],createRange:()=>({selectNodeContents(){selectedFallback=true}})},
@@ -336,4 +335,4 @@ runInNewContext(js.slice(js.indexOf('const textCopyButtons='),js.indexOf('const 
 });
 await textButton.handlers.click();assert(selectedFallback);
 assert(textStatus.textContent.includes('Select and copy')&&!/\p{Script=Han}/u.test(textStatus.textContent));
-console.log(`Verified 35 English-only pages, ${links} local links/anchors, 4 sourced reports, conference statuses, PAIR copy success/fallback, paper metadata, palette contrast, search and all 420 task/method scores.`);
+console.log(`Verified 34 English-only pages, ${links} local links/anchors, removed Community route, 4 sourced reports, conference statuses, link-copy success/fallback, paper metadata, palette contrast, search and all 420 task/method scores.`);

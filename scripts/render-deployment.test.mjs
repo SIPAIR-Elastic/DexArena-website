@@ -33,8 +33,15 @@ test('The public server serves only the build output and supports MP4 ranges',as
   const dist=join(temporary,'dist');
   await mkdir(join(dist,'paper'),{recursive:true});await mkdir(join(dist,'assets'));
   await mkdir(join(dist,'assets','docs'));await mkdir(join(dist,'assets','paper'));
+  await mkdir(join(dist,'community','threads'),{recursive:true});
+  await mkdir(join(dist,'code'));await mkdir(join(dist,'report'));
   await writeFile(join(dist,'index.html'),'<!doctype html><html lang="en">DexArena</html>');
   await writeFile(join(dist,'paper','index.html'),'Paper page');
+  await writeFile(join(dist,'community','index.html'),'retired-community-fixture');
+  await writeFile(join(dist,'community','legacy.html'),'retired-community-fixture');
+  await writeFile(join(dist,'community','threads','index.html'),'retired-community-fixture');
+  await writeFile(join(dist,'code','index.html'),'Code release page');
+  await writeFile(join(dist,'report','index.html'),'PAIR research coverage');
   await writeFile(join(dist,'assets','site.css'),'body { color: black; }');
   const bytes=Buffer.from(Array.from({length:256},(_,i)=>i));
   await writeFile(join(dist,'assets','test.mp4'),bytes);
@@ -136,6 +143,51 @@ test('The public server serves only the build output and supports MP4 ranges',as
     assert.equal(comparison.status,200);assert.equal(comparison.headers.get('content-type'),'application/pdf');
     assert((await comparison.text()).includes('public comparison fixture'));
     assert.equal(await(await fetch(origin+'/paper/')).text(),'Paper page','The paper notice route itself remains available');
+  });
+  await t.test('retired Community routes deny stale pages before redirects, ranges or cache responses',async()=>{
+    const paths=[
+      '/community',
+      '/community/',
+      '/community/index.html',
+      '/community/legacy.html',
+      '/community/threads/',
+      '/community/threads/index.html',
+      '/community?legacy=1',
+      '/community/?legacy=1',
+      '/%63ommunity/',
+      '/com%6dunity/index.html',
+      '/community%2Findex.html',
+      '/community//index.html',
+      '//community/',
+      '///community////index.html',
+      '/CoMmUnItY/'
+    ];
+    for(const path of paths){
+      for(const options of [
+        {},
+        {method:'HEAD'},
+        {headers:{Range:'bytes=0-15'}},
+        {method:'HEAD',headers:{Range:'bytes=0-0'}},
+        {headers:{'If-None-Match':'*'}}
+      ]){
+        const response=await fetch(origin+path,{...options,redirect:'manual'});
+        assert.equal(response.status,404,`${options.method||'GET'} ${path}: deleted pages must stay unavailable even in a stale build`);
+        assert.equal(response.headers.get('cache-control'),'no-store');
+        for(const header of ['location','content-range','accept-ranges','etag'])assert.equal(response.headers.get(header),null);
+        const body=await response.text();
+        assert(!body.includes('retired-community-fixture'));
+        if(options.method==='HEAD')assert.equal(body,'');
+      }
+    }
+  });
+  await t.test('retiring Community preserves Code and independent research reports',async()=>{
+    for(const [path,body] of [['/code/','Code release page'],['/report/','PAIR research coverage']]){
+      const response=await fetch(origin+path);
+      assert.equal(response.status,200);
+      assert.equal(await response.text(),body);
+      const head=await fetch(origin+path,{method:'HEAD'});
+      assert.equal(head.status,200);assert.equal(await head.text(),'');
+    }
   });
   await t.test('missing files, source, hidden paths and symlink escape are not served',async()=>{
     for(const path of ['/missing','/.git/config','/%2egit/config','/src/build.mjs','/src/paper-page.mjs','/private/paper/dexarena-paper.pdf','/private.txt','/outside.txt','/assets/%00.mp4']){

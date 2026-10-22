@@ -4,7 +4,6 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { extraDocs, protocolBody, evidenceBody } from "./documentation.mjs";
 import { paperBody, paperBibtex, renderPaperBody } from "./paper-page.mjs";
-import { communityBody } from "./community.mjs";
 import { reportBody } from "./report.mjs";
 import { algorithmLink, algorithmDirectory, algorithmReferenceSection } from "./references.mjs";
 import { benchmarkScope, findingsDigest } from "./presentation.mjs";
@@ -14,6 +13,8 @@ import { codeBody } from "./code-page.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(root, "dist");
+// Retired pages must also disappear when rebuilding an existing checkout.
+await rm(join(dist,"community","index.html"),{force:true});
 const paper = JSON.parse(await readFile(join(root,"src","paper-results.json"),"utf8"));
 const taskPreviewVideos = JSON.parse(await readFile(join(root,"src","task-preview-videos.json"),"utf8"));
 const taskPreviewFiles = new Map(taskPreviewVideos.map(record=>[record.task,record.file]));
@@ -138,7 +139,6 @@ const nav = [
   ["/evaluation/","Evaluation","evaluation"],
   ["/docs/","Docs","docs"],
   ["/report/","Report","report"],
-  ["/community/","Community","community"],
   ["/code/","Code","code"]
 ];
 
@@ -206,9 +206,9 @@ function header(active="") {
 function footer() {
   return `<footer class="site-footer">
     <div class="footer-top">
-      <div class="footer-brand"><a class="wordmark wordmark--footer" href="/" aria-label="DexArena home">${brandMark({inverse:true})}<b>DexArena</b></a><p class="footer-tagline">A unified benchmark for long-horizon <strong>bimanual dexterous manipulation.</strong></p><a class="footer-community" href="/community/#wechat"><b>PAIR</b><span>WeChat official account</span><span aria-hidden="true">↗</span></a></div>
+      <div class="footer-brand"><a class="wordmark wordmark--footer" href="/" aria-label="DexArena home">${brandMark({inverse:true})}<b>DexArena</b></a><p class="footer-tagline">A unified benchmark for long-horizon <strong>bimanual dexterous manipulation.</strong></p></div>
       <nav class="footer-nav-group" aria-label="Explore DexArena"><span class="footer-eyebrow">Explore</span>${publicNav.filter(([, ,id])=>['tasks','leaderboard','evaluation'].includes(id)).map(([href,label])=>`<a href="${href}">${label}<span aria-hidden="true">↗</span></a>`).join('')}</nav>
-      <nav class="footer-nav-group footer-nav-group--research" aria-label="DexArena research and resources"><span class="footer-eyebrow">Research & resources</span><a href="/paper/">Paper<span aria-hidden="true">↗</span></a>${publicNav.filter(([, ,id])=>['report','community','code'].includes(id)).map(([href,label])=>`<a href="${href}">${label}<span aria-hidden="true">↗</span></a>`).join('')}</nav>
+      <nav class="footer-nav-group footer-nav-group--research" aria-label="DexArena research and resources"><span class="footer-eyebrow">Research & resources</span><a href="/paper/">Paper<span aria-hidden="true">↗</span></a>${publicNav.filter(([, ,id])=>['report','code'].includes(id)).map(([href,label])=>`<a href="${href}">${label}<span aria-hidden="true">↗</span></a>`).join('')}</nav>
     </div>
     <div class="footer-bottom"><span class="footer-preview"><i aria-hidden="true"></i>Research preview<span class="footer-year">2026</span></span><span class="footer-built">Built on <strong>SAPIEN</strong><span aria-hidden="true">/</span><strong>ManiSkill</strong></span></div>
   </footer>`;
@@ -519,7 +519,6 @@ const pages = [
   ["docs/submission/index.html",layout({title:"Submission preview — DexArena",description:"Prepare a reproducible DexArena leaderboard submission.",active:"docs",body:submissionDocs(),pageClass:"docs-page"})],
   ["report/index.html",layout({title:"Report — DexArena",description:"DexArena research, PAIR institute coverage and academic conference updates.",active:"report",body:reportPage(),pageClass:"report-page"})],
   ["paper/index.html",layout({title:"Paper — DexArena",description:paperPublished?"DexArena paper, authors, affiliations, abstract, figures and citation. ICLR 2027 Conference Submission.":"The DexArena manuscript is not publicly available yet. Explore the benchmark overview, tasks and evaluation results.",active:"paper",body:paperBody,pageClass:"paper-page"})],
-  ["community/index.html",layout({title:"Community — DexArena",description:"PAIR WeChat account information and institute updates.",active:"community",body:communityBody,pageClass:"community-page"})],
   ["code/index.html",layout({title:"Code — DexArena",description:"DexArena benchmark code and public release status.",active:"code",body:codeBody,pageClass:"code-page"})]
 ];
 extraDocs.forEach(page=>pages.push([`${page.href.slice(1)}index.html`,layout({title:`${page.title} — DexArena`,description:page.lead,active:"docs",body:docsShell(page.id,page.title,page.lead,page.content),pageClass:"docs-page"})]));
