@@ -177,7 +177,7 @@ for(const html of [docsOverview,training]){
 if(docsPublished)assert(training.includes(' · DPPO'),'Keep extended DPPO distinct from PPO');
 else{
   assert(docsOverview.includes('data-docs-unavailable')&&training.includes('data-docs-unavailable'));
-  assert(home.includes('class="code-resource-link" href="/code/"'),'Shared repository entries lead to the Code page');
+  assert(home.includes('<dt>Code</dt><dd><span class="paper-release-status">Code Coming Soon</span></dd>'),'Homepage states the pending code release without implying a repository download');
 }
 const codePage=await readFile(join(dist,'code/index.html'),'utf8');
 assert(codePage.includes('data-code-page')&&codePage.includes('<h1>Code coming soon</h1>'),'Code has a dedicated release-status page');
@@ -239,6 +239,31 @@ assert.equal(reportConferences.find(item=>item.id==='iclr-2027').status,'Under r
 assert.equal(reportConferences.find(item=>item.id==='pair-2026').status,'Held');
 const paperHtml=await readFile(join(dist,'paper','index.html'),'utf8');
 assert.equal(paperAuthors.length,15);assert.equal(paperAffiliations.length,7);
+assert.deepEqual(paperAffiliations.slice(0,2).map(([name])=>name),['Shanghai Jiao Tong University','Tsinghua University'],'SJTU and Tsinghua lead the affiliation list');
+const expectedAuthorUniversities=[
+  ['Haonan Ping','University of Michigan – Ann Arbor'],
+  ['Jianshu Hu','Shanghai Jiao Tong University'],
+  ['Yimin Wang','University of Michigan – Ann Arbor'],
+  ['Yi Zhu','National University of Singapore'],
+  ['Pai Liang','University of Pennsylvania'],
+  ['Qiyan Jin','Nanyang Technological University'],
+  ['Qirui Bao','Shanghai Jiao Tong University'],
+  ['Ying Qian','Stanford University'],
+  ['Xinyang Ding','Shanghai Jiao Tong University'],
+  ['Hongfei Qiao','Shanghai Jiao Tong University'],
+  ['Tianle Xue','Shanghai Jiao Tong University'],
+  ['Yucheng Bai','Shanghai Jiao Tong University'],
+  ['Soo Wei Jie','Shanghai Jiao Tong University'],
+  ['Shuguang Li','Tsinghua University'],
+  ['Yutong Ban','Shanghai Jiao Tong University']
+];
+assert.deepEqual(paperAuthors.map(([name,index])=>[name,paperAffiliations[index-1][0]]),expectedAuthorUniversities,'Changing institution order must preserve every author and their actual affiliation');
+const authorList=home.match(/<ol class="author-list"[^>]*>([\s\S]*?)<\/ol>/)?.[1];
+assert(authorList,'Authors use a semantic list');
+assert.equal([...authorList.matchAll(/<li>/g)].length,15,'One list item per author, with no inline comma separators');
+assert(!/<\/li>\s*,/.test(authorList));
+if(!paperPublished)assert(home.includes('<dt>Paper</dt><dd><a href="/paper/">Paper ↗</a>'),'The homepage Paper link is labeled Paper');
+assert(home.includes('Code Coming Soon')&&!home.includes('Benchmark release status →'),'The homepage Code field uses the requested availability text');
 for(const [name,affiliation] of paperAuthors){
   if(paperPublished)assert(paperHtml.includes(`${name}<sup>${affiliation}</sup>`));
   assert(paperBibtex.includes(name));
@@ -276,9 +301,10 @@ await copyButton.handlers.click();
 assert.equal(copiedText,paperBibtex);assert.equal(copyStatus.textContent,'BibTeX copied.');
 assert.equal(universityLogos.length,7);
 assert.equal(universityLogos.filter(Boolean).length,7,'All seven affiliations must display their institutional marks');
+assert.deepEqual(universityLogos,['sjtu.png','tsinghua.png','umich.ico','nus.png','penn.svg','ntu.png','stanford.png'],'Institutional marks follow the reordered affiliation list');
 for(const html of paperPublished?[home,paperHtml]:[home]){
   assert.equal([...html.matchAll(/class="affiliation-logo /g)].length,7);
-  for(const index of [1,6]){
+  for(const index of [0,1]){
     assert(html.includes(`src="/assets/universities/${universityLogos[index]}"`),'SJTU and Tsinghua logos must render on Home and Paper');
     assert(html.includes(`alt="${paperAffiliations[index][0]} logo"`),'Institutional marks need English accessible labels');
   }
@@ -289,6 +315,7 @@ for(const file of ['sjtu.png','tsinghua.png']){
   assert.equal(buffer.subarray(0,8).toString('hex'),'89504e470d0a1a0a','Institutional mark must be a real PNG');
 }
 const refinement=await readFile(join(dist,'assets','refinement.css'),'utf8');
+assert(/\.author-list\{[^}]*flex-direction:column/.test(refinement),'Authors are stacked vertically in a single column');
 const baseStyle=await readFile(join(dist,'assets','site.css'),'utf8');
 const leaderboardBackground=baseStyle.match(/\.leaderboard-page\{([^}]+)\}/)?.[1]||'';
 assert(leaderboardBackground.includes('background:var(--bg)')&&!leaderboardBackground.includes('gradient('),'Leaderboard uses the shared page background, not a unique gradient');

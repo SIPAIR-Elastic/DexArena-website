@@ -9,8 +9,8 @@
 .paper-action--primary{background:#1967d2;color:white;border-color:#1967d2}.paper-action--primary span{color:white}.paper-action--primary:hover{background:#174ea6}
 .paper-identity{padding-top:25px;border-top:1px solid var(--line)}
 .paper-identity h2,.paper-metadata dt{font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:#6c7582;margin:0 0 16px}
-.author-list{display:flex;flex-wrap:wrap;column-gap:24px;row-gap:12px;max-width:1140px}
-.author-list>a{font-size:16px;line-height:1.6;white-space:nowrap}.author-list>a:hover{color:#1967d2}
+.author-list{display:flex;flex-direction:column;align-items:flex-start;gap:0;list-style:none;margin:0;padding:0;max-width:1140px}
+.author-list a{font-size:16px;line-height:1.6;white-space:nowrap}.author-list a:hover{color:#1967d2}
 .author-list sup{margin-left:3px;font:10px var(--mono);color:#1967d2}
 .paper-page .paper-note{font-size:12px;line-height:1.7;color:var(--muted);margin:14px 0 0}
 .paper-affiliations{margin-top:25px}.paper-affiliations ol{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;list-style:none;padding:0;margin:0}
@@ -50,7 +50,7 @@
 @media(max-width:760px){
  .paper-masthead{padding-top:112px!important}.paper-masthead h1{font-size:34px;line-height:1.15}.paper-kicker{gap:10px;font-size:10px;flex-wrap:wrap}
  .paper-deck{font-size:14px}.paper-actions{gap:8px;margin:20px 0 26px}.paper-action{font-size:12px;padding:11px 15px;gap:16px}
- .author-list{column-gap:18px;row-gap:10px}.author-list>a{font-size:14px}.paper-affiliations ol{grid-template-columns:1fr 1fr}
+ .author-list a{font-size:14px}.paper-affiliations ol{grid-template-columns:1fr 1fr}
  .paper-affiliations li>a{grid-template-columns:10px 1fr 8px;gap:7px;min-height:76px;padding:12px 10px;font-size:11px}.affiliation-monogram{display:none}
  .paper-metadata{grid-template-columns:1fr 1fr;gap:20px 16px}.paper-metadata dd{font-size:12px}
  .paper-section-nav>div{gap:24px;padding:15px 0}.paper-abstract,.paper-citation{grid-template-columns:1fr;gap:22px}.paper-keywords{margin-top:12px}

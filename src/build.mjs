@@ -145,6 +145,7 @@ const nav = [
 const esc = (value) => String(value).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
 const taskImage = (index) => `/assets/tasks/task-${String(index).padStart(2,"0")}.jpg`;
 const publicNav=nav.filter(([, ,id])=>docsPublished||id!=="docs");
+const headerNav=publicNav.filter(([, ,id])=>id!=="code");
 
 const tracks = [
   {id:"stage",label:"Stage benchmark",scope:"30 stages · training scene",description:"Success rate over 50 episodes per stage. Each policy starts from a valid initial state for that stage."},
@@ -184,8 +185,8 @@ function methodProfiles(){
 }
 
 function header(active="") {
-  const links = publicNav.map(([href,label,id]) => `<a class="site-nav__link ${active===id?"is-active":""}" href="${href}"${active===id?' aria-current="page"':""}>${label}</a>`).join("");
-  const drawerLinks = [...publicNav,["/paper/","Paper","paper"]].map(([href,label,id],index)=>`<a class="site-nav__link ${active===id?"is-active":""}" href="${href}"${active===id?' aria-current="page"':""}><span class="nav-destination"><small aria-hidden="true">${String(index+1).padStart(2,"0")}</small><span>${label}</span></span><span class="nav-destination-arrow" aria-hidden="true">↗</span></a>`).join("");
+  const links = headerNav.map(([href,label,id]) => `<a class="site-nav__link ${active===id?"is-active":""}" href="${href}"${active===id?' aria-current="page"':""}>${label}</a>`).join("");
+  const drawerLinks = headerNav.map(([href,label,id],index)=>`<a class="site-nav__link ${active===id?"is-active":""}" href="${href}"${active===id?' aria-current="page"':""}><span class="nav-destination"><small aria-hidden="true">${String(index+1).padStart(2,"0")}</small><span>${label}</span></span><span class="nav-destination-arrow" aria-hidden="true">↗</span></a>`).join("");
   return `<header class="site-nav is-solid" data-nav data-nav-theme="precision">
     <button class="nav-backdrop" type="button" data-nav-dismiss aria-label="Close navigation menu" tabindex="-1" hidden></button>
     <div class="site-nav__pill">
@@ -195,10 +196,9 @@ function header(active="") {
       </div>
       <div class="site-nav__actions">
         <button class="nav-search" type="button" data-open-search aria-label="Search tasks and research"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search</span><kbd data-search-shortcut>Ctrl K</kbd></button>
-        <a class="nav-paper ${active==="paper"?"is-active":""}" href="/paper/" ${active==="paper"?'aria-current="page"':""}><span>Read paper</span><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a>
         <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-mobile-nav" data-menu><span></span><span></span></button>
       </div>
-      <nav class="site-nav__drawer" id="site-mobile-nav" data-drawer aria-label="Mobile" aria-hidden="true" inert><span class="nav-drawer-heading">Explore DexArena</span><div class="nav-drawer-links">${drawerLinks}</div><a class="nav-drawer-footer" href="/paper/"><span>Research overview</span><span>Read the paper ↗</span></a></nav>
+      <nav class="site-nav__drawer" id="site-mobile-nav" data-drawer aria-label="Mobile" aria-hidden="true" inert><span class="nav-drawer-heading">Explore DexArena</span><div class="nav-drawer-links">${drawerLinks}</div><a class="nav-drawer-footer" href="/tasks/"><span>Explore the benchmark</span><span>Browse tasks ↗</span></a></nav>
     </div>
   </header>`;
 }

@@ -2,14 +2,15 @@
 import { paperPublished } from "./publication.mjs";
 export const paperTitle = "DexArena: A Unified Benchmark for Long-Horizon Dexterous Manipulation";
 export const openReview = "https://openreview.net/forum?id=9yr0F1saHs";
-export const paperAuthors = [["Haonan Ping",1],["Jianshu Hu",2],["Yimin Wang",1],["Yi Zhu",3],["Pai Liang",4],["Qiyan Jin",5],["Qirui Bao",2],["Ying Qian",6],["Xinyang Ding",2],["Hongfei Qiao",2],["Tianle Xue",2],["Yucheng Bai",2],["Soo Wei Jie",2],["Shuguang Li",7],["Yutong Ban",2]];
-export const paperAffiliations = [["University of Michigan – Ann Arbor","https://umich.edu/","UM"],["Shanghai Jiao Tong University","https://www.sjtu.edu.cn/","SJTU"],["National University of Singapore","https://www.nus.edu.sg/","NUS"],["University of Pennsylvania","https://www.upenn.edu/","Penn"],["Nanyang Technological University","https://www.ntu.edu.sg/","NTU"],["Stanford University","https://www.stanford.edu/","Stanford"],["Tsinghua University","https://www.tsinghua.edu.cn/","Tsinghua"]];
+// Preserve author order and actual affiliations; only institution numbering changes.
+export const paperAuthors = [["Haonan Ping",3],["Jianshu Hu",1],["Yimin Wang",3],["Yi Zhu",4],["Pai Liang",5],["Qiyan Jin",6],["Qirui Bao",1],["Ying Qian",7],["Xinyang Ding",1],["Hongfei Qiao",1],["Tianle Xue",1],["Yucheng Bai",1],["Soo Wei Jie",1],["Shuguang Li",2],["Yutong Ban",1]];
+export const paperAffiliations = [["Shanghai Jiao Tong University","https://www.sjtu.edu.cn/","SJTU"],["Tsinghua University","https://www.tsinghua.edu.cn/","Tsinghua"],["University of Michigan – Ann Arbor","https://umich.edu/","UM"],["National University of Singapore","https://www.nus.edu.sg/","NUS"],["University of Pennsylvania","https://www.upenn.edu/","Penn"],["Nanyang Technological University","https://www.ntu.edu.sg/","NTU"],["Stanford University","https://www.stanford.edu/","Stanford"]];
 export const paperAbstract = "Long-horizon dexterous manipulation remains a fundamental challenge for robot learning, requiring the composition of multiple skills, precise bimanual coordination, generalizable visual understanding, and robust skill transitions. Yet existing manipulation benchmarks largely emphasize isolated skills or support only a limited range of end-effectors, making these capabilities difficult to evaluate systematically. We introduce DexArena, a benchmark designed to evaluate learning and generalization in long-horizon bimanual dexterous manipulation. DexArena features 10 long-horizon tasks and 30 stage-level tasks spanning diverse household and industrial scenarios. Each long-horizon task is composed of explicitly defined stages with physically grounded success conditions, enabling reliable evaluation of both intermediate progress and end-to-end task completion. A unified benchmark interface and verified human-teleoperated demonstrations enable testing different policy learning algorithms, with standardized simulation configurations, scene randomization, trajectory replay, and task-level evaluation. Through extensive baseline experiments, we identify substantial challenges in precise manipulation, generalization to scene variation, and skill composition. DexArena establishes a challenging and reproducible benchmark for developing robot learning methods that move toward generalizable long-horizon dexterous behavior.";
 export const paperBibtex = "@misc{ping2026dexarena,\n  title = {DexArena: A Unified Benchmark for Long-Horizon Dexterous Manipulation},\n  author = {Haonan Ping and Jianshu Hu and Yimin Wang and Yi Zhu and Pai Liang and Qiyan Jin and Qirui Bao and Ying Qian and Xinyang Ding and Hongfei Qiao and Tianle Xue and Yucheng Bai and Soo Wei Jie and Shuguang Li and Yutong Ban},\n  year = {2026},\n  note = {ICLR 2027 Conference Submission, submission 13718; under review},\n  url = {https://openreview.net/forum?id=9yr0F1saHs}\n}\n";
 // Display every supplied institutional mark, including SJTU and Tsinghua.
 // Keep identity artwork unmodified; accessible labels and page text stay English.
-export const universityLogos = ["umich.ico","sjtu.png","nus.png","penn.svg","ntu.png","stanford.png","tsinghua.png"];
-const universitySizes = [[32,32],[601,160],[349,160],[563,184],[3006,1079],[192,192],[557,160]];
+export const universityLogos = ["sjtu.png","tsinghua.png","umich.ico","nus.png","penn.svg","ntu.png","stanford.png"];
+const universitySizes = [[601,160],[557,160],[32,32],[349,160],[563,184],[3006,1079],[192,192]];
 const paperUnavailableBody=`
 <section class="section code-preview paper-unavailable" data-paper-unavailable>
   <span class="code-eyebrow">DexArena / Paper</span>
@@ -24,26 +25,26 @@ export function renderPaperBody({home=false}={}) {
   const titleTag=home?"h2":"h1";
   return `
 <section class="paper-masthead section">
-${home?'<div class="home-paper-eyebrow"><span>The research behind DexArena</span><a href="/paper/">Read paper ↗</a></div>':""}
+${home?'<div class="home-paper-eyebrow"><span>The research behind DexArena</span><a href="/paper/">Paper ↗</a></div>':""}
   <${titleTag} class="paper-title">${paperTitle}</${titleTag}>
   <div class="paper-identity">
-<div class="paper-authors"><h2>Author</h2><div class="author-list">${paperAuthors.map(([name,index])=>'<a href="#affiliation-'+index+'" data-affiliation="'+index+'" title="'+paperAffiliations[index-1][0]+'">'+name+'<sup>'+index+'</sup></a>').join(', ')}</div></div>
-    <div class="paper-affiliations" id="affiliations"><h2>Affiliations</h2><ol>${paperAffiliations.map(([name,url],i)=>'<li id="affiliation-'+(i+1)+'"><a href="'+url+'" title="'+(i+1)+'. '+name+'" aria-label="'+(i+1)+'. '+name+' official website" target="_blank" rel="noreferrer">'+(universityLogos[i]?'<span class="affiliation-logo-frame '+(i===3?'affiliation-logo-frame--dark':'')+'"><img class="affiliation-logo '+([0,5].includes(i)?'affiliation-logo--icon':'')+'" src="/assets/universities/'+universityLogos[i]+'" alt="'+name+' logo" width="'+universitySizes[i][0]+'" height="'+universitySizes[i][1]+'" decoding="async"></span>':'<span class="affiliation-english-name"><sup>'+(i+1)+'</sup>'+name+'</span>')+'</a></li>').join('')}</ol></div>
+<div class="paper-authors"><h2>Authors</h2><ol class="author-list" aria-label="Authors in manuscript order">${paperAuthors.map(([name,index])=>'<li><a href="#affiliation-'+index+'" data-affiliation="'+index+'" title="'+paperAffiliations[index-1][0]+'">'+name+'<sup>'+index+'</sup></a></li>').join('')}</ol></div>
+    <div class="paper-affiliations" id="affiliations"><h2>Affiliations</h2><ol>${paperAffiliations.map(([name,url],i)=>'<li id="affiliation-'+(i+1)+'"><a href="'+url+'" title="'+(i+1)+'. '+name+'" aria-label="'+(i+1)+'. '+name+' official website" target="_blank" rel="noreferrer"><sup class="affiliation-number" aria-hidden="true">'+(i+1)+'</sup>'+(universityLogos[i]?'<span class="affiliation-logo-frame '+(universityLogos[i]==='penn.svg'?'affiliation-logo-frame--dark':'')+'"><img class="affiliation-logo '+(['umich.ico','stanford.png'].includes(universityLogos[i])?'affiliation-logo--icon':'')+'" src="/assets/universities/'+universityLogos[i]+'" alt="'+name+' logo" width="'+universitySizes[i][0]+'" height="'+universitySizes[i][1]+'" decoding="async"></span>':'<span class="affiliation-english-name">'+name+'</span>')+'</a></li>').join('')}</ol></div>
   </div>
   ${paperPublished?`<dl class="paper-metadata">
     <div><dt>Submitted</dt><dd><time datetime="2026-09-11">11 September 2026</time></dd></div>
     <div><dt>Last modified</dt><dd><time datetime="2026-10-06">6 October 2026</time></dd></div>
     <div><dt>Status</dt><dd><strong>ICLR 2027 Conference Submission</strong> · Under review</dd></div>
     <div><dt>Report</dt><dd class="paper-inline-links"><a href="/assets/docs/dexarena-paper.pdf" download>Download PDF ↗</a><a href="https://openreview.net/forum?id=9yr0F1saHs" target="_blank" rel="noreferrer">OpenReview · #13718 ↗</a><a href="#citation">BibTeX ↓</a></dd></div>
-    <div><dt>Repository</dt><dd><a href="/docs/resources/">Code & data release status →</a></dd></div>
+    <div><dt>Code</dt><dd><span class="paper-release-status">Code Coming Soon</span></dd></div>
     <div><dt>Leaderboard</dt><dd><a href="/leaderboard/">View benchmark results →</a></dd></div>
     <div><dt>License</dt><dd><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0 ↗</a></dd></div>
     <div><dt>Revisions</dt><dd><a href="https://openreview.net/forum?id=9yr0F1saHs" target="_blank" rel="noreferrer">View on OpenReview ↗</a></dd></div>
     <div><dt>Share</dt><dd><button class="text-copy-button" type="button" data-copy-text="https://dexarena-benchmark.adeptfawn4.chatgpt.site/paper/">Copy paper link</button><span class="copy-status" role="status" aria-live="polite"></span></dd></div>
   </dl>
   <div class="paper-release-note"><p><b>Research preview.</b> This is an under-review submission, not an accepted publication. The PDF is the supplied local manuscript snapshot; the modification date above describes the OpenReview record.</p><a href="/docs/resources/">Code, data & release status →</a></div>`:`<dl class="paper-metadata">
-    <div><dt>Paper</dt><dd><a href="/paper/">Read paper ↗</a><p class="paper-note">Not publicly available yet.</p></dd></div>
-    <div><dt>Code</dt><dd><a class="code-resource-link" href="/code/">Benchmark release status →</a></dd></div>
+    <div><dt>Paper</dt><dd><a href="/paper/">Paper ↗</a><p class="paper-note">Not publicly available yet.</p></dd></div>
+    <div><dt>Code</dt><dd><span class="paper-release-status">Code Coming Soon</span></dd></div>
     <div><dt>Leaderboard</dt><dd><a href="/leaderboard/">View benchmark results →</a></dd></div>
   </dl>`}
 </section>

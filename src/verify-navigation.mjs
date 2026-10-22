@@ -28,7 +28,7 @@ const classes=node=>(node.attributes.class||'').split(/\s+/);
 const plainText=html=>html.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
 const route=href=>new URL(href,'https://dexarena.invalid').pathname.replace(/\/$/,'')||'/';
 const asset=(value,name)=>new RegExp(`/assets/${name.replaceAll('.','\\.')}(?:[?#].*)?$`).test(value||'');
-const expectedLinks=[['/','Project'],['/tasks/','Tasks'],['/leaderboard/','Leaderboard'],['/evaluation/','Evaluation'],['/docs/','Docs'],['/report/','Report'],['/code/','Code']]
+const expectedLinks=[['/','Project'],['/tasks/','Tasks'],['/leaderboard/','Leaderboard'],['/evaluation/','Evaluation'],['/docs/','Docs'],['/report/','Report']]
   .filter(([href])=>docsPublished||route(href)!=='/docs');
 
 export function verifyNavigation({html,css,js}){
@@ -65,8 +65,11 @@ export function verifyNavigation({html,css,js}){
   const drawerLinks=allDrawerLinks.filter(node=>classes(node).includes('site-nav__link'));
   const drawerFooter=allDrawerLinks.filter(node=>classes(node).includes('nav-drawer-footer'));
   assert.equal(desktopLinks.length,expectedLinks.length,'Preserve every published desktop destination');
-  assert.equal(drawerLinks.length,expectedLinks.length+1,'Mobile navigation also includes the paper');
-  assert.equal(drawerFooter.length,1,'One separate paper entry in the mobile footer');
+  assert.equal(drawerLinks.length,expectedLinks.length,'Mobile navigation matches the published primary destinations');
+  assert.equal(drawerFooter.length,1,'One separate task-catalog entry in the mobile footer');
+  for(const link of elements(header.content,'a')){
+    assert(!/^\/(?:code|paper)(?:\/|$)/.test(route(link.attributes.href||'')),'Code and Paper remain available outside the header, not in desktop or mobile navigation');
+  }
   if(!docsPublished){
     for(const link of elements(header.content,'a'))assert(!/^\/docs(?:\/|$)/.test(route(link.attributes.href||'')),'Unpublished documentation has no header or mobile navigation entry');
   }
@@ -81,12 +84,13 @@ export function verifyNavigation({html,css,js}){
     }
   }
   checkDestinations(desktopLinks,expectedLinks);
-  checkDestinations(drawerLinks,[...expectedLinks,['/paper/','Paper']]);
-  checkDestinations(drawerFooter,[['/paper/','Read the paper']]);
-  assert.deepEqual(desktopLinks.map(link=>route(link.attributes.href)),expectedLinks.map(([href])=>route(href)),'Desktop Code entry follows Report in the published destination order');
-  assert.deepEqual(drawerLinks.map(link=>route(link.attributes.href)),[...expectedLinks,['/paper/','Paper']].map(([href])=>route(href)),'Mobile destinations preserve the published order, including Code');
+  checkDestinations(drawerLinks,expectedLinks);
+  checkDestinations(drawerFooter,[['/tasks/','Browse tasks']]);
+  assert(plainText(drawerFooter[0].content).includes('Explore the benchmark'),'Mobile footer describes the task-catalog destination');
+  assert.deepEqual(desktopLinks.map(link=>route(link.attributes.href)),expectedLinks.map(([href])=>route(href)),'Desktop navigation preserves the published destination order');
+  assert.deepEqual(drawerLinks.map(link=>route(link.attributes.href)),expectedLinks.map(([href])=>route(href)),'Mobile navigation preserves the published destination order');
   assert.equal(tagged(drawer.content,a=>has(a,'data-code-status')).length,0,'Mobile navigation footer does not repeat a pending-code badge');
-  assert(!/code\s+coming\s+soon/i.test(plainText(drawerFooter[0].content)),'Mobile footer leads to the paper instead of a static code notice');
+  assert(!/code\s+coming\s+soon/i.test(plainText(drawerFooter[0].content)),'Mobile footer leads to tasks instead of a static code notice');
   const siteFooters=elements(html,'footer');
   assert.equal(siteFooters.length,1,'One shared site footer');
   for(const link of [...elements(header.content,'a'),...elements(siteFooters[0].content,'a')]){
@@ -96,18 +100,20 @@ export function verifyNavigation({html,css,js}){
   assert.equal(tagged(siteFooters[0].content,a=>has(a,'data-code-status')).length,0,'Site footer does not repeat a pending-code badge');
   assert(!/code\s+coming\s+soon/i.test(plainText(siteFooters[0].content)),'Code coming soon is a dedicated page, not repeated footer text');
   const paperActions=elements(header.content,'a').filter(node=>classes(node).includes('nav-paper'));
-  assert.equal(paperActions.length,1,'Preserve the desktop paper action');
-  assert.equal(route(paperActions[0].attributes.href),'/paper');
+  assert.equal(paperActions.length,0,'The desktop Read paper action is not part of the header');
   const current=links=>links.filter(link=>link.attributes['aria-current']==='page');
-  const currentDesktop=current([...desktopLinks,...paperActions]);
+  const currentDesktop=current(desktopLinks);
   const currentMobile=current(allDrawerLinks);
   const main=elements(html,'main')[0]?.content||'';
   const unavailable=!docsPublished&&tagged(main,a=>has(a,'data-docs-unavailable')).length>0;
-  const currentCount=unavailable?0:1;
-  assert.equal(currentDesktop.length,currentCount,unavailable?'Unavailable documentation does not identify another desktop page as current':'Exactly one current route in desktop navigation and paper action');
-  assert.equal(currentMobile.length,currentCount,unavailable?'Unavailable documentation does not identify another mobile page as current':'Exactly one current route in mobile navigation, including Paper');
-  if(unavailable)assert.equal(tagged(header.content,a=>a['aria-current']==='page').length,0,'Unavailable documentation has no current-page claim anywhere in the header');
-  if(!unavailable)assert.equal(route(currentDesktop[0].attributes.href),route(currentMobile[0].attributes.href),'Desktop and mobile current routes agree');
+  const body=elements(html,'body')[0];
+  const secondaryPage=body&&classes(body).some(name=>['paper-page','code-page'].includes(name));
+  const noHeaderRoute=unavailable||secondaryPage;
+  const currentCount=noHeaderRoute?0:1;
+  assert.equal(currentDesktop.length,currentCount,noHeaderRoute?'Pages outside the primary navigation do not identify another desktop destination as current':'Exactly one current route in desktop navigation');
+  assert.equal(currentMobile.length,currentCount,noHeaderRoute?'Pages outside the primary navigation do not identify another mobile destination as current':'Exactly one current route in mobile navigation');
+  if(noHeaderRoute)assert.equal(tagged(header.content,a=>a['aria-current']==='page').length,0,'Pages outside the primary navigation have no current-page claim anywhere in the header');
+  else assert.equal(route(currentDesktop[0].attributes.href),route(currentMobile[0].attributes.href),'Desktop and mobile current routes agree');
   for(const node of tagged(header.content,a=>has(a,'role'))){
     assert(!/^(?:menu|menubar|menuitem(?:checkbox|radio)?)$/i.test(node.attributes.role),'Site links use ordinary navigation semantics, not application menus');
   }

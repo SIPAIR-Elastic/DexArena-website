@@ -7,14 +7,16 @@ Website: **https://dexarena.onrender.com/**
 ## Public release status
 
 Docs is temporarily withheld from the navigation, public links, search index and
-sitemap. The **Code** navigation item follows Report and opens `/code/`,
-which displays **Code coming soon**. Shared repository/resource entries link to
-that page; the footer does not repeat the release status.
+sitemap. The primary desktop and mobile navigation shows only Project, Tasks,
+Leaderboard, Evaluation and Report. Code and Paper are not header destinations;
+their pages remain accessible from the content and footer. The homepage Code
+field displays **Code Coming Soon**; `/code/` retains its release notice.
+The footer does not repeat the release status.
 The 15 existing documentation URLs show only a no-index release notice, never
 the documentation body; the 19 research/task/resource pages remain discoverable.
 All authored Docs renderers, content and styles are retained in source. Set
 `docsPublished` in `src/publication.mjs` to `true` and rebuild to restore them.
-The **Read paper** entry remains visible, but `/paper/` currently displays
+The homepage link is labeled **Paper**, and `/paper/` currently displays
 **Paper coming soon**, not a viewer or download. Abstract, citation and direct
 manuscript/OpenReview links are withheld from all generated pages and search.
 `paperPublished` in `src/publication.mjs` controls this independently of Docs.
@@ -40,6 +42,10 @@ seven affiliations and official institutional marks where available,
 Figures 1 and 3, and baseline findings. Abstract and citation are not rendered
 while the manuscript is withheld. Full manuscript sections are retained in
 source for a future explicit release; `/paper/` remains a publication notice.
+Authors appear one per line, top to bottom, in the original manuscript order.
+Shanghai Jiao Tong University and Tsinghua University lead the institution list;
+author superscripts, accessible titles and school-logo metadata are renumbered
+together without changing anyone's actual affiliation.
 The black/blue/white header retains DexArena's navigation and visual identity.
 Its floating precision dock adds an underline-only hover/focus indicator without
 menu background boxes, a compact
