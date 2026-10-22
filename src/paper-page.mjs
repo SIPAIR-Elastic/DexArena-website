@@ -1,5 +1,6 @@
 // Paper metadata supplied by the project owner; not taken from the LaTeX template.
 import { pairAccount } from "./community.mjs";
+import { paperPublished } from "./publication.mjs";
 export const paperTitle = "DexArena: A Unified Benchmark for Long-Horizon Dexterous Manipulation";
 export const openReview = "https://openreview.net/forum?id=9yr0F1saHs";
 export const paperAuthors = [["Haonan Ping",1],["Jianshu Hu",2],["Yimin Wang",1],["Yi Zhu",3],["Pai Liang",4],["Qiyan Jin",5],["Qirui Bao",2],["Ying Qian",6],["Xinyang Ding",2],["Hongfei Qiao",2],["Tianle Xue",2],["Yucheng Bai",2],["Soo Wei Jie",2],["Shuguang Li",7],["Yutong Ban",2]];
@@ -10,17 +11,27 @@ export const paperBibtex = "@misc{ping2026dexarena,\n  title = {DexArena: A Unif
 // Keep identity artwork unmodified; accessible labels and page text stay English.
 export const universityLogos = ["umich.ico","sjtu.png","nus.png","penn.svg","ntu.png","stanford.png","tsinghua.png"];
 const universitySizes = [[32,32],[601,160],[349,160],[563,184],[3006,1079],[192,192],[557,160]];
+const paperUnavailableBody=`
+<section class="section code-preview paper-unavailable" data-paper-unavailable>
+  <span class="code-eyebrow">DexArena / Paper</span>
+  <svg class="code-preview-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M18 9h20l10 10v36H18V9Zm20 0v12h10M26 31h14M26 39h14M26 47h8"/></svg>
+  <h1>Paper coming soon</h1>
+  <p class="code-preview-lead">The manuscript is not publicly available yet.</p>
+  <p>This page will be updated when the DexArena paper is released. You can explore the benchmark overview, task demonstrations and evaluation results in the meantime.</p>
+  <div class="code-preview-links"><a class="arrow-link" href="/#paper-overview"><span>Explore the benchmark</span><b aria-hidden="true">↗</b></a><a class="arrow-link" href="/leaderboard/"><span>View results</span><b aria-hidden="true">↗</b></a></div>
+</section>`;
 export function renderPaperBody({home=false}={}) {
+  if(!paperPublished&&!home)return paperUnavailableBody;
   const titleTag=home?"h2":"h1";
   return `
 <section class="paper-masthead section">
-${home?'<div class="home-paper-eyebrow"><span>The research behind DexArena</span><a href="/paper/">Standalone paper page ↗</a></div>':""}
+${home?'<div class="home-paper-eyebrow"><span>The research behind DexArena</span><a href="/paper/">Read paper ↗</a></div>':""}
   <${titleTag} class="paper-title">${paperTitle}</${titleTag}>
   <div class="paper-identity">
 <div class="paper-authors"><h2>Author</h2><div class="author-list">${paperAuthors.map(([name,index])=>'<a href="#affiliation-'+index+'" data-affiliation="'+index+'" title="'+paperAffiliations[index-1][0]+'">'+name+'<sup>'+index+'</sup></a>').join(', ')}</div></div>
     <div class="paper-affiliations" id="affiliations"><h2>Affiliations</h2><ol>${paperAffiliations.map(([name,url],i)=>'<li id="affiliation-'+(i+1)+'"><a href="'+url+'" title="'+(i+1)+'. '+name+'" aria-label="'+(i+1)+'. '+name+' official website" target="_blank" rel="noreferrer">'+(universityLogos[i]?'<span class="affiliation-logo-frame '+(i===3?'affiliation-logo-frame--dark':'')+'"><img class="affiliation-logo '+([0,5].includes(i)?'affiliation-logo--icon':'')+'" src="/assets/universities/'+universityLogos[i]+'" alt="'+name+' logo" width="'+universitySizes[i][0]+'" height="'+universitySizes[i][1]+'" decoding="async"></span>':'<span class="affiliation-english-name"><sup>'+(i+1)+'</sup>'+name+'</span>')+'</a></li>').join('')}</ol></div>
   </div>
-  <dl class="paper-metadata">
+  ${paperPublished?`<dl class="paper-metadata">
     <div><dt>Submitted</dt><dd><time datetime="2026-09-11">11 September 2026</time></dd></div>
     <div><dt>Last modified</dt><dd><time datetime="2026-10-06">6 October 2026</time></dd></div>
     <div><dt>Status</dt><dd><strong>ICLR 2027 Conference Submission</strong> · Under review</dd></div>
@@ -33,30 +44,37 @@ ${home?'<div class="home-paper-eyebrow"><span>The research behind DexArena</span
     <div><dt>Revisions</dt><dd><a href="https://openreview.net/forum?id=9yr0F1saHs" target="_blank" rel="noreferrer">View on OpenReview ↗</a></dd></div>
     <div><dt>Share</dt><dd><button class="text-copy-button" type="button" data-copy-text="https://dexarena-benchmark.adeptfawn4.chatgpt.site/paper/">Copy paper link</button><span class="copy-status" role="status" aria-live="polite"></span></dd></div>
   </dl>
-  <div class="paper-release-note"><p><b>Research preview.</b> This is an under-review submission, not an accepted publication. The PDF is the supplied local manuscript snapshot; the modification date above describes the OpenReview record.</p><a href="/docs/resources/">Code, data & release status →</a></div>
+  <div class="paper-release-note"><p><b>Research preview.</b> This is an under-review submission, not an accepted publication. The PDF is the supplied local manuscript snapshot; the modification date above describes the OpenReview record.</p><a href="/docs/resources/">Code, data & release status →</a></div>`:`<dl class="paper-metadata">
+    <div><dt>Paper</dt><dd><a href="/paper/">Read paper ↗</a><p class="paper-note">Not publicly available yet.</p></dd></div>
+    <div><dt>Code</dt><dd><a class="code-resource-link" href="/code/">Benchmark release status →</a></dd></div>
+    <div><dt>Leaderboard</dt><dd><a href="/leaderboard/">View benchmark results →</a></dd></div>
+    <div><dt>Institute</dt><dd><a href="/community/#wechat"><strong>${pairAccount.name}</strong> · PAIR</a></dd></div>
+    <div><dt>Community</dt><dd class="paper-inline-links"><a href="/community/#wechat">WeChat official account ↗</a><code id="paper-wechat-id">${pairAccount.id}</code><button class="text-copy-button" type="button" data-copy-text="${pairAccount.id}" data-copy-target="paper-wechat-id">Copy ID</button><span class="copy-status" role="status" aria-live="polite"></span></dd></div>
+  </dl>`}
 </section>
-<nav class="paper-section-nav" aria-label="Paper sections"><div><a href="#abstract">Abstract</a><a href="#paper-overview">Overview</a><a href="#data-pipeline">Data collection</a><a href="#paper-results">Results</a><a href="#citation">Citation</a></div></nav>
+${paperPublished?`<nav class="paper-section-nav" aria-label="Paper sections"><div><a href="#abstract">Abstract</a><a href="#paper-overview">Overview</a><a href="#data-pipeline">Data collection</a><a href="#paper-results">Results</a><a href="#citation">Citation</a></div></nav>
 <section class="section paper-abstract" id="abstract">
   <div class="paper-section-heading"><span>01 · Motivation</span><h2>Abstract</h2><div class="paper-keywords"><span>Dexterous Manipulation</span><span>Benchmark</span></div></div>
   <div><p>Long-horizon dexterous manipulation remains a fundamental challenge for robot learning, requiring the composition of multiple skills, precise bimanual coordination, generalizable visual understanding, and robust skill transitions. Yet existing manipulation benchmarks largely emphasize isolated skills or support only a limited range of end-effectors, making these capabilities difficult to evaluate systematically. We introduce DexArena, a benchmark designed to evaluate learning and generalization in long-horizon bimanual dexterous manipulation. DexArena features 10 long-horizon tasks and 30 stage-level tasks spanning diverse household and industrial scenarios. Each long-horizon task is composed of explicitly defined stages with physically grounded success conditions, enabling reliable evaluation of both intermediate progress and end-to-end task completion. A unified benchmark interface and verified human-teleoperated demonstrations enable testing different policy learning algorithms, with standardized simulation configurations, scene randomization, trajectory replay, and task-level evaluation. Through extensive baseline experiments, we identify substantial challenges in precise manipulation, generalization to scene variation, and skill composition. DexArena establishes a challenging and reproducible benchmark for developing robot learning methods that move toward generalizable long-horizon dexterous behavior.</p><p class="paper-note">Primary area: applications to robotics, autonomy, planning.</p></div>
 </section>
+`:'<nav class="paper-section-nav" aria-label="Benchmark sections"><div><a href="#paper-overview">Overview</a><a href="#data-pipeline">Data collection</a><a href="#paper-results">Results</a></div></nav>'}
 <section class="section paper-visual-section" id="paper-overview">
 ${home?'<span class="anchor-alias" id="benchmark-overview" aria-hidden="true"></span>':""}
-  <div class="section-head"><span>02 · Benchmark design</span><h2>Skills and sequences in a shared physical setting.</h2><p>Ten complete tasks and thirty matched stage environments connect household, laboratory and industrial interactions. Persistent physical predicates measure both intermediate progress and complete behavior.</p></div>
+  <div class="section-head"><span>${paperPublished?'02':'01'} · Benchmark design</span><h2>Skills and sequences in a shared physical setting.</h2><p>Ten complete tasks and thirty matched stage environments connect household, laboratory and industrial interactions. Persistent physical predicates measure both intermediate progress and complete behavior.</p></div>
   <figure class="overview-figure"><a href="/assets/paper/dexarena-overview.png" target="_blank" rel="noreferrer" aria-label="Open Figure 1 at full resolution"><img src="/assets/paper/dexarena-overview.png" width="1800" height="1040" alt="Figure 1: DexArena overview of tasks, objects, embodiments, skills and scenarios" loading="lazy"></a><figcaption><b>Figure 1 · DexArena overview.</b> Multi-stage tasks, diverse scenarios, teleoperated demonstrations and multiple embodiments. <a href="/assets/paper/dexarena-overview.png" target="_blank" rel="noreferrer">Full resolution ↗</a></figcaption></figure>
 </section>
 <section class="section paper-visual-section" id="data-pipeline">
-  <div class="section-head"><span>03 · Demonstrations</span><h2>From human motion to replayable demonstrations.</h2><p>VR wrist tracking and glove inputs are mapped into absolute arm and hand targets. Episodes then pass through review, export and replay validation, with recorded simulator states retained for offline multi-view rendering.</p></div>
+  <div class="section-head"><span>${paperPublished?'03':'02'} · Demonstrations</span><h2>From human motion to replayable demonstrations.</h2><p>VR wrist tracking and glove inputs are mapped into absolute arm and hand targets. Episodes then pass through review, export and replay validation, with recorded simulator states retained for offline multi-view rendering.</p></div>
   <figure class="overview-figure pipeline-paper-figure"><a href="/assets/paper/data-collection-pipeline.png" target="_blank" rel="noreferrer" aria-label="Open Figure 3: Data collection pipeline at full resolution"><img src="/assets/paper/data-collection-pipeline.png" width="1650" height="1070" alt="Figure 3: Data collection pipeline showing VR and glove input, motion mapping, simulation feedback, episode review and replay validation, and offline RGB rendering" loading="lazy"></a><figcaption><b>Figure 3 · Data collection pipeline.</b> The operator wears a VR headset and gloves, with a controller mounted on each hand. Finger and wrist inputs are mapped to absolute joint targets, while VR rendering provides scene feedback. Episodes are recorded, reviewed, exported, validated and rendered offline. <a href="/assets/paper/data-collection-pipeline.png" target="_blank" rel="noreferrer">Full resolution ↗</a></figcaption></figure>
   <div class="paper-data-notes"><article><b>3,000</b><h3>Replay-successful demonstrations</h3><p>100 episodes per canonical stage, recorded at 20 Hz.</p></article><article><b>State + action</b><h3>Restoration and replay</h3><p>Recorded state supports fidelity checks and open-loop trajectory validation.</p></article><article><b>Multi-view</b><h3>Offline RGB rendering</h3><p>The same recorded interaction can be rendered from fixed base and wrist views.</p></article></div>
   <div class="overview-links"><a class="arrow-link" href="/docs/data/"><span>Data & replay</span><b>↗</b></a><a class="arrow-link" href="/docs/teleoperation/"><span>Teleoperation guide</span><b>↗</b></a></div>
 </section>
 <section class="section" id="paper-results">
-  <div class="section-head"><span>04 · Findings</span><h2>Strong skills are not yet reliable sequences.</h2><p>Six baselines reveal distinct limitations in stage execution, held-out-scene generalization and end-to-end task composition. Explore the full manuscript results with shared-scale charts, heatmaps and downloadable tables.</p></div>
+  <div class="section-head"><span>${paperPublished?'04':'03'} · Findings</span><h2>Strong skills are not yet reliable sequences.</h2><p>Six baselines reveal distinct limitations in stage execution, held-out-scene generalization and end-to-end task composition. Compare baseline results with shared-scale charts, heatmaps and downloadable tables.</p></div>
   <div class="paper-result-links"><a href="/leaderboard/#results-stage"><span>01</span><h3>Stage execution</h3><p>30 stages · training scene</p><b>Compare policies →</b></a><a href="/leaderboard/#results-generalization"><span>02</span><h3>Visual generalization</h3><p>30 stages × 3 native scenes</p><b>Explore scene transfer →</b></a><a href="/leaderboard/#results-longHorizon"><span>03</span><h3>Long-horizon composition</h3><p>10 sequences · no stage resets</p><b>Inspect sequence success →</b></a></div>
-  <p class="paper-note">Leaderboard values are extracted from the current LaTeX manuscript; the downloadable PDF is a separate supplied snapshot.</p>
+  <p class="paper-note">${paperPublished?'Leaderboard values are extracted from the current LaTeX manuscript; the downloadable PDF is a separate supplied snapshot.':'These are research-preview baseline results, not community submissions.'}</p>
 </section>
-<section class="section paper-citation" id="citation"><div class="paper-section-heading"><span>05 · Reference</span><h2>Citation</h2><p class="paper-note">Suggested BibTeX based on the supplied submission metadata, not an official OpenReview export. Update it when a final publication record is available.</p></div><div><div class="citation-toolbar"><a href="/assets/docs/dexarena-citation.bib" download>Download .bib ↓</a><button type="button" data-copy-citation>Copy BibTeX</button></div><pre><code id="paper-bibtex">@misc{ping2026dexarena,
+${paperPublished?`<section class="section paper-citation" id="citation"><div class="paper-section-heading"><span>05 · Reference</span><h2>Citation</h2><p class="paper-note">Suggested BibTeX based on the supplied submission metadata, not an official OpenReview export. Update it when a final publication record is available.</p></div><div><div class="citation-toolbar"><a href="/assets/docs/dexarena-citation.bib" download>Download .bib ↓</a><button type="button" data-copy-citation>Copy BibTeX</button></div><pre><code id="paper-bibtex">@misc{ping2026dexarena,
   title = {DexArena: A Unified Benchmark for Long-Horizon Dexterous Manipulation},
   author = {Haonan Ping and Jianshu Hu and Yimin Wang and Yi Zhu and Pai Liang and Qiyan Jin and Qirui Bao and Ying Qian and Xinyang Ding and Hongfei Qiao and Tianle Xue and Yucheng Bai and Soo Wei Jie and Shuguang Li and Yutong Ban},
   year = {2026},
@@ -64,7 +82,7 @@ ${home?'<span class="anchor-alias" id="benchmark-overview" aria-hidden="true"></
   url = {https://openreview.net/forum?id=9yr0F1saHs}
 }
 </code></pre><p class="citation-feedback" role="status" aria-live="polite" data-citation-status></p></div></section>
-<section class="section paper-footnotes"><details><summary>Submission transparency</summary><p>The supplied record identifies a public ICLR 2027 submission under CC BY 4.0, with ethics and submission requirements acknowledged. AI assistance was used to aid or polish writing; details are described in the paper. Reviewing administration is available in the OpenReview record.</p></details><p class="paper-note">Author metadata follows the record supplied for this project. Institutional names link to their official homepages; university marks identify affiliations only and do not imply institutional sponsorship or endorsement. PAIR's WeChat account details are supplied by the project owner. Public repository and project email links remain pending.</p></section>
+<section class="section paper-footnotes"><details><summary>Submission transparency</summary><p>The supplied record identifies a public ICLR 2027 submission under CC BY 4.0, with ethics and submission requirements acknowledged. AI assistance was used to aid or polish writing; details are described in the paper. Reviewing administration is available in the OpenReview record.</p></details><p class="paper-note">Author metadata follows the record supplied for this project. Institutional names link to their official homepages; university marks identify affiliations only and do not imply institutional sponsorship or endorsement. PAIR's WeChat account details are supplied by the project owner. Public repository and project email links remain pending.</p></section>`:''}
 `;
 }
 export const paperBody = renderPaperBody();

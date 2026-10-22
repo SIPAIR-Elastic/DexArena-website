@@ -1,5 +1,6 @@
 import { paperTitle, paperAuthors, openReview } from "./paper-page.mjs";
 import { pairAccount } from "./community.mjs";
+import { paperPublished } from "./publication.mjs";
 
 // English editorial summaries, not official English translations or new research claims.
 // Each item links to a verified publication. Coverage dates are distinct from event dates.
@@ -75,13 +76,13 @@ export const reportBody = `
 <section class="section report-section" id="research">
   <div class="report-section-heading"><div><span class="report-eyebrow">01 · Research</span><h2>From precise skills to complete behavior.</h2></div><p>The benchmark paper and its accompanying technical notes.</p></div>
   <article class="publication-row report-paper-card">
-    <a class="publication-media" href="/paper/#paper-overview" aria-label="Explore the DexArena paper overview"><img src="/assets/paper/dexarena-overview.png" alt="DexArena overview: tasks, scenarios, embodiments and evaluation" width="1800" height="1040"></a>
+    <a class="publication-media" href="${paperPublished?'/paper/#paper-overview':'/#paper-overview'}" aria-label="Explore the DexArena benchmark overview"><img src="/assets/paper/dexarena-overview.png" alt="DexArena overview: tasks, scenarios, embodiments and evaluation" width="1800" height="1040"></a>
     <div class="publication-copy"><span class="report-eyebrow">Benchmark paper · ICLR 2027 submission</span><h3><a href="/paper/">${paperTitle}</a></h3>
       <p class="report-byline">Haonan Ping, Jianshu Hu, Yimin Wang, Yi Zhu, …, Yutong Ban</p>
       <details class="publication-authors"><summary>Full author list</summary><p>${paperAuthors.map(([name])=>name).join(', ')}.</p></details>
       <p>Ten long-horizon tasks and thirty stage environments connect skill execution, visual generalization and bimanual composition through physically grounded success conditions.</p>
       <div class="publication-meta"><time datetime="2026-09-11">11 September 2026</time><span>Under review</span></div>
-      <div class="publication-links"><a href="/paper/">Project & paper page ↗</a><a href="/assets/docs/dexarena-paper.pdf">Paper PDF ↗</a>${external(openReview,"OpenReview")}<a href="/leaderboard/">Leaderboard ↗</a></div>
+      <div class="publication-links">${paperPublished?`<a href="/paper/">Project & paper page ↗</a><a href="/assets/docs/dexarena-paper.pdf">Paper PDF ↗</a>${external(openReview,"OpenReview")}`:'<a href="/paper/">Read paper ↗</a>'}<a href="/leaderboard/">Leaderboard ↗</a></div>
     </div>
   </article>
   <div class="research-notes">

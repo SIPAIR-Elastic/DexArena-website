@@ -1,6 +1,6 @@
 /* Precision dock: quiet glass, cobalt accents, deliberate movement. */
-.code-resource-link{display:inline-flex;align-items:center;gap:8px;color:#1967d2;font-size:12px;line-height:1.6}
-.code-resource-link:hover{text-decoration:underline;text-underline-offset:4px}
+.code-resource-link,.paper-resource-link{display:inline-flex;align-items:center;gap:8px;color:#1967d2;font-size:12px;line-height:1.6}
+.code-resource-link:hover,.paper-resource-link:hover{text-decoration:underline;text-underline-offset:4px}
 .release-preview{min-height:65vh;padding-top:160px!important;padding-bottom:80px!important;max-width:900px}
 .release-eyebrow{display:block;color:#185bb5;font:500 10px/1.5 var(--mono);letter-spacing:.1em;text-transform:uppercase}
 .release-preview h1{margin:22px 0;font:600 clamp(38px,6vw,64px)/1.08 var(--display);letter-spacing:-.05em}

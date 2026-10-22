@@ -14,7 +14,14 @@ The 15 existing documentation URLs show only a no-index release notice, never
 the documentation body; the 20 research/task/resource pages remain discoverable.
 All authored Docs renderers, content and styles are retained in source. Set
 `docsPublished` in `src/publication.mjs` to `true` and rebuild to restore them.
-Paper PDFs and BibTeX under `/assets/docs/` remain publicly accessible.
+The **Read paper** entry remains visible, but `/paper/` currently displays
+**Paper coming soon**, not a viewer or download. Abstract, citation and direct
+manuscript/OpenReview links are withheld from all generated pages and search.
+`paperPublished` in `src/publication.mjs` controls this independently of Docs.
+The original PDF is retained at `private/paper/dexarena-paper.pdf` in this private
+repository, outside the served directory. The build excludes PDF/BibTeX artifacts
+while withheld; the HTTP server also rejects their old URLs, including stale
+copies. Previously downloaded or third-party-cached copies cannot be recalled.
 
 The public website is deployed as a **Render Web Service**. The GitHub repository
 remains private; visitors do not need a GitHub or Render account. Only the
@@ -28,10 +35,11 @@ white inverse. The favicon shares the exact geometry on a blue tile. All SVGs
 are generated from one path in `src/brand.mjs`, not copied reference artwork.
 Reusable assets are in `dist/assets/brand/`.
 
-The complete paper content follows the homepage carousel: title, 15 authors,
+The benchmark overview follows the homepage carousel: title, 15 authors,
 seven affiliations, official institutional marks where available, PAIR links,
-abstract, Figures 1 and 3, findings and citation. It shares a renderer with
-`/paper/` so metadata stays consistent. The standalone paper URL is preserved.
+Figures 1 and 3, and baseline findings. Abstract and citation are not rendered
+while the manuscript is withheld. Full manuscript sections are retained in
+source for a future explicit release; `/paper/` remains a publication notice.
 The black/blue/white header retains DexArena's navigation and visual identity.
 Its floating precision dock adds an underline-only hover/focus indicator without
 menu background boxes, a compact

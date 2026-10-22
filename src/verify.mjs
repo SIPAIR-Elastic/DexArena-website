@@ -11,7 +11,7 @@ import {verifyCarousel} from './verify-carousel.mjs';
 import {verifyTaskMedia} from './verify-task-media.mjs';
 import {verifyPresentation} from './verify-presentation.mjs';
 import {verifyNavigation} from './verify-navigation.mjs';
-import {docsPublished} from './publication.mjs';
+import {docsPublished,paperPublished,paperArtifactPaths} from './publication.mjs';
 import {brandAssets,brandMark} from './brand.mjs';
 import {createHash} from 'node:crypto';
 
@@ -42,6 +42,12 @@ for(const file of paths){
   assert.equal([...html.matchAll(/data-brandmark="arena-da"/g)].length,2,'One brand icon per header and footer');
   const footer=html.match(/<footer\b[^>]*>([\s\S]*?)<\/footer>/)?.[1]||'';
   assert(footer.includes('href="/code/"')&&!/Code coming soon|data-code-status|code-coming-soon/.test(footer),'Footer links to Code without repeating the pending-release status');
+  if(!paperPublished){
+    assert(!html.includes(paperAbstract)&&!html.includes(paperAbstract.slice(0,160)),`No manuscript abstract in ${file}`);
+    assert(!/id="(?:abstract|citation|paper-bibtex)"|>Abstract<|data-copy-citation|9yr0F1saHs/.test(html),`No abstract, citation or manuscript record entry in ${file}`);
+    for(const path of paperArtifactPaths)assert(!html.includes(path),`No manuscript artifact link in ${file}`);
+    assert(!/<(?:iframe|embed|object)\b/i.test(html),'No embedded manuscript viewer');
+  }
   if(!docsPublished){
     assert(!/href="\/docs(?:\/|[?#"])/.test(html),'No public Docs entry points');
     if(file.startsWith(join(dist,'docs')+'/')){
@@ -128,6 +134,15 @@ const searchIndex=JSON.parse(await readFile(join(dist,'assets','search-index.jso
 assert.equal(searchIndex.length,docsPublished?35:20);
 assert.equal(new Set(searchIndex.map(entry=>entry.url)).size,docsPublished?35:20);
 assert(searchIndex.some(entry=>entry.url==='/code/'&&entry.text.includes('Code coming soon')),'The real Code page is searchable');
+if(!paperPublished){
+  const searchText=JSON.stringify(searchIndex);
+  assert(!searchText.includes(paperAbstract.slice(0,160))&&!/9yr0F1saHs|ping2026dexarena|Download PDF|Copy BibTeX/.test(searchText),'Search must not retain manuscript content or download entries');
+  assert(searchIndex.some(entry=>entry.url==='/paper/'&&entry.text.includes('Paper coming soon')),'The paper release notice stays discoverable');
+  for(const path of paperArtifactPaths){
+    await assert.rejects(stat(join(dist,path)),error=>error.code==='ENOENT','Withheld manuscript files must be absent from the public build');
+  }
+  assert((await stat(join(root,'private/paper/dexarena-paper.pdf'))).size>0,'Keep the manuscript source outside the public build');
+}
 if(!docsPublished)assert(searchIndex.every(entry=>!entry.url.startsWith('/docs/')),'Unpublished Docs are excluded from search');
 for(const entry of searchIndex){
   assert(entry.title && entry.text && !entry.text.includes('undefined'));
@@ -222,7 +237,7 @@ assert.equal(reportConferences.find(item=>item.id==='pair-2026').status,'Held');
 const paperHtml=await readFile(join(dist,'paper','index.html'),'utf8');
 assert.equal(paperAuthors.length,15);assert.equal(paperAffiliations.length,7);
 for(const [name,affiliation] of paperAuthors){
-  assert(paperHtml.includes(`${name}<sup>${affiliation}</sup>`));
+  if(paperPublished)assert(paperHtml.includes(`${name}<sup>${affiliation}</sup>`));
   assert(paperBibtex.includes(name));
   assert(home.includes(`${name}<sup>${affiliation}</sup>`),'Homepage must include all paper authors');
 }
@@ -231,16 +246,24 @@ assert(home.includes('<h2 class="paper-title">'));
 assert(home.includes('/assets/paper.css'));
 assert.equal([...home.matchAll(/id="paper-overview"/g)].length,1);
 assert.equal([...home.matchAll(/src="\/assets\/paper\/dexarena-overview.png"/g)].length,1,'Do not repeat Figure 1 on the homepage');
-for(const id of ['abstract','data-pipeline','paper-results','citation','paper-bibtex','paper-wechat-id'])assert(home.includes(`id="${id}"`));
-assert(home.includes(paperAbstract));
+for(const id of ['data-pipeline','paper-results','paper-wechat-id'])assert(home.includes(`id="${id}"`));
 for(const html of [home,paperHtml]){
   const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
   assert.equal(ids.length,new Set(ids).size,'Paper embedding must not introduce duplicate IDs');
 }
-assert(paperHtml.includes(paperAbstract));
-assert(paperHtml.includes('datetime="2026-09-11"')&&paperHtml.includes('datetime="2026-10-06"'));
-assert(paperHtml.includes('/assets/paper/data-collection-pipeline.png'));
-assert.equal(await readFile(join(dist,'assets','docs','dexarena-citation.bib'),'utf8'),paperBibtex);
+if(paperPublished){
+  for(const id of ['abstract','citation','paper-bibtex'])assert(home.includes(`id="${id}"`));
+  assert(home.includes(paperAbstract)&&paperHtml.includes(paperAbstract));
+  assert(paperHtml.includes('datetime="2026-09-11"')&&paperHtml.includes('datetime="2026-10-06"'));
+  assert(paperHtml.includes('/assets/paper/data-collection-pipeline.png'));
+  assert.equal(await readFile(join(dist,'assets','docs','dexarena-citation.bib'),'utf8'),paperBibtex);
+}else{
+  assert(paperHtml.includes('data-paper-unavailable')&&paperHtml.includes('<h1>Paper coming soon</h1>'));
+  assert(!paperHtml.includes('paper-masthead')&&!paperHtml.includes('paper-abstract'));
+  assert(home.includes('/assets/paper/data-collection-pipeline.png'),'Keep the data pipeline image on the homepage');
+  assert(report.includes('href="/#paper-overview"'),'Report images lead to the retained visual overview');
+  assert(!leaderboard.includes('/paper/#paper-results'),'Baseline sources must not point to a nonexistent notice-page anchor');
+}
 const copyButton=node(),copyStatus={textContent:''};let copiedText='';
 runInNewContext(js.slice(js.indexOf('const citationButton='),js.indexOf('const docLinks=')),{
   document:{querySelector:selector=>selector==='[data-copy-citation]'?copyButton:selector==='#paper-bibtex'?{textContent:paperBibtex}:copyStatus},
@@ -250,7 +273,7 @@ await copyButton.handlers.click();
 assert.equal(copiedText,paperBibtex);assert.equal(copyStatus.textContent,'BibTeX copied.');
 assert.equal(universityLogos.length,7);
 assert.equal(universityLogos.filter(Boolean).length,7,'All seven affiliations must display their institutional marks');
-for(const html of [home,paperHtml]){
+for(const html of paperPublished?[home,paperHtml]:[home]){
   assert.equal([...html.matchAll(/class="affiliation-logo /g)].length,7);
   for(const index of [1,6]){
     assert(html.includes(`src="/assets/universities/${universityLogos[index]}"`),'SJTU and Tsinghua logos must render on Home and Paper');
@@ -293,7 +316,8 @@ for(const [foreground,background] of [['#c6dafc','#1a1d24'],['#ffffff','#1a1d24'
 }
 assert(refinement.includes('.leaderboard-cta__card .arrow-link.on-dark span{color:#1967d2'));
 assert(community.includes(pairAccount.name)&&community.includes(pairAccount.id));
-assert(paperHtml.includes('/community/#wechat')&&paperHtml.includes(pairAccount.id));
+assert(home.includes('/community/#wechat')&&home.includes(pairAccount.id));
+if(paperPublished)assert(paperHtml.includes('/community/#wechat')&&paperHtml.includes(pairAccount.id));
 assert(!community.includes('2026-09-19'),'Do not publish the visitor follow date');
 assert(!community.includes('qr/code?'),'Do not fabricate a WeChat follow QR');
 assert(refinement.includes('--bg:#f8f9fa')&&!refinement.includes('gradient('));

@@ -1,5 +1,5 @@
 
-import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, writeFile, rm } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { extraDocs, protocolBody, evidenceBody } from "./documentation.mjs";
@@ -8,7 +8,7 @@ import { communityBody } from "./community.mjs";
 import { reportBody } from "./report.mjs";
 import { algorithmLink, algorithmDirectory, algorithmReferenceSection } from "./references.mjs";
 import { benchmarkScope, findingsDigest } from "./presentation.mjs";
-import { docsPublished, publishContent } from "./publication.mjs";
+import { docsPublished, paperPublished, paperArtifactPaths, publishContent } from "./publication.mjs";
 import { brandAssets, brandMark } from "./brand.mjs";
 import { codeBody } from "./code-page.mjs";
 
@@ -220,7 +220,7 @@ function layout({title,description,active,body,pageClass=""}) {
     title="Code coming soon — DexArena";
     description="DexArena code and documentation are not yet publicly available.";
     active="";pageClass="release-preview-page";
-    body=`<section class="section release-preview" data-docs-unavailable><span class="release-eyebrow">DexArena · Public release</span><h1>Code coming soon</h1><p>The benchmark code and documentation are not publicly available yet. Explore the paper, tasks and published evaluation results in the meantime.</p><div class="overview-links">${arrowLink('/paper/','Read the paper')}${arrowLink('/tasks/','Explore tasks')}</div></section>`;
+    body=`<section class="section release-preview" data-docs-unavailable><span class="release-eyebrow">DexArena · Public release</span><h1>Code coming soon</h1><p>The benchmark code and documentation are not publicly available yet. Explore the benchmark tasks and evaluation results in the meantime.</p><div class="overview-links">${arrowLink('/paper/','Read the paper')}${arrowLink('/tasks/','Explore tasks')}</div></section>`;
   }
   return publishContent(`<!doctype html><html lang="en"><head>
     <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -391,7 +391,7 @@ function leaderboardPage() {
   const panels=tracks.map(track=>{
     const data=paper[track.id];
     const ranking=paper.models.map((model,i)=>({...model,value:data.reportedAverage[i]})).sort((a,b)=>b.value.mean-a.value.mean);
-    const rows=ranking.map((m,i)=>`<tr data-method-row data-family="${m.family.toLowerCase()}"><td><span class="rank">${i+1}</span></td><th scope="row">${m.name}</th><td>${m.family}</td><td class="score-cell">${score(m.value)}</td><td><a href="${docsPublished?'/docs/training/':'/paper/#paper-results'}">Paper baseline ↗</a></td></tr>`).join("");
+    const rows=ranking.map((m,i)=>`<tr data-method-row data-family="${m.family.toLowerCase()}"><td><span class="rank">${i+1}</span></td><th scope="row">${m.name}</th><td>${m.family}</td><td class="score-cell">${score(m.value)}</td><td><a href="${docsPublished?'/docs/training/':paperPublished?'/paper/#paper-results':'/#paper-results'}">Paper baseline ↗</a></td></tr>`).join("");
     return `<section data-result-panel="${track.id}" id="results-${track.id}" aria-labelledby="tab-${track.id}"><div class="board-head"><div><span>${track.scope}</span><h2>${track.label}</h2><p>${track.description}</p></div><a class="arrow-link" href="/assets/results/${track.id}.csv" download>Download CSV ↓</a></div><div data-result-view="charts" class="result-visual">${rankingChart(track.id)}${methodProfiles()}</div><div data-result-view="heatmap" class="result-visual">${heatmap(track.id)}</div><div data-result-view="tables"><div class="table-scroll"><table class="leaderboard-table"><thead><tr><th>Rank</th><th>Method</th><th>Family</th><th>Average success (%) ↑</th><th>Source</th></tr></thead><tbody>${rows}</tbody></table></div><div class="result-full"><h3>All ${track.id==="longHorizon"?"10 tasks":"30 stages"}</h3><p>Success rates (%). Highlighted cells are the highest result in each row.</p>${resultTable(track.id)}</div></div></section>`;
   }).join("");
   return `<section class="leaderboard-page">
@@ -518,7 +518,7 @@ const pages = [
   ["docs/randomization/index.html",layout({title:"Scene evaluation — DexArena",description:"DexArena cross-scene evaluation matrix.",active:"docs",body:randomizationDocs(),pageClass:"docs-page"})],
   ["docs/submission/index.html",layout({title:"Submission preview — DexArena",description:"Prepare a reproducible DexArena leaderboard submission.",active:"docs",body:submissionDocs(),pageClass:"docs-page"})],
   ["report/index.html",layout({title:"Report — DexArena",description:"DexArena research, PAIR institute coverage and academic conference updates.",active:"report",body:reportPage(),pageClass:"report-page"})],
-  ["paper/index.html",layout({title:"Paper — DexArena",description:"DexArena paper, authors, affiliations, abstract, figures and citation. ICLR 2027 Conference Submission.",active:"paper",body:paperBody,pageClass:"paper-page"})],
+  ["paper/index.html",layout({title:"Paper — DexArena",description:paperPublished?"DexArena paper, authors, affiliations, abstract, figures and citation. ICLR 2027 Conference Submission.":"The DexArena manuscript is not publicly available yet. Explore the benchmark overview, tasks and evaluation results.",active:"paper",body:paperBody,pageClass:"paper-page"})],
   ["community/index.html",layout({title:"Community — DexArena",description:"PAIR WeChat account information and institute updates.",active:"community",body:communityBody,pageClass:"community-page"})],
   ["code/index.html",layout({title:"Code — DexArena",description:"DexArena benchmark code and public release status.",active:"code",body:codeBody,pageClass:"code-page"})]
 ];
@@ -539,7 +539,14 @@ for(const [file,svg] of brandAssets){
   await mkdir(dirname(asset),{recursive:true});
   await writeFile(asset,svg);
 }
-await writeFile(join(dist,"assets","docs","dexarena-citation.bib"),paperBibtex);
+if(paperPublished){
+  await mkdir(join(dist,"assets","docs"),{recursive:true});
+  await copyFile(join(root,"private","paper","dexarena-paper.pdf"),join(dist,"assets","docs","dexarena-paper.pdf"));
+  await writeFile(join(dist,"assets","docs","dexarena-citation.bib"),paperBibtex);
+}else{
+  // Remove only known generated manuscript artifacts, including stale builds.
+  for(const path of paperArtifactPaths)await rm(join(dist,path),{force:true});
+}
 await copyFile(join(root,"src","paper.css"),join(dist,"assets","paper.css"));
 await copyFile(join(root,"src","refinement.css"),join(dist,"assets","refinement.css"));
 await copyFile(join(root,"src","report.css"),join(dist,"assets","report.css"));

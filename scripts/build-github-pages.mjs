@@ -3,7 +3,7 @@ import {readFile,writeFile,readdir,stat} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {dirname,join,relative,resolve} from 'node:path';
 import assert from 'node:assert/strict';
-import {docsPublished} from '../src/publication.mjs';
+import {docsPublished,paperPublished} from '../src/publication.mjs';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const dist=join(root,'dist');
@@ -70,5 +70,7 @@ for(const file of files.filter(file=>file.endsWith('.css'))){
 }
 for(const entry of search)await checkTarget(entry.url,join(dist,'index.html'));
 assert(runtime.includes(`fetch("${base}assets/search-index.json")`),'Search fetch must use the project path');
-assert((await readFile(join(dist,'paper','index.html'),'utf8')).includes(`data-copy-text="${site.href}paper/"`),'Shared paper URL must use the public GitHub Pages address');
+const paperHtml=await readFile(join(dist,'paper','index.html'),'utf8');
+if(paperPublished)assert(paperHtml.includes(`data-copy-text="${site.href}paper/"`),'Shared paper URL must use the public site address');
+else assert(paperHtml.includes('data-paper-unavailable')&&!/Download PDF|<iframe|<embed|<object|id="abstract"/i.test(paperHtml),'The paper route remains a release notice, not a manuscript viewer');
 console.log(`GitHub Pages build verified: ${htmlFiles.length} English pages, ${links} project-path links/resources; ${site.href}`);
