@@ -11,13 +11,11 @@
 .site-nav[data-nav-theme="precision"].is-scrolled .site-nav__pill{min-height:64px;padding-block:7px;border-color:#c5d3e0c9;box-shadow:0 8px 28px -12px #102a4a38,inset 0 1px 0 #fff}
 .site-nav[data-nav-theme="precision"] .site-nav__left{flex:1;gap:28px;min-width:0}
 .site-nav[data-nav-theme="precision"] .wordmark{gap:10px;padding:0;border:0;color:#102033;letter-spacing:-.05em}
-.site-nav[data-nav-theme="precision"] .wordmark__mark{position:relative;isolation:isolate;overflow:hidden;width:36px;height:36px;padding:8px;gap:3px;border:1px solid #2568d0;border-radius:11px;background:linear-gradient(145deg,#3c8dff,#1253c5);box-shadow:0 3px 9px #216bdd29,inset 0 1px 0 #ffffff61;color:#fff;transition:transform .3s,box-shadow .3s}
-.site-nav[data-nav-theme="precision"] .wordmark__mark:after{content:"";position:absolute;inset:-30%;background:linear-gradient(100deg,transparent 35%,#ffffff57 50%,transparent 65%);transform:translateX(-110%);transition:transform .65s cubic-bezier(.2,.7,.2,1)}
-.site-nav[data-nav-theme="precision"] .wordmark__mark i{border-radius:1px;background:currentColor;transition:transform .35s cubic-bezier(.2,.7,.2,1)}
-.site-nav[data-nav-theme="precision"] .wordmark:hover .wordmark__mark{transform:translateY(-1px);box-shadow:0 5px 14px #216bdd38}
-.site-nav[data-nav-theme="precision"] .wordmark:hover .wordmark__mark:after{transform:translateX(110%)}
-.site-nav[data-nav-theme="precision"] .wordmark:hover .wordmark__mark i:nth-child(2){transform:translateY(4px)}
-.site-nav[data-nav-theme="precision"] .wordmark:hover .wordmark__mark i:nth-child(3){transform:translateY(-3px)}
+.wordmark .wordmark__mark{display:block;flex:none;width:40px;height:40px;padding:0;border:0;border-radius:0;background:none;box-shadow:none}
+.wordmark .wordmark__mark img{display:block;width:100%;height:100%;max-width:none;object-fit:contain}
+.site-nav[data-nav-theme="precision"] .wordmark__mark{position:relative;isolation:isolate;overflow:visible;width:40px;height:40px;padding:0;border:0;border-radius:0;background:none;box-shadow:none;transition:transform .3s cubic-bezier(.2,.7,.2,1),filter .3s}
+.site-nav[data-nav-theme="precision"] .wordmark__mark:after{display:none}
+.site-nav[data-nav-theme="precision"] .wordmark:hover .wordmark__mark{transform:translateY(-1px) scale(1.04);filter:drop-shadow(0 3px 4px #1769e626)}
 .wordmark__type{display:grid;gap:4px}.wordmark__type b{font:650 21px/1 var(--display);letter-spacing:-.055em}.wordmark__type small{font:500 8px/1.2 var(--font);text-transform:uppercase;letter-spacing:.105em;color:#64758a}
 .site-nav[data-nav-theme="precision"] .site-nav__desktop{position:relative;isolation:isolate;gap:1px;margin-inline:auto;padding:4px;border:1px solid #e6edf4;border-radius:14px;background:#eff3f7b3}
 .site-nav[data-nav-theme="precision"] .site-nav__desktop .site-nav__link{z-index:1;flex:none;padding:10px 11px;border-radius:10px;background:none;color:#5b697a;font:500 12px/1.5 var(--font);transition:color .2s,background .2s}
@@ -71,7 +69,7 @@
 @media(max-width:760px){
  .site-nav[data-nav-theme="precision"],.site-nav[data-nav-theme="precision"].is-scrolled{padding:10px 12px 0}
  .site-nav[data-nav-theme="precision"] .site-nav__pill,.site-nav[data-nav-theme="precision"].is-scrolled .site-nav__pill{min-height:60px;padding:7px 9px 7px 12px;gap:10px;border-radius:17px}
- .site-nav[data-nav-theme="precision"] .wordmark{gap:9px}.site-nav[data-nav-theme="precision"] .wordmark__mark{width:32px;height:32px;padding:7px;border-radius:10px}.wordmark__type b{font-size:20px}.wordmark__type small{font-size:7px;letter-spacing:.06em;line-height:1.2}
+ .site-nav[data-nav-theme="precision"] .wordmark{gap:9px}.site-nav[data-nav-theme="precision"] .wordmark__mark{width:36px;height:36px;padding:0;border-radius:0}.wordmark__type b{font-size:20px}.wordmark__type small{font-size:7px;letter-spacing:.06em;line-height:1.2}
  .site-nav[data-nav-theme="precision"] .site-nav__actions{gap:5px}
  .site-nav[data-nav-theme="precision"] .nav-search kbd{display:none}
  .site-nav[data-nav-theme="precision"] .site-nav__drawer{padding:14px;border-radius:17px;max-height:calc(100dvh - 100px)}

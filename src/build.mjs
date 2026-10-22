@@ -9,6 +9,7 @@ import { reportBody } from "./report.mjs";
 import { algorithmLink, algorithmDirectory, algorithmReferenceSection } from "./references.mjs";
 import { benchmarkScope, findingsDigest } from "./presentation.mjs";
 import { docsPublished, codeComingSoon, publishContent } from "./publication.mjs";
+import { brandAssets, brandMark } from "./brand.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(root, "dist");
@@ -187,7 +188,7 @@ function header(active="") {
     <button class="nav-backdrop" type="button" data-nav-dismiss aria-label="Close navigation menu" tabindex="-1" hidden></button>
     <div class="site-nav__pill">
       <div class="site-nav__left">
-        <a class="wordmark" href="/" aria-label="DexArena home"><span class="wordmark__mark" aria-hidden="true"><i></i><i></i><i></i></span><span class="wordmark__type"><b>DexArena</b><small>Dexterous intelligence</small></span></a>
+        <a class="wordmark" href="/" aria-label="DexArena home">${brandMark()}<span class="wordmark__type"><b>DexArena</b><small>Dexterous intelligence</small></span></a>
         <nav class="site-nav__desktop" data-nav-desktop aria-label="Primary"><span class="nav-indicator" data-nav-indicator aria-hidden="true"></span>${links}</nav>
       </div>
       <div class="site-nav__actions">
@@ -202,7 +203,7 @@ function header(active="") {
 
 function footer() {
   return `<footer class="site-footer">
-    <div class="footer-top"><a class="wordmark wordmark--footer" href="/"><span class="wordmark__mark"><i></i><i></i><i></i></span><b>DexArena</b></a>
+    <div class="footer-top"><a class="wordmark wordmark--footer" href="/" aria-label="DexArena home">${brandMark({inverse:true})}<b>DexArena</b></a>
       <div class="footer-description"><p>A unified benchmark for long-horizon bimanual dexterous manipulation.</p><a class="footer-community" href="/community/#wechat">PAIR · WeChat official account →</a></div>
       <div class="footer-links"><a href="/paper/">Paper</a>${publicNav.slice(1).map(([h,l])=>`<a href="${h}">${l}</a>`).join("")}</div>
     </div>
@@ -222,7 +223,7 @@ function layout({title,description,active,body,pageClass=""}) {
     <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="description" content="${esc(description)}"><meta name="theme-color" content="#f8f9fa">${withheld?'<meta name="robots" content="noindex, nofollow">':""}
     <meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}">
-    <title>${esc(title)}</title><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <title>${esc(title)}</title><link rel="icon" href="/assets/brand/dexarena-favicon.svg" type="image/svg+xml" sizes="any">
     <link rel="preload" href="/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${["paper-page","home-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}${["home-page","evaluation-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/experience.css">':""}${pageClass==="home-page"?'<link rel="stylesheet" href="/assets/carousel.css">':""}<link rel="stylesheet" href="/assets/navigation.css"><script src="/assets/navigation.js" defer></script><script src="/assets/site.js" defer></script>${["home-page","evaluation-page"].includes(pageClass)?'<script src="/assets/experience.js" defer></script>':""}
@@ -529,6 +530,11 @@ for (const [file,html] of pages) {
 }
 
 await mkdir(join(dist,"assets"),{recursive:true});
+for(const [file,svg] of brandAssets){
+  const asset=join(dist,"assets",file);
+  await mkdir(dirname(asset),{recursive:true});
+  await writeFile(asset,svg);
+}
 await writeFile(join(dist,"assets","docs","dexarena-citation.bib"),paperBibtex);
 await copyFile(join(root,"src","paper.css"),join(dist,"assets","paper.css"));
 await copyFile(join(root,"src","refinement.css"),join(dist,"assets","refinement.css"));

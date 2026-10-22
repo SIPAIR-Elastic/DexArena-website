@@ -9,6 +9,6 @@
     "build": "node scripts/build-render.mjs",
     "build:render": "node scripts/build-render.mjs",
     "start": "node scripts/start-render.mjs",
-    "test": "node --test scripts/render-deployment.test.mjs scripts/public-release.test.mjs"
+    "test": "node --test scripts/render-deployment.test.mjs scripts/public-release.test.mjs scripts/brand-identity.test.mjs"
   }
 }

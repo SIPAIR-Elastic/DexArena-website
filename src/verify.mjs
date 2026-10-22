@@ -12,6 +12,7 @@ import {verifyTaskMedia} from './verify-task-media.mjs';
 import {verifyPresentation} from './verify-presentation.mjs';
 import {verifyNavigation} from './verify-navigation.mjs';
 import {docsPublished} from './publication.mjs';
+import {brandAssets,brandMark} from './brand.mjs';
 import {createHash} from 'node:crypto';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
@@ -32,9 +33,13 @@ await walk(dist);assert.equal(paths.length,34);
 let links=0;
 const navigationCss=await readFile(join(dist,'assets/navigation.css'),'utf8');
 const navigationJs=await readFile(join(dist,'assets/navigation.js'),'utf8');
+for(const [file,svg] of brandAssets)assert.equal(await readFile(join(dist,'assets',file),'utf8'),svg,'Generated brand asset matches its canonical source');
 for(const file of paths){
   const html=await readFile(file,'utf8');
   verifyNavigation({html,css:navigationCss,js:navigationJs});
+  assert(html.includes('href="/assets/brand/dexarena-favicon.svg"'),'Use the same identity in the browser tab');
+  assert(html.includes(brandMark())&&html.includes(brandMark({inverse:true})),'Header and footer share one original brand geometry');
+  assert.equal([...html.matchAll(/data-brandmark="arena-da"/g)].length,2,'One brand icon per header and footer');
   if(!docsPublished){
     assert(!/href="\/docs(?:\/|[?#"])/.test(html),'No public Docs entry points');
     if(file.startsWith(join(dist,'docs')+'/')){

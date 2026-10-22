@@ -20,6 +20,12 @@ generated website in `dist/` is served, not the repository or its source files.
 
 ## Homepage layout
 
+The original DexArena icon combines a chamfered D silhouette with an A-shaped
+negative space. Navigation uses the cobalt variant; the dark footer uses its
+white inverse. The favicon shares the exact geometry on a blue tile. All SVGs
+are generated from one path in `src/brand.mjs`, not copied reference artwork.
+Reusable assets are in `dist/assets/brand/`.
+
 The complete paper content follows the homepage carousel: title, 15 authors,
 seven affiliations, official institutional marks where available, PAIR links,
 abstract, Figures 1 and 3, findings and citation. It shares a renderer with
