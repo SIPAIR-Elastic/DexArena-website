@@ -8,8 +8,9 @@ import { communityBody } from "./community.mjs";
 import { reportBody } from "./report.mjs";
 import { algorithmLink, algorithmDirectory, algorithmReferenceSection } from "./references.mjs";
 import { benchmarkScope, findingsDigest } from "./presentation.mjs";
-import { docsPublished, codeComingSoon, publishContent } from "./publication.mjs";
+import { docsPublished, publishContent } from "./publication.mjs";
 import { brandAssets, brandMark } from "./brand.mjs";
+import { codeBody } from "./code-page.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(root, "dist");
@@ -137,7 +138,8 @@ const nav = [
   ["/evaluation/","Evaluation","evaluation"],
   ["/docs/","Docs","docs"],
   ["/report/","Report","report"],
-  ["/community/","Community","community"]
+  ["/community/","Community","community"],
+  ["/code/","Code","code"]
 ];
 
 const esc = (value) => String(value).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
@@ -196,18 +198,19 @@ function header(active="") {
         <a class="nav-paper ${active==="paper"?"is-active":""}" href="/paper/" ${active==="paper"?'aria-current="page"':""}><span>Read paper</span><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a>
         <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-mobile-nav" data-menu><span></span><span></span></button>
       </div>
-      <nav class="site-nav__drawer" id="site-mobile-nav" data-drawer aria-label="Mobile" aria-hidden="true" inert><span class="nav-drawer-heading">Explore DexArena</span><div class="nav-drawer-links">${drawerLinks}</div>${docsPublished?'<a class="nav-drawer-footer" href="/docs/getting-started/"><span>Build with DexArena</span><span>Getting started ↗</span></a>':`<div class="nav-drawer-footer"><span>Benchmark release</span>${codeComingSoon}</div>`}</nav>
+      <nav class="site-nav__drawer" id="site-mobile-nav" data-drawer aria-label="Mobile" aria-hidden="true" inert><span class="nav-drawer-heading">Explore DexArena</span><div class="nav-drawer-links">${drawerLinks}</div><a class="nav-drawer-footer" href="/paper/"><span>Research overview</span><span>Read the paper ↗</span></a></nav>
     </div>
   </header>`;
 }
 
 function footer() {
   return `<footer class="site-footer">
-    <div class="footer-top"><a class="wordmark wordmark--footer" href="/" aria-label="DexArena home">${brandMark({inverse:true})}<b>DexArena</b></a>
-      <div class="footer-description"><p>A unified benchmark for long-horizon bimanual dexterous manipulation.</p><a class="footer-community" href="/community/#wechat">PAIR · WeChat official account →</a></div>
-      <div class="footer-links"><a href="/paper/">Paper</a>${publicNav.slice(1).map(([h,l])=>`<a href="${h}">${l}</a>`).join("")}</div>
+    <div class="footer-top">
+      <div class="footer-brand"><a class="wordmark wordmark--footer" href="/" aria-label="DexArena home">${brandMark({inverse:true})}<b>DexArena</b></a><p class="footer-tagline">A unified benchmark for long-horizon <strong>bimanual dexterous manipulation.</strong></p><a class="footer-community" href="/community/#wechat"><b>PAIR</b><span>WeChat official account</span><span aria-hidden="true">↗</span></a></div>
+      <nav class="footer-nav-group" aria-label="Explore DexArena"><span class="footer-eyebrow">Explore</span>${publicNav.filter(([, ,id])=>['tasks','leaderboard','evaluation'].includes(id)).map(([href,label])=>`<a href="${href}">${label}<span aria-hidden="true">↗</span></a>`).join('')}</nav>
+      <nav class="footer-nav-group footer-nav-group--research" aria-label="DexArena research and resources"><span class="footer-eyebrow">Research & resources</span><a href="/paper/">Paper<span aria-hidden="true">↗</span></a>${publicNav.filter(([, ,id])=>['report','community','code'].includes(id)).map(([href,label])=>`<a href="${href}">${label}<span aria-hidden="true">↗</span></a>`).join('')}</nav>
     </div>
-    <div class="footer-bottom"><span>Research preview · 2026</span><a href="/docs/resources/">Resources & release status</a><span>Built on SAPIEN / ManiSkill</span></div>
+    <div class="footer-bottom"><span class="footer-preview"><i aria-hidden="true"></i>Research preview<span class="footer-year">2026</span></span><span class="footer-built">Built on <strong>SAPIEN</strong><span aria-hidden="true">/</span><strong>ManiSkill</strong></span></div>
   </footer>`;
 }
 
@@ -226,7 +229,7 @@ function layout({title,description,active,body,pageClass=""}) {
     <title>${esc(title)}</title><link rel="icon" href="/assets/brand/dexarena-favicon.svg" type="image/svg+xml" sizes="any">
     <link rel="preload" href="/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${["paper-page","home-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}${["home-page","evaluation-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/experience.css">':""}${pageClass==="home-page"?'<link rel="stylesheet" href="/assets/carousel.css">':""}<link rel="stylesheet" href="/assets/navigation.css"><script src="/assets/navigation.js" defer></script><script src="/assets/site.js" defer></script>${["home-page","evaluation-page"].includes(pageClass)?'<script src="/assets/experience.js" defer></script>':""}
+    <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${["paper-page","home-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}${["home-page","evaluation-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/experience.css">':""}${pageClass==="home-page"?'<link rel="stylesheet" href="/assets/carousel.css">':""}<link rel="stylesheet" href="/assets/footer.css"><link rel="stylesheet" href="/assets/navigation.css"><script src="/assets/navigation.js" defer></script><script src="/assets/site.js" defer></script>${["home-page","evaluation-page"].includes(pageClass)?'<script src="/assets/experience.js" defer></script>':""}
   </head><body class="${pageClass}">${header(active)}<main>${body}</main>${footer()}<div class="route-progress" aria-hidden="true"></div></body></html>`);
 }
 
@@ -400,7 +403,7 @@ function leaderboardPage() {
       <div class="board-filter"><div class="view-switch" aria-label="Result presentation">${[["charts","Charts"],["heatmap","Heatmap"],["tables","Tables"]].map(([id,label],i)=>`<button type="button" data-view-button="${id}" aria-pressed="${i===0}" class="${i===0?"active":""}">${label}</button>`).join("")}</div><label>Ranking family<select data-method-filter><option value="all">All families</option><option value="imitation">Imitation learning</option><option value="rl">Demo-guided RL</option><option value="vla">VLA</option></select></label></div>
       ${panels}<p class="result-source">Source: DexArena manuscript, stage-level and generalization experiment tables and long-horizon appendix table. <a href="/assets/results/paper-results.json" download>Download all results (JSON) ↓</a></p>
     </section>
-    <section class="submission-cta"><div><span>Submit a method</span><h2>Evaluation intake is not open yet.</h2><p>Submission instructions will be shared when evaluation intake opens.</p></div>${docsPublished?arrowLink("/docs/submission/","Submission preview"):codeComingSoon}</section>
+    <section class="submission-cta"><div><span>Submit a method</span><h2>Evaluation intake is not open yet.</h2><p>Submission instructions will be shared when evaluation intake opens.</p></div>${docsPublished?arrowLink("/docs/submission/","Submission preview"):''}</section>
   </section>`;
 }
 
@@ -516,7 +519,8 @@ const pages = [
   ["docs/submission/index.html",layout({title:"Submission preview — DexArena",description:"Prepare a reproducible DexArena leaderboard submission.",active:"docs",body:submissionDocs(),pageClass:"docs-page"})],
   ["report/index.html",layout({title:"Report — DexArena",description:"DexArena research, PAIR institute coverage and academic conference updates.",active:"report",body:reportPage(),pageClass:"report-page"})],
   ["paper/index.html",layout({title:"Paper — DexArena",description:"DexArena paper, authors, affiliations, abstract, figures and citation. ICLR 2027 Conference Submission.",active:"paper",body:paperBody,pageClass:"paper-page"})],
-  ["community/index.html",layout({title:"Community — DexArena",description:"PAIR WeChat account information and institute updates.",active:"community",body:communityBody,pageClass:"community-page"})]
+  ["community/index.html",layout({title:"Community — DexArena",description:"PAIR WeChat account information and institute updates.",active:"community",body:communityBody,pageClass:"community-page"})],
+  ["code/index.html",layout({title:"Code — DexArena",description:"DexArena benchmark code and public release status.",active:"code",body:codeBody,pageClass:"code-page"})]
 ];
 extraDocs.forEach(page=>pages.push([`${page.href.slice(1)}index.html`,layout({title:`${page.title} — DexArena`,description:page.lead,active:"docs",body:docsShell(page.id,page.title,page.lead,page.content),pageClass:"docs-page"})]));
 pages.push(["leaderboard/protocol/index.html",layout({title:"Leaderboard protocol — DexArena",description:"Score definitions and reproducibility requirements for DexArena results.",active:"leaderboard",body:protocolBody,pageClass:"protocol-page"})]);
@@ -542,6 +546,7 @@ await copyFile(join(root,"src","report.css"),join(dist,"assets","report.css"));
 await copyFile(join(root,"src","experience.css"),join(dist,"assets","experience.css"));
 await copyFile(join(root,"src","carousel.css"),join(dist,"assets","carousel.css"));
 await copyFile(join(root,"src","navigation.css"),join(dist,"assets","navigation.css"));
+await copyFile(join(root,"src","footer.css"),join(dist,"assets","footer.css"));
 await copyFile(join(root,"src","navigation.js"),join(dist,"assets","navigation.js"));
 await copyFile(join(root,"src","experience.js"),join(dist,"assets","experience.js"));
 await Promise.all([copyFile(join(root,"src","site.css"),join(dist,"assets","site.css")),copyFile(join(root,"src","layout.css"),join(dist,"assets","layout.css")),copyFile(join(root,"src","site.js"),join(dist,"assets","site.js"))]);

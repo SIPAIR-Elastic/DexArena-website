@@ -29,7 +29,7 @@ for(const track of ['stage','generalization','longHorizon']){
 }
 const paths=[];
 async function walk(dir){for(const e of await readdir(dir,{withFileTypes:true})){const p=join(dir,e.name);if(e.isDirectory())await walk(p);else if(e.name.endsWith('.html'))paths.push(p)}}
-await walk(dist);assert.equal(paths.length,34);
+await walk(dist);assert.equal(paths.length,35);
 let links=0;
 const navigationCss=await readFile(join(dist,'assets/navigation.css'),'utf8');
 const navigationJs=await readFile(join(dist,'assets/navigation.js'),'utf8');
@@ -40,6 +40,8 @@ for(const file of paths){
   assert(html.includes('href="/assets/brand/dexarena-favicon.svg"'),'Use the same identity in the browser tab');
   assert(html.includes(brandMark())&&html.includes(brandMark({inverse:true})),'Header and footer share one original brand geometry');
   assert.equal([...html.matchAll(/data-brandmark="arena-da"/g)].length,2,'One brand icon per header and footer');
+  const footer=html.match(/<footer\b[^>]*>([\s\S]*?)<\/footer>/)?.[1]||'';
+  assert(footer.includes('href="/code/"')&&!/Code coming soon|data-code-status|code-coming-soon/.test(footer),'Footer links to Code without repeating the pending-release status');
   if(!docsPublished){
     assert(!/href="\/docs(?:\/|[?#"])/.test(html),'No public Docs entry points');
     if(file.startsWith(join(dist,'docs')+'/')){
@@ -123,8 +125,9 @@ viewButtons[2].handlers.click();assert(views.filter(v=>!v.hidden).every(v=>v.dat
 assert.equal([...leaderboard.matchAll(/data-result-view=/g)].length,9);
 assert.equal([...leaderboard.matchAll(/class="chart-track"/g)].length,18);
 const searchIndex=JSON.parse(await readFile(join(dist,'assets','search-index.json'),'utf8'));
-assert.equal(searchIndex.length,docsPublished?34:19);
-assert.equal(new Set(searchIndex.map(entry=>entry.url)).size,docsPublished?34:19);
+assert.equal(searchIndex.length,docsPublished?35:20);
+assert.equal(new Set(searchIndex.map(entry=>entry.url)).size,docsPublished?35:20);
+assert(searchIndex.some(entry=>entry.url==='/code/'&&entry.text.includes('Code coming soon')),'The real Code page is searchable');
 if(!docsPublished)assert(searchIndex.every(entry=>!entry.url.startsWith('/docs/')),'Unpublished Docs are excluded from search');
 for(const entry of searchIndex){
   assert(entry.title && entry.text && !entry.text.includes('undefined'));
@@ -156,8 +159,11 @@ for(const html of [docsOverview,training]){
 if(docsPublished)assert(training.includes(' · DPPO'),'Keep extended DPPO distinct from PPO');
 else{
   assert(docsOverview.includes('data-docs-unavailable')&&training.includes('data-docs-unavailable'));
-  assert(home.includes('data-code-status="coming-soon"'),'Code entry must explicitly state availability');
+  assert(home.includes('class="code-resource-link" href="/code/"'),'Shared repository entries lead to the Code page');
 }
+const codePage=await readFile(join(dist,'code/index.html'),'utf8');
+assert(codePage.includes('data-code-page')&&codePage.includes('<h1>Code coming soon</h1>'),'Code has a dedicated release-status page');
+assert(!codePage.includes('github.com/Qhf7/DexArena'),'Do not expose a private website repository as a public benchmark code release');
 const meal=await readFile(join(dist,'tasks/meal-preparation/index.html'),'utf8');
 assert(meal.includes('data-stage-button="2" data-image="/assets/tasks/task-02.jpg"'));
 assert(!meal.includes('/assets/tasks/scoop-tomato-preview.png'));
@@ -276,6 +282,10 @@ for(const foreground of ['#202124','#5f6368','#666c73','#1967d2']){
   const ratio=(luminance('#f8f9fa')+.05)/(luminance(foreground)+.05);
   assert(ratio>=4.5,'Insufficient normal-text contrast: '+foreground+' '+ratio);
 }
+for(const foreground of ['#b8c9df','#edf4ff','#92dce3','#b6f0f4','#8db8ef','#f0f5fe','#7fa7d9','#a4b6ce','#c2d1e5','#c9dfff']){
+  const ratio=(luminance(foreground)+.05)/(luminance('#101a2a')+.05);
+  assert(ratio>=4.5,'Footer text contrast: '+foreground+' '+ratio);
+}
 const community=await readFile(join(dist,'community','index.html'),'utf8');
 for(const [foreground,background] of [['#c6dafc','#1a1d24'],['#ffffff','#1a1d24'],['#d9dee7','#1a1d24'],['#1967d2','#ffffff'],['#174ea6','#e8f0fe']]){
   const a=luminance(foreground),b=luminance(background);
@@ -302,4 +312,4 @@ runInNewContext(js.slice(js.indexOf('const textCopyButtons='),js.indexOf('const 
 });
 await textButton.handlers.click();assert(selectedFallback);
 assert(textStatus.textContent.includes('Select and copy')&&!/\p{Script=Han}/u.test(textStatus.textContent));
-console.log(`Verified 34 English-only pages, ${links} local links/anchors, 4 sourced reports, conference statuses, PAIR copy success/fallback, paper metadata, palette contrast, search and all 420 task/method scores.`);
+console.log(`Verified 35 English-only pages, ${links} local links/anchors, 4 sourced reports, conference statuses, PAIR copy success/fallback, paper metadata, palette contrast, search and all 420 task/method scores.`);

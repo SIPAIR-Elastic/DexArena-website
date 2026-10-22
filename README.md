@@ -7,9 +7,11 @@ Website: **https://dexarena.onrender.com/**
 ## Public release status
 
 Docs is temporarily withheld from the navigation, public links, search index and
-sitemap. Repository/code entries display non-clickable **Code coming soon**.
+sitemap. The **Code** navigation item follows Community and opens `/code/`,
+which displays **Code coming soon**. Shared repository/resource entries link to
+that page; the footer does not repeat the release status.
 The 15 existing documentation URLs show only a no-index release notice, never
-the documentation body; the 19 research/task pages remain discoverable.
+the documentation body; the 20 research/task/resource pages remain discoverable.
 All authored Docs renderers, content and styles are retained in source. Set
 `docsPublished` in `src/publication.mjs` to `true` and rebuild to restore them.
 Paper PDFs and BibTeX under `/assets/docs/` remain publicly accessible.
@@ -31,12 +33,15 @@ seven affiliations, official institutional marks where available, PAIR links,
 abstract, Figures 1 and 3, findings and citation. It shares a renderer with
 `/paper/` so metadata stays consistent. The standalone paper URL is preserved.
 The black/blue/white header retains DexArena's navigation and visual identity.
-Its floating precision dock adds a sliding hover/focus indicator, a compact
+Its floating precision dock adds an underline-only hover/focus indicator without
+menu background boxes, a compact
 scroll state and restrained cobalt accents. The responsive drawer supports
 Escape/outside-click dismissal, focus containment and return, short-screen
 scrolling and resize cleanup. Search closes the drawer before opening. Header
 styles and behavior are isolated in `src/navigation.css` and `src/navigation.js`;
 reduced-motion preferences disable decorative movement.
+The shared footer uses readable white, blue and cyan typography with grouped
+research links, PAIR access and technology credits, styled in `src/footer.css`.
 The immersive carousel combines full-frame scene media, adjacent previews and
 oversized typography directly over the image, without caption cards. Pagination
 matches the reference's separate circular chevrons and three small dots with an
@@ -58,7 +63,7 @@ readable without JavaScript. The same digest is used on the Evaluation page.
 
 The configured service uses Build Command `yarn` and Start Command `yarn start`.
 No dependency packages are required. During Render's install step, the
-`postinstall` hook generates and verifies all 34 pages at the service root. The
+`postinstall` hook generates and verifies all 35 pages at the service root. The
 start script serves only `dist/`, binds to `0.0.0.0:$PORT`, and supports HEAD and
 byte-range requests for videos. It never serves the Git checkout or source.
 
@@ -90,7 +95,7 @@ Requires Node.js 22 or later. No npm dependencies are needed.
 npm run build
 ```
 
-This generates 34 pages, runs benchmark content, navigation and carousel checks,
+This generates 35 pages, runs benchmark content, navigation and carousel checks,
 builds navigation, media, fonts and search at the Render root path `/`, and verifies
 the final deployment links. The published output is in `dist/`. Canonical,
 sharing and sitemap URLs use the Render service URL.

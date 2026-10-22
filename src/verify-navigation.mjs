@@ -28,7 +28,7 @@ const classes=node=>(node.attributes.class||'').split(/\s+/);
 const plainText=html=>html.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
 const route=href=>new URL(href,'https://dexarena.invalid').pathname.replace(/\/$/,'')||'/';
 const asset=(value,name)=>new RegExp(`/assets/${name.replaceAll('.','\\.')}(?:[?#].*)?$`).test(value||'');
-const expectedLinks=[['/','Project'],['/tasks/','Tasks'],['/leaderboard/','Leaderboard'],['/evaluation/','Evaluation'],['/docs/','Docs'],['/report/','Report'],['/community/','Community']]
+const expectedLinks=[['/','Project'],['/tasks/','Tasks'],['/leaderboard/','Leaderboard'],['/evaluation/','Evaluation'],['/docs/','Docs'],['/report/','Report'],['/community/','Community'],['/code/','Code']]
   .filter(([href])=>docsPublished||route(href)!=='/docs');
 
 export function verifyNavigation({html,css,js}){
@@ -66,18 +66,8 @@ export function verifyNavigation({html,css,js}){
   const drawerFooter=allDrawerLinks.filter(node=>classes(node).includes('nav-drawer-footer'));
   assert.equal(desktopLinks.length,expectedLinks.length,'Preserve every published desktop destination');
   assert.equal(drawerLinks.length,expectedLinks.length+1,'Mobile navigation also includes the paper');
-  if(docsPublished){
-    assert.equal(drawerFooter.length,1,'One separate getting-started entry in the mobile footer');
-  }else{
-    assert.equal(drawerFooter.length,0,'Unpublished code status is not a footer link');
-    const footer=elements(drawer.content,'div').filter(node=>classes(node).includes('nav-drawer-footer'));
-    assert.equal(footer.length,1,'One static release-status footer');
-    const statuses=tagged(footer[0].content,a=>has(a,'data-code-status'));
-    assert.equal(statuses.length,1,'Mobile footer includes one code release status');
-    assert.equal(statuses[0].attributes['data-code-status'],'coming-soon');
-    assert(plainText(footer[0].content).includes('Code coming soon'),'Mobile footer states the code release status');
-    assert(!has(statuses[0].attributes,'href')&&!has(statuses[0].attributes,'tabindex'),'Static code status must not masquerade as a link or keyboard target');
-    assert.equal(elements(footer[0].content,'a').length,0,'Static release footer does not expose documentation');
+  assert.equal(drawerFooter.length,1,'One separate paper entry in the mobile footer');
+  if(!docsPublished){
     for(const link of elements(header.content,'a'))assert(!/^\/docs(?:\/|$)/.test(route(link.attributes.href||'')),'Unpublished documentation has no header or mobile navigation entry');
   }
   assert.equal(allDrawerLinks.length,drawerLinks.length+drawerFooter.length,'Every mobile link belongs to published primary destinations or an available footer link');
@@ -92,7 +82,15 @@ export function verifyNavigation({html,css,js}){
   }
   checkDestinations(desktopLinks,expectedLinks);
   checkDestinations(drawerLinks,[...expectedLinks,['/paper/','Paper']]);
-  if(docsPublished)checkDestinations(drawerFooter,[['/docs/getting-started/','Getting started']]);
+  checkDestinations(drawerFooter,[['/paper/','Read the paper']]);
+  assert.deepEqual(desktopLinks.map(link=>route(link.attributes.href)),expectedLinks.map(([href])=>route(href)),'Desktop Code entry follows Community in the published destination order');
+  assert.deepEqual(drawerLinks.map(link=>route(link.attributes.href)),[...expectedLinks,['/paper/','Paper']].map(([href])=>route(href)),'Mobile destinations preserve the published order, including Code');
+  assert.equal(tagged(drawer.content,a=>has(a,'data-code-status')).length,0,'Mobile navigation footer does not repeat a pending-code badge');
+  assert(!/code\s+coming\s+soon/i.test(plainText(drawerFooter[0].content)),'Mobile footer leads to the paper instead of a static code notice');
+  const siteFooters=elements(html,'footer');
+  assert.equal(siteFooters.length,1,'One shared site footer');
+  assert.equal(tagged(siteFooters[0].content,a=>has(a,'data-code-status')).length,0,'Site footer does not repeat a pending-code badge');
+  assert(!/code\s+coming\s+soon/i.test(plainText(siteFooters[0].content)),'Code coming soon is a dedicated page, not repeated footer text');
   const paperActions=elements(header.content,'a').filter(node=>classes(node).includes('nav-paper'));
   assert.equal(paperActions.length,1,'Preserve the desktop paper action');
   assert.equal(route(paperActions[0].attributes.href),'/paper');

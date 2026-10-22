@@ -2,27 +2,32 @@ import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
-import {docsPublished,codeComingSoon,publishContent} from '../src/publication.mjs';
+import {docsPublished,codeLink,publishContent} from '../src/publication.mjs';
 
 const digest=value=>createHash('sha256').update(value).digest('hex');
 const htmlText=value=>value.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
 
-test('The public preview hides Docs and declares code availability without a fake link',()=>{
+test('The public preview hides Docs and directs Code entries to a real release page',()=>{
   assert.equal(docsPublished,false);
-  assert.equal(codeComingSoon,'<span class="code-coming-soon" data-code-status="coming-soon">Code coming soon</span>');
-  assert(!/<a\b|\bhref\s*=/i.test(codeComingSoon));
+  assert.equal(codeLink,'<a class="code-resource-link" href="/code/">Code <span aria-hidden="true">↗</span></a>');
+  assert(!/code-coming-soon|data-code-status|Code coming soon/.test(codeLink),'Shared entries link to the Code page instead of repeating its status');
 });
 
-test('Repository/resource entries become the same explicit Code coming soon marker',()=>{
+test('Repository/resource entries become the same ordinary Code destination link',()=>{
   const sources=[
     '<a href="/docs/resources/">Repository</a>',
     "<a href='/docs/resources/' class='paper-resource'>Code &amp; data release status →</a>",
     '<a class="arrow-link on-dark" target="_self" href="/docs/resources/"><span>Code</span><b>↗</b></a>',
     "<a aria-label='Source release status' href = '/docs/resources/' data-kind='repository'>Code release</a>"
   ];
-  for(const source of sources)assert.equal(publishContent(source),codeComingSoon,source);
+  for(const source of sources){
+    const output=publishContent(source);
+    assert.equal(output,codeLink,source);
+    assert.equal([...output.matchAll(/<a\b/g)].length,1,'A resource entry has exactly one real destination');
+    assert(!/Code coming soon|data-code-status|code-coming-soon/.test(output),'Status messages belong on the Code page, not in shared entries');
+  }
   const wrapped='<dl><div><dt>Repository</dt><dd><a href="/docs/resources/">Code &amp; data release status →</a></dd></div></dl>';
-  assert.equal(publishContent(wrapped),`<dl><div><dt>Repository</dt><dd>${codeComingSoon}</dd></div></dl>`);
+  assert.equal(publishContent(wrapped),`<dl><div><dt>Repository</dt><dd>${codeLink}</dd></div></dl>`);
 });
 
 test('Documentation call-to-action anchors disappear without removing surrounding content',()=>{
@@ -67,6 +72,7 @@ test('Paper PDFs, citations, external algorithm documentation and public routes 
     '<a href="https://example.org/docs/resources/">External resource documentation →</a>',
     '<a href="/tasks/package-opening/" class="arrow-link">Explore Package Opening ↗</a>',
     '<a href="/paper/" class="editorial-link">Paper ↗</a>',
+    '<a href="/code/" class="code-resource-link">Code <span aria-hidden="true">↗</span></a>',
     '<a href="/leaderboard/#results-generalization">Cross-scene results ↗</a>',
     '<a href="#citation">BibTeX ↓</a>',
     '<a href="mailto:research@example.org">Contact</a>',
@@ -80,7 +86,7 @@ test('Paper PDFs, citations, external algorithm documentation and public routes 
 test('Mixed publication filtering is deterministic and safe to run twice',()=>{
   const source='<article><h2><a href="/docs/data/">Replay validation</a></h2><p>Protocol text stays.</p><a href="/docs/data/" class="arrow-link">Explore data ↗</a><a href="/docs/resources/">Repository</a><a href="/assets/docs/dexarena-paper.pdf">PDF ↗</a><a href="/tasks/">Tasks →</a></article>';
   const output=publishContent(source);
-  assert.equal(output,`<article><h2><span>Replay validation</span></h2><p>Protocol text stays.</p>${codeComingSoon}<a href="/assets/docs/dexarena-paper.pdf">PDF ↗</a><a href="/tasks/">Tasks →</a></article>`);
+  assert.equal(output,`<article><h2><span>Replay validation</span></h2><p>Protocol text stays.</p>${codeLink}<a href="/assets/docs/dexarena-paper.pdf">PDF ↗</a><a href="/tasks/">Tasks →</a></article>`);
   assert.equal(publishContent(output),output);
   assert.equal(publishContent(''),'');
   assert.equal(publishContent('Research text without links.'),'Research text without links.');
