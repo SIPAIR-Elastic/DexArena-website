@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {runInNewContext} from 'node:vm';
 import {benchmarkScope,findingsDigest} from './presentation.mjs';
+import {docsPublished,publishContent} from './publication.mjs';
 
 const tracks=['stage','generalization','longHorizon'];
 const panelsIn=html=>[...html.matchAll(/<section\b[^>]*data-finding-panel="([^"]+)"[^>]*>[\s\S]*?<\/section>/g)];
@@ -77,7 +78,8 @@ function verifyScope(home){
   assert.equal([...matrix.matchAll(/<b><\/b>/g)].length,90,'Show the complete 30 × 3 coverage matrix');
   assert.equal([...matrix.matchAll(/class="scope-scene-row /g)].length,3,'Show three native kitchen rows');
   for(const name of ['Blue stone','Light wood','Warm wood'])assert(matrix.includes(name));
-  assert(home.includes('href="/docs/data/"')&&home.includes('href="/docs/randomization/"'),'Expose data and scene protocols');
+  if(docsPublished)assert(home.includes('href="/docs/data/"')&&home.includes('href="/docs/randomization/"'),'Expose data and scene protocols');
+  else assert(!/href="\/docs\//.test(home),'Do not expose unpublished documentation');
 }
 
 function verifyEnhancement(js){
@@ -150,5 +152,5 @@ export function verifyPresentation({home,evaluation,paper,js}){
   }
   verifyDigest(findingsDigest(altered),altered,'Generated alternate data');
   const syntheticTasks=Array.from({length:10},(_,i)=>({slug:`task-${i}`,title:`Task ${i+1}`,stages:Array.from({length:3},()=>[])}));
-  verifyScope(benchmarkScope(syntheticTasks,paper.protocol));
+  verifyScope(publishContent(benchmarkScope(syntheticTasks,paper.protocol)));
 }

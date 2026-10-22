@@ -8,6 +8,7 @@ import { communityBody } from "./community.mjs";
 import { reportBody } from "./report.mjs";
 import { algorithmLink, algorithmDirectory, algorithmReferenceSection } from "./references.mjs";
 import { benchmarkScope, findingsDigest } from "./presentation.mjs";
+import { docsPublished, codeComingSoon, publishContent } from "./publication.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(root, "dist");
@@ -140,6 +141,7 @@ const nav = [
 
 const esc = (value) => String(value).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
 const taskImage = (index) => `/assets/tasks/task-${String(index).padStart(2,"0")}.jpg`;
+const publicNav=nav.filter(([, ,id])=>docsPublished||id!=="docs");
 
 const tracks = [
   {id:"stage",label:"Stage benchmark",scope:"30 stages · training scene",description:"Success rate over 50 episodes per stage. Each policy starts from a valid initial state for that stage."},
@@ -179,8 +181,8 @@ function methodProfiles(){
 }
 
 function header(active="") {
-  const links = nav.map(([href,label,id]) => `<a class="site-nav__link ${active===id?"is-active":""}" href="${href}"${active===id?' aria-current="page"':""}>${label}</a>`).join("");
-  const drawerLinks = [...nav,["/paper/","Paper","paper"]].map(([href,label,id],index)=>`<a class="site-nav__link ${active===id?"is-active":""}" href="${href}"${active===id?' aria-current="page"':""}><span class="nav-destination"><small aria-hidden="true">${String(index+1).padStart(2,"0")}</small><span>${label}</span></span><span class="nav-destination-arrow" aria-hidden="true">↗</span></a>`).join("");
+  const links = publicNav.map(([href,label,id]) => `<a class="site-nav__link ${active===id?"is-active":""}" href="${href}"${active===id?' aria-current="page"':""}>${label}</a>`).join("");
+  const drawerLinks = [...publicNav,["/paper/","Paper","paper"]].map(([href,label,id],index)=>`<a class="site-nav__link ${active===id?"is-active":""}" href="${href}"${active===id?' aria-current="page"':""}><span class="nav-destination"><small aria-hidden="true">${String(index+1).padStart(2,"0")}</small><span>${label}</span></span><span class="nav-destination-arrow" aria-hidden="true">↗</span></a>`).join("");
   return `<header class="site-nav is-solid" data-nav data-nav-theme="precision">
     <button class="nav-backdrop" type="button" data-nav-dismiss aria-label="Close navigation menu" tabindex="-1" hidden></button>
     <div class="site-nav__pill">
@@ -189,11 +191,11 @@ function header(active="") {
         <nav class="site-nav__desktop" data-nav-desktop aria-label="Primary"><span class="nav-indicator" data-nav-indicator aria-hidden="true"></span>${links}</nav>
       </div>
       <div class="site-nav__actions">
-        <button class="nav-search" type="button" data-open-search aria-label="Search documentation and tasks"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search</span><kbd data-search-shortcut>Ctrl K</kbd></button>
+        <button class="nav-search" type="button" data-open-search aria-label="Search tasks and research"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search</span><kbd data-search-shortcut>Ctrl K</kbd></button>
         <a class="nav-paper ${active==="paper"?"is-active":""}" href="/paper/" ${active==="paper"?'aria-current="page"':""}><span>Read paper</span><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a>
         <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-mobile-nav" data-menu><span></span><span></span></button>
       </div>
-      <nav class="site-nav__drawer" id="site-mobile-nav" data-drawer aria-label="Mobile" aria-hidden="true" inert><span class="nav-drawer-heading">Explore DexArena</span><div class="nav-drawer-links">${drawerLinks}</div><a class="nav-drawer-footer" href="/docs/getting-started/"><span>Build with DexArena</span><span>Getting started ↗</span></a></nav>
+      <nav class="site-nav__drawer" id="site-mobile-nav" data-drawer aria-label="Mobile" aria-hidden="true" inert><span class="nav-drawer-heading">Explore DexArena</span><div class="nav-drawer-links">${drawerLinks}</div>${docsPublished?'<a class="nav-drawer-footer" href="/docs/getting-started/"><span>Build with DexArena</span><span>Getting started ↗</span></a>':`<div class="nav-drawer-footer"><span>Benchmark release</span>${codeComingSoon}</div>`}</nav>
     </div>
   </header>`;
 }
@@ -202,22 +204,29 @@ function footer() {
   return `<footer class="site-footer">
     <div class="footer-top"><a class="wordmark wordmark--footer" href="/"><span class="wordmark__mark"><i></i><i></i><i></i></span><b>DexArena</b></a>
       <div class="footer-description"><p>A unified benchmark for long-horizon bimanual dexterous manipulation.</p><a class="footer-community" href="/community/#wechat">PAIR · WeChat official account →</a></div>
-      <div class="footer-links"><a href="/paper/">Paper</a>${nav.slice(1).map(([h,l])=>`<a href="${h}">${l}</a>`).join("")}</div>
+      <div class="footer-links"><a href="/paper/">Paper</a>${publicNav.slice(1).map(([h,l])=>`<a href="${h}">${l}</a>`).join("")}</div>
     </div>
     <div class="footer-bottom"><span>Research preview · 2026</span><a href="/docs/resources/">Resources & release status</a><span>Built on SAPIEN / ManiSkill</span></div>
   </footer>`;
 }
 
 function layout({title,description,active,body,pageClass=""}) {
-  return `<!doctype html><html lang="en"><head>
+  const withheld=pageClass==="docs-page"&&!docsPublished;
+  if(withheld){
+    title="Code coming soon — DexArena";
+    description="DexArena code and documentation are not yet publicly available.";
+    active="";pageClass="release-preview-page";
+    body=`<section class="section release-preview" data-docs-unavailable><span class="release-eyebrow">DexArena · Public release</span><h1>Code coming soon</h1><p>The benchmark code and documentation are not publicly available yet. Explore the paper, tasks and published evaluation results in the meantime.</p><div class="overview-links">${arrowLink('/paper/','Read the paper')}${arrowLink('/tasks/','Explore tasks')}</div></section>`;
+  }
+  return publishContent(`<!doctype html><html lang="en"><head>
     <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="description" content="${esc(description)}"><meta name="theme-color" content="#f8f9fa">
+    <meta name="description" content="${esc(description)}"><meta name="theme-color" content="#f8f9fa">${withheld?'<meta name="robots" content="noindex, nofollow">':""}
     <meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}">
     <title>${esc(title)}</title><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
     <link rel="preload" href="/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${["paper-page","home-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}${["home-page","evaluation-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/experience.css">':""}${pageClass==="home-page"?'<link rel="stylesheet" href="/assets/carousel.css">':""}<link rel="stylesheet" href="/assets/navigation.css"><script src="/assets/navigation.js" defer></script><script src="/assets/site.js" defer></script>${["home-page","evaluation-page"].includes(pageClass)?'<script src="/assets/experience.js" defer></script>':""}
-  </head><body class="${pageClass}">${header(active)}<main>${body}</main>${footer()}<div class="route-progress" aria-hidden="true"></div></body></html>`;
+  </head><body class="${pageClass}">${header(active)}<main>${body}</main>${footer()}<div class="route-progress" aria-hidden="true"></div></body></html>`);
 }
 
 function arrowLink(href,label,kind="") {
@@ -273,7 +282,7 @@ const homeBody = `
           <p class="cover-title">Same skill.<br>New scene.</p>
           <h2>Change the scene. Keep the task.</h2>
           <p>Evaluate all 30 canonical stages on three native scene surfaces with fixed policy cameras.</p>
-          ${arrowLink("/docs/randomization/","Explore randomization","on-dark")}
+          ${arrowLink(docsPublished?"/docs/randomization/":"/evaluation/",docsPublished?"Explore randomization":"Explore generalization","on-dark")}
         </div>
       </div>
     </article>
@@ -378,7 +387,7 @@ function leaderboardPage() {
   const panels=tracks.map(track=>{
     const data=paper[track.id];
     const ranking=paper.models.map((model,i)=>({...model,value:data.reportedAverage[i]})).sort((a,b)=>b.value.mean-a.value.mean);
-    const rows=ranking.map((m,i)=>`<tr data-method-row data-family="${m.family.toLowerCase()}"><td><span class="rank">${i+1}</span></td><th scope="row">${m.name}</th><td>${m.family}</td><td class="score-cell">${score(m.value)}</td><td><a href="/docs/training/">Paper baseline ↗</a></td></tr>`).join("");
+    const rows=ranking.map((m,i)=>`<tr data-method-row data-family="${m.family.toLowerCase()}"><td><span class="rank">${i+1}</span></td><th scope="row">${m.name}</th><td>${m.family}</td><td class="score-cell">${score(m.value)}</td><td><a href="${docsPublished?'/docs/training/':'/paper/#paper-results'}">Paper baseline ↗</a></td></tr>`).join("");
     return `<section data-result-panel="${track.id}" id="results-${track.id}" aria-labelledby="tab-${track.id}"><div class="board-head"><div><span>${track.scope}</span><h2>${track.label}</h2><p>${track.description}</p></div><a class="arrow-link" href="/assets/results/${track.id}.csv" download>Download CSV ↓</a></div><div data-result-view="charts" class="result-visual">${rankingChart(track.id)}${methodProfiles()}</div><div data-result-view="heatmap" class="result-visual">${heatmap(track.id)}</div><div data-result-view="tables"><div class="table-scroll"><table class="leaderboard-table"><thead><tr><th>Rank</th><th>Method</th><th>Family</th><th>Average success (%) ↑</th><th>Source</th></tr></thead><tbody>${rows}</tbody></table></div><div class="result-full"><h3>All ${track.id==="longHorizon"?"10 tasks":"30 stages"}</h3><p>Success rates (%). Highlighted cells are the highest result in each row.</p>${resultTable(track.id)}</div></div></section>`;
   }).join("");
   return `<section class="leaderboard-page">
@@ -390,7 +399,7 @@ function leaderboardPage() {
       <div class="board-filter"><div class="view-switch" aria-label="Result presentation">${[["charts","Charts"],["heatmap","Heatmap"],["tables","Tables"]].map(([id,label],i)=>`<button type="button" data-view-button="${id}" aria-pressed="${i===0}" class="${i===0?"active":""}">${label}</button>`).join("")}</div><label>Ranking family<select data-method-filter><option value="all">All families</option><option value="imitation">Imitation learning</option><option value="rl">Demo-guided RL</option><option value="vla">VLA</option></select></label></div>
       ${panels}<p class="result-source">Source: DexArena manuscript, stage-level and generalization experiment tables and long-horizon appendix table. <a href="/assets/results/paper-results.json" download>Download all results (JSON) ↓</a></p>
     </section>
-    <section class="submission-cta"><div><span>Submit a method</span><h2>Evaluation intake is not open yet.</h2><p>Use the preview submission checklist to prepare code, manifests, checkpoints, and reproducibility metadata.</p></div>${arrowLink("/docs/submission/","Submission preview")}</section>
+    <section class="submission-cta"><div><span>Submit a method</span><h2>Evaluation intake is not open yet.</h2><p>Submission instructions will be shared when evaluation intake opens.</p></div>${docsPublished?arrowLink("/docs/submission/","Submission preview"):codeComingSoon}</section>
   </section>`;
 }
 
@@ -516,7 +525,7 @@ tasks.forEach((task,index)=>pages.push([`tasks/${task.slug}/index.html`,layout({
 for (const [file,html] of pages) {
   const path=join(dist,file);
   await mkdir(dirname(path),{recursive:true});
-  await writeFile(path,html);
+  await writeFile(path,html.replace(/[ \t]+$/gm,''));
 }
 
 await mkdir(join(dist,"assets"),{recursive:true});
@@ -531,7 +540,7 @@ await copyFile(join(root,"src","navigation.js"),join(dist,"assets","navigation.j
 await copyFile(join(root,"src","experience.js"),join(dist,"assets","experience.js"));
 await Promise.all([copyFile(join(root,"src","site.css"),join(dist,"assets","site.css")),copyFile(join(root,"src","layout.css"),join(dist,"assets","layout.css")),copyFile(join(root,"src","site.js"),join(dist,"assets","site.js"))]);
 
-const searchEntries=pages.map(([file,html])=>{
+const searchEntries=pages.filter(([file])=>docsPublished||!file.startsWith('docs/')).map(([file,html])=>{
   const content=html.match(/<article class="docs-article">([\s\S]*?)<\/article>/)?.[1]||html.match(/<main>([\s\S]*?)<\/main>/)?.[1]||html;
   return {url:file==='index.html'?'/':'/'+file.replace(/index\.html$/,''),title:html.match(/<title>(.*?)<\/title>/)?.[1]||'DexArena',text:content.replace(/<script[\s\S]*?<\/script>/g,'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').slice(0,40000)};
 });

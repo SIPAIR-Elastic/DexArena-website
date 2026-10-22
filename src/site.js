@@ -314,7 +314,7 @@ if(searchTriggers.length){
   const dialog=document.createElement("dialog");
   dialog.className="search-dialog";
   dialog.setAttribute("aria-labelledby","search-heading");
-  dialog.innerHTML='<div class="search-dialog-head"><h2 id="search-heading">Search DexArena</h2><button type="button" class="search-close">Close · Esc</button></div><label class="search-field">Docs, tasks and research<input type="search" placeholder="Try: cameras, replay, mouse…" autocomplete="off"></label><p class="search-status" role="status" aria-live="polite"></p><ul class="search-results"></ul>';
+  dialog.innerHTML='<div class="search-dialog-head"><h2 id="search-heading">Search DexArena</h2><button type="button" class="search-close">Close · Esc</button></div><label class="search-field">Tasks, results and research<input type="search" placeholder="Try: cameras, replay, mouse…" autocomplete="off"></label><p class="search-status" role="status" aria-live="polite"></p><ul class="search-results"></ul>';
   document.body.append(dialog);
   const input=dialog.querySelector("input"), status=dialog.querySelector(".search-status"), list=dialog.querySelector("ul");
   let entries=null,previousFocus=null,loadPromise=null;
@@ -345,7 +345,7 @@ if(searchTriggers.length){
     try{
       loadPromise ||= fetch("/assets/search-index.json").then(response=>{if(!response.ok)throw new Error("Search unavailable");return response.json()});
       entries=await loadPromise;render();
-    }catch{status.textContent="Search could not load. Please use Docs or the task catalog.";loadPromise=null}
+    }catch{status.textContent="Search could not load. Please use the paper page or the task catalog.";loadPromise=null}
   }
   searchTriggers.forEach(button=>button.addEventListener("click",openSearch));
   dialog.querySelector(".search-close").addEventListener("click",()=>dialog.close());

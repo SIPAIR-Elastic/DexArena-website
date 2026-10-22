@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {docsPublished} from './publication.mjs';
 
 // Static contracts complement browser checks for keyboard, focus and breakpoints.
 // Attribute parsing deliberately accepts reordered attributes and either quote style.
@@ -27,7 +28,8 @@ const classes=node=>(node.attributes.class||'').split(/\s+/);
 const plainText=html=>html.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
 const route=href=>new URL(href,'https://dexarena.invalid').pathname.replace(/\/$/,'')||'/';
 const asset=(value,name)=>new RegExp(`/assets/${name.replaceAll('.','\\.')}(?:[?#].*)?$`).test(value||'');
-const expectedLinks=[['/','Project'],['/tasks/','Tasks'],['/leaderboard/','Leaderboard'],['/evaluation/','Evaluation'],['/docs/','Docs'],['/report/','Report'],['/community/','Community']];
+const expectedLinks=[['/','Project'],['/tasks/','Tasks'],['/leaderboard/','Leaderboard'],['/evaluation/','Evaluation'],['/docs/','Docs'],['/report/','Report'],['/community/','Community']]
+  .filter(([href])=>docsPublished||route(href)!=='/docs');
 
 export function verifyNavigation({html,css,js}){
   for(const [name,value] of Object.entries({html,css,js}))assert.equal(typeof value,'string',`Navigation ${name} must be provided`);
@@ -62,10 +64,23 @@ export function verifyNavigation({html,css,js}){
   const allDrawerLinks=elements(drawer.content,'a');
   const drawerLinks=allDrawerLinks.filter(node=>classes(node).includes('site-nav__link'));
   const drawerFooter=allDrawerLinks.filter(node=>classes(node).includes('nav-drawer-footer'));
-  assert.equal(desktopLinks.length,expectedLinks.length,'Preserve all seven desktop destinations');
+  assert.equal(desktopLinks.length,expectedLinks.length,'Preserve every published desktop destination');
   assert.equal(drawerLinks.length,expectedLinks.length+1,'Mobile navigation also includes the paper');
-  assert.equal(drawerFooter.length,1,'One separate getting-started entry in the mobile footer');
-  assert.equal(allDrawerLinks.length,drawerLinks.length+drawerFooter.length,'Every mobile link belongs to the primary destinations or getting-started footer');
+  if(docsPublished){
+    assert.equal(drawerFooter.length,1,'One separate getting-started entry in the mobile footer');
+  }else{
+    assert.equal(drawerFooter.length,0,'Unpublished code status is not a footer link');
+    const footer=elements(drawer.content,'div').filter(node=>classes(node).includes('nav-drawer-footer'));
+    assert.equal(footer.length,1,'One static release-status footer');
+    const statuses=tagged(footer[0].content,a=>has(a,'data-code-status'));
+    assert.equal(statuses.length,1,'Mobile footer includes one code release status');
+    assert.equal(statuses[0].attributes['data-code-status'],'coming-soon');
+    assert(plainText(footer[0].content).includes('Code coming soon'),'Mobile footer states the code release status');
+    assert(!has(statuses[0].attributes,'href')&&!has(statuses[0].attributes,'tabindex'),'Static code status must not masquerade as a link or keyboard target');
+    assert.equal(elements(footer[0].content,'a').length,0,'Static release footer does not expose documentation');
+    for(const link of elements(header.content,'a'))assert(!/^\/docs(?:\/|$)/.test(route(link.attributes.href||'')),'Unpublished documentation has no header or mobile navigation entry');
+  }
+  assert.equal(allDrawerLinks.length,drawerLinks.length+drawerFooter.length,'Every mobile link belongs to published primary destinations or an available footer link');
   function checkDestinations(links,expected){
     links.forEach(link=>assert((link.attributes.href||'').trim(),'Every navigation link has a real destination'));
     for(const [href,label] of expected){
@@ -77,16 +92,20 @@ export function verifyNavigation({html,css,js}){
   }
   checkDestinations(desktopLinks,expectedLinks);
   checkDestinations(drawerLinks,[...expectedLinks,['/paper/','Paper']]);
-  checkDestinations(drawerFooter,[['/docs/getting-started/','Getting started']]);
+  if(docsPublished)checkDestinations(drawerFooter,[['/docs/getting-started/','Getting started']]);
   const paperActions=elements(header.content,'a').filter(node=>classes(node).includes('nav-paper'));
   assert.equal(paperActions.length,1,'Preserve the desktop paper action');
   assert.equal(route(paperActions[0].attributes.href),'/paper');
   const current=links=>links.filter(link=>link.attributes['aria-current']==='page');
   const currentDesktop=current([...desktopLinks,...paperActions]);
   const currentMobile=current(allDrawerLinks);
-  assert.equal(currentDesktop.length,1,'Exactly one current route in desktop navigation and paper action');
-  assert.equal(currentMobile.length,1,'Exactly one current route in mobile navigation, including Paper');
-  assert.equal(route(currentDesktop[0].attributes.href),route(currentMobile[0].attributes.href),'Desktop and mobile current routes agree');
+  const main=elements(html,'main')[0]?.content||'';
+  const unavailable=!docsPublished&&tagged(main,a=>has(a,'data-docs-unavailable')).length>0;
+  const currentCount=unavailable?0:1;
+  assert.equal(currentDesktop.length,currentCount,unavailable?'Unavailable documentation does not identify another desktop page as current':'Exactly one current route in desktop navigation and paper action');
+  assert.equal(currentMobile.length,currentCount,unavailable?'Unavailable documentation does not identify another mobile page as current':'Exactly one current route in mobile navigation, including Paper');
+  if(unavailable)assert.equal(tagged(header.content,a=>a['aria-current']==='page').length,0,'Unavailable documentation has no current-page claim anywhere in the header');
+  if(!unavailable)assert.equal(route(currentDesktop[0].attributes.href),route(currentMobile[0].attributes.href),'Desktop and mobile current routes agree');
   for(const node of tagged(header.content,a=>has(a,'role'))){
     assert(!/^(?:menu|menubar|menuitem(?:checkbox|radio)?)$/i.test(node.attributes.role),'Site links use ordinary navigation semantics, not application menus');
   }

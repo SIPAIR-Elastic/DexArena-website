@@ -4,6 +4,16 @@ Public, English-language website for the DexArena dexterous manipulation benchma
 
 Website: **https://dexarena.onrender.com/**
 
+## Public release status
+
+Docs is temporarily withheld from the navigation, public links, search index and
+sitemap. Repository/code entries display non-clickable **Code coming soon**.
+The 15 existing documentation URLs show only a no-index release notice, never
+the documentation body; the 19 research/task pages remain discoverable.
+All authored Docs renderers, content and styles are retained in source. Set
+`docsPublished` in `src/publication.mjs` to `true` and rebuild to restore them.
+Paper PDFs and BibTeX under `/assets/docs/` remain publicly accessible.
+
 The public website is deployed as a **Render Web Service**. The GitHub repository
 remains private; visitors do not need a GitHub or Render account. Only the
 generated website in `dist/` is served, not the repository or its source files.

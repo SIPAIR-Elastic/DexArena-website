@@ -89,7 +89,7 @@ export const reportBody = `
     <article><span class="report-eyebrow">Data note</span><h3><a href="/docs/data/">Replay-validated demonstrations.</a></h3><p>One hundred replay-successful episodes per stage retain the simulator state for restoration and offline rendering.</p><a href="/docs/data/">Data & replay guide →</a></article>
     <article><span class="report-eyebrow">Baseline note</span><h3><a href="/leaderboard/">Six policies. Three evaluation tracks.</a></h3><p>Compare PPO, RLPD, ACT, Diffusion Policy, GR00T and π0.5 on execution, scene transfer and full sequences.</p><a href="/leaderboard/">Explore manuscript results →</a></article>
   </div>
-  <p class="report-note">Technical notes describe the current project, not separate publications. Public code and dataset release links are listed in <a href="/docs/resources/">Resources & release status</a>.</p>
+  <p class="report-note">Technical notes describe the current project, not separate publications. <a href="/docs/resources/">Code & data release status</a></p>
 </section>
 <section class="section report-section" id="coverage">
   <div class="report-section-heading"><div><span class="report-eyebrow">02 · PAIR coverage</span><h2>Ideas beyond the benchmark.</h2></div><p>Selected institute announcements and independent coverage of PAIR's research conversations.</p></div>

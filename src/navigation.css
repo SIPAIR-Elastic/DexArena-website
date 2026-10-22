@@ -1,4 +1,10 @@
 /* Precision dock: quiet glass, cobalt accents, deliberate movement. */
+.code-coming-soon{display:inline-flex;align-items:center;max-width:100%;padding:6px 10px;border:1px solid #d1e1f8;border-radius:8px;background:#edf4ff;color:#185bb5;font:500 12px/1.5 var(--font);letter-spacing:0;text-transform:none;white-space:nowrap;cursor:default}
+.nav-drawer-footer .code-coming-soon{font-size:10px;padding:4px 8px}
+.release-preview{min-height:65vh;padding-top:160px!important;padding-bottom:80px!important;max-width:900px}
+.release-eyebrow{display:block;color:#185bb5;font:500 10px/1.5 var(--mono);letter-spacing:.1em;text-transform:uppercase}
+.release-preview h1{margin:22px 0;font:600 clamp(38px,6vw,64px)/1.08 var(--display);letter-spacing:-.05em}
+.release-preview>p{max-width:600px;color:#5f6368;font-size:16px;line-height:1.8}
 .site-nav[data-nav-theme="precision"]{padding:14px 24px 0;border:0;background:none;box-shadow:none;backdrop-filter:none;transition:padding .35s cubic-bezier(.2,.7,.2,1)}
 .site-nav[data-nav-theme="precision"] .site-nav__pill{z-index:1;width:min(1320px,100%);min-height:70px;padding:10px 16px;gap:18px;border:1px solid #c5d3e080;border-radius:20px;background:#ffffffed;box-shadow:0 3px 5px #12294303,0 12px 40px -20px #12294338,inset 0 1px 0 #fff;backdrop-filter:blur(22px) saturate(1.25);-webkit-backdrop-filter:blur(22px) saturate(1.25);transition:min-height .35s,padding .35s,box-shadow .35s,border-color .35s;animation:nav-arrive .6s cubic-bezier(.2,.7,.2,1) both}
 .site-nav[data-nav-theme="precision"].is-scrolled{padding-top:8px}

@@ -11,6 +11,7 @@ import {verifyCarousel} from './verify-carousel.mjs';
 import {verifyTaskMedia} from './verify-task-media.mjs';
 import {verifyPresentation} from './verify-presentation.mjs';
 import {verifyNavigation} from './verify-navigation.mjs';
+import {docsPublished} from './publication.mjs';
 import {createHash} from 'node:crypto';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
@@ -34,6 +35,14 @@ const navigationJs=await readFile(join(dist,'assets/navigation.js'),'utf8');
 for(const file of paths){
   const html=await readFile(file,'utf8');
   verifyNavigation({html,css:navigationCss,js:navigationJs});
+  if(!docsPublished){
+    assert(!/href="\/docs(?:\/|[?#"])/.test(html),'No public Docs entry points');
+    if(file.startsWith(join(dist,'docs')+'/')){
+      assert(html.includes('data-docs-unavailable')&&html.includes('<h1>Code coming soon</h1>'));
+      assert(html.includes('content="noindex, nofollow"'));
+      assert(!html.includes('class="docs-layout"')&&!html.includes('class="docs-article"'),'Old URLs must not expose documentation content');
+    }
+  }
   assert(!html.includes('undefined'),`Missing content in ${file}`);
   assert(!/\p{Script=Han}/u.test(html),`Visitor-facing Chinese in ${file}`);
   assert(!html.includes('lang="zh'),`Non-English locale in ${file}`);
@@ -109,8 +118,9 @@ viewButtons[2].handlers.click();assert(views.filter(v=>!v.hidden).every(v=>v.dat
 assert.equal([...leaderboard.matchAll(/data-result-view=/g)].length,9);
 assert.equal([...leaderboard.matchAll(/class="chart-track"/g)].length,18);
 const searchIndex=JSON.parse(await readFile(join(dist,'assets','search-index.json'),'utf8'));
-assert.equal(searchIndex.length,34);
-assert.equal(new Set(searchIndex.map(entry=>entry.url)).size,34);
+assert.equal(searchIndex.length,docsPublished?34:19);
+assert.equal(new Set(searchIndex.map(entry=>entry.url)).size,docsPublished?34:19);
+if(!docsPublished)assert(searchIndex.every(entry=>!entry.url.startsWith('/docs/')),'Unpublished Docs are excluded from search');
 for(const entry of searchIndex){
   assert(entry.title && entry.text && !entry.text.includes('undefined'));
   assert(!/\p{Script=Han}/u.test(entry.title+entry.text),'Non-English search content');
@@ -130,7 +140,7 @@ assert(home.includes('/assets/media/manus-metagloves-pro.png')&&home.includes('O
 assert((await stat(join(dist,'assets/media/manus-metagloves-pro.png'))).size>0);
 const docsOverview=await readFile(join(dist,'docs/index.html'),'utf8');
 const training=await readFile(join(dist,'docs/training/index.html'),'utf8');
-for(const model of algorithmReferences){
+if(docsPublished)for(const model of algorithmReferences){
   assert(docsOverview.includes(`/docs/training/#${model.id}`));
   assert(training.includes(`id="${model.id}"`)&&training.includes(`href="${model.url}"`));
 }
@@ -138,7 +148,11 @@ for(const html of [docsOverview,training]){
   assert(!/<a\b[^>]*>(?:(?!<\/a>)[\s\S])*<a\b/.test(html),'Nested documentation link');
   assert(!html.includes('${algorithmLink'),'Unresolved interpolation');
 }
-assert(training.includes(' · DPPO'),'Keep extended DPPO distinct from PPO');
+if(docsPublished)assert(training.includes(' · DPPO'),'Keep extended DPPO distinct from PPO');
+else{
+  assert(docsOverview.includes('data-docs-unavailable')&&training.includes('data-docs-unavailable'));
+  assert(home.includes('data-code-status="coming-soon"'),'Code entry must explicitly state availability');
+}
 const meal=await readFile(join(dist,'tasks/meal-preparation/index.html'),'utf8');
 assert(meal.includes('data-stage-button="2" data-image="/assets/tasks/task-02.jpg"'));
 assert(!meal.includes('/assets/tasks/scoop-tomato-preview.png'));

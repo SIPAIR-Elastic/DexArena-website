@@ -3,6 +3,7 @@ import {readFile,writeFile,readdir,stat} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {dirname,join,relative,resolve} from 'node:path';
 import assert from 'node:assert/strict';
+import {docsPublished} from '../src/publication.mjs';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const dist=join(root,'dist');
@@ -40,7 +41,7 @@ const search=JSON.parse(await readFile(searchPath,'utf8'));
 for(const entry of search){entry.url=withBase(entry.url);entry.text=entry.text.replaceAll(oldOrigin,site.origin+base.slice(0,-1))}
 await writeFile(searchPath,JSON.stringify(search));
 await writeFile(join(dist,'.nojekyll'),'');
-const urls=htmlFiles.map(file=>new URL(relative(dist,file).replaceAll('\\','/').replace(/index\.html$/,''),site).href);
+const urls=htmlFiles.filter(file=>docsPublished||!relative(dist,file).replaceAll('\\','/').startsWith('docs/')).map(file=>new URL(relative(dist,file).replaceAll('\\','/').replace(/index\.html$/,''),site).href);
 await writeFile(join(dist,'sitemap.xml'),`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map(url=>`<url><loc>${url}</loc></url>`).join('')}</urlset>\n`);
 
 // Validate the actual project-path build, including poster images and dynamic stage images.
