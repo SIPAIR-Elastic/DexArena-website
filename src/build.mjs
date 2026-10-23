@@ -8,7 +8,7 @@ import { reportBody } from "./report.mjs";
 import { algorithmLink, algorithmDirectory, algorithmReferenceSection } from "./references.mjs";
 import { benchmarkScope, findingsDigest } from "./presentation.mjs";
 import { docsPublished, paperPublished, paperArtifactPaths, publishContent } from "./publication.mjs";
-import { brandAssets, brandMark } from "./brand.mjs";
+import { brandAssets, brandMark, brandVersion } from "./brand.mjs";
 import { codeBody } from "./code-page.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -226,7 +226,7 @@ function layout({title,description,active,body,pageClass=""}) {
     <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="description" content="${esc(description)}"><meta name="theme-color" content="#f8f9fa">${withheld?'<meta name="robots" content="noindex, nofollow">':""}
     <meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}">
-    <title>${esc(title)}</title><link rel="icon" href="/assets/brand/dexarena-favicon.svg" type="image/svg+xml" sizes="any">
+    <title>${esc(title)}</title><link rel="icon" href="/assets/brand/dexarena-favicon.svg?v=${brandVersion}" type="image/svg+xml" sizes="any">
     <link rel="preload" href="/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${["paper-page","home-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}${["home-page","evaluation-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/experience.css">':""}${pageClass==="home-page"?'<link rel="stylesheet" href="/assets/carousel.css">':""}<link rel="stylesheet" href="/assets/footer.css"><link rel="stylesheet" href="/assets/navigation.css"><script src="/assets/navigation.js" defer></script><script src="/assets/site.js" defer></script>${["home-page","evaluation-page"].includes(pageClass)?'<script src="/assets/experience.js" defer></script>':""}

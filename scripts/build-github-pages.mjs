@@ -48,7 +48,8 @@ await writeFile(join(dist,'sitemap.xml'),`<?xml version="1.0" encoding="UTF-8"?>
 let links=0;
 async function checkTarget(url,source){
   if(/^(?:https?:|mailto:|data:|\/\/)/.test(url))return;
-  const [path,hash]=url.split('#');
+  const [pathWithQuery,hash]=url.split('#');
+  const path=pathWithQuery.split('?')[0];
   let target=source;
   if(path){
     assert(path.startsWith(base),`URL escapes the project path: ${url} in ${source}`);

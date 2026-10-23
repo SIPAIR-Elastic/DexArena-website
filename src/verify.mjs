@@ -11,7 +11,7 @@ import {verifyTaskMedia} from './verify-task-media.mjs';
 import {verifyPresentation} from './verify-presentation.mjs';
 import {verifyNavigation} from './verify-navigation.mjs';
 import {docsPublished,paperPublished,paperArtifactPaths,isRetiredRoute} from './publication.mjs';
-import {brandAssets,brandMark} from './brand.mjs';
+import {brandAssets,brandMark,brandVersion} from './brand.mjs';
 import {createHash} from 'node:crypto';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
@@ -37,9 +37,9 @@ for(const [file,svg] of brandAssets)assert.equal(await readFile(join(dist,'asset
 for(const file of paths){
   const html=await readFile(file,'utf8');
   verifyNavigation({html,css:navigationCss,js:navigationJs});
-  assert(html.includes('href="/assets/brand/dexarena-favicon.svg"'),'Use the same identity in the browser tab');
+  assert(html.includes(`href="/assets/brand/dexarena-favicon.svg?v=${brandVersion}"`),'Use the current identity in the browser tab with explicit cache versioning');
   assert(html.includes(brandMark())&&html.includes(brandMark({inverse:true})),'Header and footer share one original brand geometry');
-  assert.equal([...html.matchAll(/data-brandmark="arena-da"/g)].length,2,'One brand icon per header and footer');
+  assert.equal([...html.matchAll(/data-brandmark="dexterous-hand"/g)].length,2,'One dexterous-hand icon per header and footer');
   const footer=html.match(/<footer\b[^>]*>([\s\S]*?)<\/footer>/)?.[1]||'';
   assert(footer.includes('href="/code/"')&&!/Code coming soon|data-code-status|code-coming-soon/.test(footer),'Footer links to Code without repeating the pending-release status');
   assert(!/wechat|weixin\.qq\.com|gh_[a-z\d]{10,}|href=["']\/community(?:\/|[?#"'])/i.test(html),`Removed social-account content or Community link in ${file}`);
@@ -61,7 +61,8 @@ for(const file of paths){
   assert(!/\p{Script=Han}/u.test(html),`Visitor-facing Chinese in ${file}`);
   assert(!html.includes('lang="zh'),`Non-English locale in ${file}`);
   for(const match of html.matchAll(/(?:href|src)="([^"]+)"/g)){
-    const [url,fragment]=match[1].split('#');
+    const [urlWithQuery,fragment]=match[1].split('#');
+    const url=urlWithQuery.split('?')[0];
     if(/^(https?:|mailto:|data:)/.test(url))continue;
     let target=url?url.startsWith('/')?join(dist,url):resolve(dirname(file),url):file;
     if(url.endsWith('/'))target=join(target,'index.html');
@@ -238,7 +239,12 @@ assert.equal(reportConferences.length,2);
 assert.equal(reportConferences.find(item=>item.id==='iclr-2027').status,'Under review');
 assert.equal(reportConferences.find(item=>item.id==='pair-2026').status,'Held');
 const paperHtml=await readFile(join(dist,'paper','index.html'),'utf8');
-assert.equal(paperAuthors.length,15);assert.equal(paperAffiliations.length,7);
+assert.equal(paperAuthors.length,15);assert.equal(paperAffiliations.length,8);
+assert.deepEqual(paperAffiliations[7],['Shanghai Institute for Physical Artificial Intelligence and Robotics',null,'PAIR'],'PAIR is an additional institution without an invented public URL');
+assert(paperAuthors.every(([,index])=>index>=1&&index<=7),'Do not infer PAIR affiliations for individual authors');
+const pairAffiliation=home.match(/<li id="affiliation-8"[^>]*>([\s\S]*?)<\/li>/)?.[1]||'';
+assert(pairAffiliation.includes('<b>PAIR</b>')&&pairAffiliation.includes(paperAffiliations[7][0]),'Show PAIR acronym and complete supplied English name');
+assert(!/<a\b|<img\b/.test(pairAffiliation),'Render institute text, not an invented official logo or destination');
 assert.deepEqual(paperAffiliations.slice(0,2).map(([name])=>name),['Shanghai Jiao Tong University','Tsinghua University'],'SJTU and Tsinghua lead the affiliation list');
 const expectedAuthorUniversities=[
   ['Haonan Ping','University of Michigan – Ann Arbor'],
@@ -299,9 +305,9 @@ runInNewContext(js.slice(js.indexOf('const citationButton='),js.indexOf('const d
 });
 await copyButton.handlers.click();
 assert.equal(copiedText,paperBibtex);assert.equal(copyStatus.textContent,'BibTeX copied.');
-assert.equal(universityLogos.length,7);
-assert.equal(universityLogos.filter(Boolean).length,7,'All seven affiliations must display their institutional marks');
-assert.deepEqual(universityLogos,['sjtu.png','tsinghua.png','umich.ico','nus.png','penn.svg','ntu.png','stanford.png'],'Institutional marks follow the reordered affiliation list');
+assert.equal(universityLogos.length,8);
+assert.equal(universityLogos.filter(Boolean).length,7,'Retain all seven supplied university marks; PAIR is typeset by name');
+assert.deepEqual(universityLogos,['sjtu.png','tsinghua.png','umich.ico','nus.png','penn.svg','ntu.png','stanford.png',null],'Institutional marks follow the affiliation list without inventing an institute logo');
 for(const html of paperPublished?[home,paperHtml]:[home]){
   assert.equal([...html.matchAll(/class="affiliation-logo /g)].length,7);
   for(const index of [0,1]){

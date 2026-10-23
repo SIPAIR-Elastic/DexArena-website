@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {brandPath,brandAssets,brandMark} from '../src/brand.mjs';
+import {brandVersion,brandFingerPaths,brandPalmPath,brandWristPath,brandPath,brandAssets,brandMark} from '../src/brand.mjs';
 
 const expectedAssets=[
   'brand/dexarena-mark.svg',
@@ -54,6 +54,7 @@ function isBluePaint(svg,value){
 }
 
 test('A single canonical path supplies the four versioned brand assets',()=>{
+  assert.equal(brandVersion,'dexterous-hand-v1');
   assert.equal(typeof brandPath,'string');
   assert(brandPath.trim().length>0,'The logo has real vector geometry');
   assert(/^[Mm]/.test(brandPath.trim()),'SVG geometry starts with a move command');
@@ -68,7 +69,20 @@ test('A single canonical path supplies the four versioned brand assets',()=>{
     assert.equal(roots[0].viewbox,'0 0 64 64');
     assert(svg.trim().endsWith('</svg>'),`${name}: complete SVG document`);
     assert.equal(brandShape(svg)['fill-rule'],'evenodd',`${name}: retain intentional cut-outs`);
+    assert.equal(brandShape(svg)['data-symbol'],'articulated-hand');
+    assert(svg.includes('<title id="dexarena-title">DexArena dexterous hand</title>'));
   }
+});
+
+test('The original geometry contains five digits, joint breaks, a precision palm and wrist coupling',()=>{
+  assert.deepEqual(Object.keys(brandFingerPaths),['index','middle','ring','little','thumb']);
+  for(const name of ['index','middle','ring','little']){
+    assert.equal([...brandFingerPaths[name].matchAll(/M/g)].length,2,`${name}: distinct phalanx segments`);
+  }
+  assert(brandFingerPaths.thumb.includes('L16 31'),'The opposed thumb is diagonal, not a fifth parallel finger');
+  assert.equal([...brandPalmPath.matchAll(/M/g)].length,3,'Palm silhouette, negative-space aperture and grasp center');
+  assert(brandWristPath.length>0,'The hand has a distinct mechanical wrist coupling');
+  assert.equal(brandPath,[...Object.values(brandFingerPaths),brandPalmPath,brandWristPath].join(' '));
 });
 
 test('The transparent mark has blue and white variants without a background tile',()=>{
@@ -113,7 +127,8 @@ test('The default wordmark renders a decorative, dimensioned official asset',()=
   assert((wrapper.class||'').split(/\s+/).includes('wordmark__mark'));
   assert(Object.hasOwn(wrapper,'data-brandmark'));
   assert.equal(wrapper['aria-hidden'],'true');
-  assert.equal(image.src,'/assets/brand/dexarena-mark.svg');
+  assert.equal(image.src,`/assets/brand/dexarena-mark.svg?v=${brandVersion}`);
+  assert.equal(wrapper['data-brandmark'],'dexterous-hand');
   assert.equal(image.alt,'','The adjacent DexArena name supplies the accessible identity');
   assert.equal(image.width,'40');assert.equal(image.height,'40');
   assert(!/<a\b|\btabindex\s*=/i.test(markup),'The decorative mark does not create an extra focus target');
@@ -126,11 +141,12 @@ test('The inverse wordmark selects the white asset and preserves decorative acce
   assert.equal(elements(inverse,'img').length,1);
   assert.equal(elements(inverse,'span').length,1);
   const image=elements(inverse,'img')[0];
-  assert.equal(image.src,'/assets/brand/dexarena-mark-white.svg');
+  assert.equal(image.src,`/assets/brand/dexarena-mark-white.svg?v=${brandVersion}`);
   assert.equal(image.alt,'');
   assert.equal(image.width,'40');assert.equal(image.height,'40');
   const wrapper=elements(inverse,'span')[0];
   assert.equal(wrapper['aria-hidden'],'true');
+  assert.equal(wrapper['data-brandmark'],'dexterous-hand');
   assert((wrapper.class||'').split(/\s+/).includes('wordmark__mark'));
   assert(Object.hasOwn(wrapper,'data-brandmark'));
   assert(!/<a\b|\btabindex\s*=/i.test(inverse));

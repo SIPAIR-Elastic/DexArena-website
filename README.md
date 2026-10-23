@@ -31,14 +31,17 @@ generated website in `dist/` is served, not the repository or its source files.
 
 ## Homepage layout
 
-The original DexArena icon combines a chamfered D silhouette with an A-shaped
-negative space. Navigation uses the cobalt variant; the dark footer uses its
-white inverse. The favicon shares the exact geometry on a blue tile. All SVGs
-are generated from one path in `src/brand.mjs`, not copied reference artwork.
-Reusable assets are in `dist/assets/brand/`.
+The original DexArena icon depicts an articulated robotic hand: four fingers of
+different lengths, an opposed thumb, visible joint breaks, a precision aperture
+and a mechanical wrist coupling. Navigation uses the cobalt variant; the dark
+footer uses its white inverse. The favicon shares the geometry on a blue tile.
+All SVGs derive from one canonical path in `src/brand.mjs`, not copied artwork.
+`brandVersion` versions header/footer images and the favicon to avoid stale
+browser icons. Reusable assets are in `dist/assets/brand/`.
 
 The benchmark overview follows the homepage carousel: title, 15 authors,
-seven affiliations and official institutional marks where available,
+eight institutions, with the seven supplied university marks and a typeset PAIR
+entry (Shanghai Institute for Physical Artificial Intelligence and Robotics),
 Figures 1 and 3, and baseline findings. Abstract and citation are not rendered
 while the manuscript is withheld. Full manuscript sections are retained in
 source for a future explicit release; `/paper/` remains a publication notice.
@@ -46,6 +49,8 @@ Authors appear one per line, top to bottom, in the original manuscript order.
 Shanghai Jiao Tong University and Tsinghua University lead the institution list;
 author superscripts, accessible titles and school-logo metadata are renumbered
 together without changing anyone's actual affiliation.
+PAIR is listed separately as institution 8 without assigning unprovided author
+affiliations or inventing an official institute logo or website link.
 The black/blue/white header retains DexArena's navigation and visual identity.
 Its floating precision dock adds an underline-only hover/focus indicator without
 menu background boxes, a compact
