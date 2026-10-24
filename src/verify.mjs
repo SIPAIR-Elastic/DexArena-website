@@ -352,7 +352,7 @@ for(const [foreground,background] of [['#c6dafc','#1a1d24'],['#ffffff','#1a1d24'
 assert(refinement.includes('.leaderboard-cta__card .arrow-link.on-dark span{color:#1967d2'));
 assert(refinement.includes('--bg:#f8f9fa')&&!refinement.includes('gradient('));
 assert(!/wechat|footer-community|community-account/i.test(refinement+await readFile(join(dist,'assets/footer.css'),'utf8')),'Remove retired account-specific styling');
-const projectLink='https://dexarena.onrender.com/';
+const projectLink='https://sipair-elastic.github.io/DexArena-website/';
 const textButton=node({copyText:projectLink}),textStatus={textContent:''};
 textButton.parentElement={querySelector:()=>textStatus};
 let copiedLink='';

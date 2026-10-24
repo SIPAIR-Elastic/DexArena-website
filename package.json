@@ -5,10 +5,8 @@
   "description": "DexArena benchmark website with dependency-free static builds",
   "engines": {"node": ">=22"},
   "scripts": {
-    "postinstall": "node scripts/render-postinstall.mjs",
-    "build": "node scripts/build-render.mjs",
-    "build:render": "node scripts/build-render.mjs",
-    "start": "node scripts/start-render.mjs",
-    "test": "node --test scripts/render-deployment.test.mjs scripts/public-release.test.mjs scripts/brand-identity.test.mjs"
+    "build": "node scripts/build-github-pages.mjs",
+    "start": "node scripts/preview.mjs",
+    "test": "node --test scripts/pages-deployment.test.mjs scripts/public-release.test.mjs scripts/brand-identity.test.mjs"
   }
 }

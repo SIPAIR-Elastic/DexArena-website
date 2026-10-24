@@ -1,16 +1,17 @@
 import {execFileSync} from 'node:child_process';
-import {readFile,writeFile,readdir,stat} from 'node:fs/promises';
+import {readFile,writeFile,readdir,stat,rm} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {dirname,join,relative,resolve} from 'node:path';
 import assert from 'node:assert/strict';
 import {docsPublished,paperPublished,isRetiredRoute} from '../src/publication.mjs';
+import {githubPagesConfig} from './pages-config.mjs';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const dist=join(root,'dist');
-const base=process.env.SITE_BASE_PATH||'/DexArena/';
-assert(/^\/(?:[A-Za-z0-9_-]+\/)*$/.test(base),'SITE_BASE_PATH must be an absolute directory path ending in /');
-const site=new URL(process.env.SITE_URL||`https://qhf7.github.io${base}`);
-assert(site.protocol==='https:'&&!site.username&&!site.password&&site.pathname===base&&!site.search&&!site.hash,'SITE_URL must be the HTTPS public site URL including SITE_BASE_PATH');
+const {basePath:base,siteUrl}=githubPagesConfig();
+const site=new URL(siteUrl);
+// A previous deployment marker must never be included in the Pages artifact.
+await rm(join(dist,'.render-build.json'),{force:true});
 const oldOrigin='https://dexarena-benchmark.adeptfawn4.chatgpt.site';
 const withBase=url=>base+url.slice(1);
 

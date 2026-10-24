@@ -5,5 +5,4 @@ __pycache__/
 node_modules/
 .openai/
 .vercel/
-dist/.render-build.json
 .wrangler/

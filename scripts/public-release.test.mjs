@@ -69,7 +69,7 @@ test('Unreleased manuscript downloads and its OpenReview record point only to th
     '<a class="arrow-link" href="/assets/docs/dexarena-paper.pdf" download>Download PDF ↗</a>',
     "<a href='/assets/docs/dexarena-citation.bib' download>Download .bib ↓</a>",
     '<a href="/assets/docs/dexarena-paper.pdf?download=1#page=1">PDF</a>',
-    '<a href="https://dexarena.onrender.com/assets/docs/dexarena-paper.pdf">Full paper</a>',
+    '<a href="https://example.org/assets/docs/dexarena-paper.pdf">Full paper</a>',
     '<a href="https://openreview.net/forum?id=9yr0F1saHs" target="_blank">OpenReview</a>',
     "<a href='https://openreview.net/pdf?id=9yr0F1saHs'>OpenReview PDF</a>",
     '<a href="https://openreview.net/forum?id=9yr0F1saHs&amp;referrer=profile">Submission record</a>'

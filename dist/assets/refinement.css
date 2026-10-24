@@ -1,7 +1,7 @@
 /* Local fonts; restrained black, blue and white research-site theme. */
-@font-face{font-family:Inter;src:url("/assets/fonts/inter.woff2") format("woff2");font-style:normal;font-weight:400 700;font-display:swap}
-@font-face{font-family:Manrope;src:url("/assets/fonts/manrope.woff2") format("woff2");font-style:normal;font-weight:400 700;font-display:swap}
-@font-face{font-family:"JetBrains Mono";src:url("/assets/fonts/jetbrains-mono.woff2") format("woff2");font-style:normal;font-weight:400 600;font-display:swap}
+@font-face{font-family:Inter;src:url("/DexArena-website/assets/fonts/inter.woff2") format("woff2");font-style:normal;font-weight:400 700;font-display:swap}
+@font-face{font-family:Manrope;src:url("/DexArena-website/assets/fonts/manrope.woff2") format("woff2");font-style:normal;font-weight:400 700;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url("/DexArena-website/assets/fonts/jetbrains-mono.woff2") format("woff2");font-style:normal;font-weight:400 600;font-display:swap}
 :root{--bg:#f8f9fa;--surface:#fff;--surface-2:#f1f3f4;--text:#202124;--muted:#5f6368;--soft:#666c73;--blue:#1967d2;--blue-soft:#e8f0fe;--teal:#1967d2;--violet:#1967d2;--amber:#1967d2;--line:rgba(32,34,36,.12);--font:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;--display:Manrope,Inter,ui-sans-serif,system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace}
 body{font-optical-sizing:auto}
 h1,h2,h3,.wordmark,.task-card__body strong{font-family:var(--display)}

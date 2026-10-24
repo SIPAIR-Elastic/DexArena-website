@@ -1,34 +1,60 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {mkdtemp,mkdir,readFile,writeFile,symlink,rm} from 'node:fs/promises';
+import {mkdtemp,mkdir,readFile,readdir,writeFile,symlink,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createStaticServer} from './serve.mjs';
-import {renderSiteUrl} from './render-config.mjs';
+import {githubPagesConfig} from './pages-config.mjs';
 
-test('Render is the default build and the documented production host',async()=>{
+test('GitHub Pages is the only deployment target and main publishes automatically',async()=>{
   const pkg=JSON.parse(await readFile(new URL('../package.json',import.meta.url),'utf8'));
-  assert.equal(pkg.scripts.build,'node scripts/build-render.mjs');
-  assert.equal(pkg.scripts.start,'node scripts/start-render.mjs');
-  assert.equal(pkg.scripts.postinstall,'node scripts/render-postinstall.mjs');
-  assert(!Object.keys(pkg.scripts).some(name=>/cloudflare|vercel/i.test(name)));
+  assert.equal(pkg.scripts.build,'node scripts/build-github-pages.mjs');
+  assert.equal(pkg.scripts.start,'node scripts/preview.mjs');
+  assert.equal(pkg.scripts.postinstall,undefined);
+  assert(!Object.keys(pkg.scripts).some(name=>name.includes('render')));
   const readme=await readFile(new URL('../README.md',import.meta.url),'utf8');
-  assert(readme.includes('https://dexarena.onrender.com/'));
-  assert(readme.includes('## Render deployment'));
-  assert(!/cloudflare|vercel/i.test(readme));
+  assert(readme.includes('https://sipair-elastic.github.io/DexArena-website/'));
+  assert(readme.includes('## GitHub Pages deployment'));
+  const workflow=await readFile(new URL('../.github/workflows/pages.yml',import.meta.url),'utf8');
+  assert(workflow.includes('push:')&&workflow.includes('branches: [main]')&&workflow.includes('workflow_dispatch:'));
+  assert(workflow.includes('npm run build')&&workflow.includes('npm test'));
+  assert(!workflow.includes('qhf7'));
 });
 
-test('Render URLs use the service root and allow a verified custom domain',()=>{
-  assert.equal(renderSiteUrl({}),'https://dexarena.onrender.com/');
-  assert.equal(renderSiteUrl({RENDER_EXTERNAL_URL:'https://actual.onrender.com'}),'https://actual.onrender.com/');
-  assert.equal(renderSiteUrl({RENDER_EXTERNAL_HOSTNAME:'actual.onrender.com'}),'https://actual.onrender.com/');
-  assert.equal(renderSiteUrl({SITE_URL:'https://example.org/',RENDER_EXTERNAL_URL:'https://actual.onrender.com'}),'https://example.org/');
-  for(const url of ['http://example.org/','https://example.org/DexArena/','https://user:secret@example.org/','https://example.org/?x=1']){
-    assert.throws(()=>renderSiteUrl({SITE_URL:url}));
+test('Pages URLs follow the repository owner, name and organization-site convention',()=>{
+  assert.deepEqual(githubPagesConfig({}),{basePath:'/DexArena-website/',siteUrl:'https://sipair-elastic.github.io/DexArena-website/'});
+  assert.deepEqual(githubPagesConfig({GITHUB_REPOSITORY:'SIPAIR-Elastic/DexArena'}),{basePath:'/DexArena/',siteUrl:'https://sipair-elastic.github.io/DexArena/'});
+  assert.deepEqual(githubPagesConfig({GITHUB_REPOSITORY:'DEXARENA/DEXARENA.github.io'}),{basePath:'/',siteUrl:'https://dexarena.github.io/'});
+  assert.deepEqual(githubPagesConfig({GITHUB_REPOSITORY:'SIPAIR-Elastic/DexArena.github.io'}),{basePath:'/DexArena.github.io/',siteUrl:'https://sipair-elastic.github.io/DexArena.github.io/'});
+  for(const url of ['http://sipair-elastic.github.io/DexArena-website/','https://example.org/DexArena-website/','https://sipair-elastic.github.io/','https://user:secret@sipair-elastic.github.io/DexArena-website/','https://sipair-elastic.github.io/DexArena-website/?x=1']){
+    assert.throws(()=>githubPagesConfig({SITE_URL:url}));
+  }
+  for(const basePath of ['DexArena/','/DexArena','/../','/./','//evil.example/'])assert.throws(()=>githubPagesConfig({SITE_BASE_PATH:basePath}));
+});
+
+test('The published artifact uses Pages URLs and excludes unpublished manuscript files',async()=>{
+  const {basePath,siteUrl}=githubPagesConfig();
+  const dist=new URL('../dist/',import.meta.url);
+  const paths=await readdir(dist,{recursive:true});
+  const htmlPaths=paths.filter(path=>path.endsWith('.html'));
+  assert.equal(htmlPaths.length,34);
+  for(const path of htmlPaths){
+    const html=await readFile(new URL(path,dist),'utf8');
+    const canonical=html.split('<link rel="canonical" href="');
+    assert.equal(canonical.length,2,`${path}: exactly one canonical URL`);
+    assert(canonical[1].startsWith(siteUrl),`${path}: canonical uses Pages`);
+    assert(!html.includes('onrender.com')&&!html.includes('qhf7.github.io'),`${path}: no retired host`);
+  }
+  const search=JSON.parse(await readFile(new URL('assets/search-index.json',dist),'utf8'));
+  assert(search.length>0&&search.every(entry=>entry.url.startsWith(basePath)));
+  const sitemap=await readFile(new URL('sitemap.xml',dist),'utf8');
+  assert(sitemap.includes(`<loc>${siteUrl}</loc>`));
+  for(const path of ['.render-build.json','assets/docs/dexarena-paper.pdf','assets/docs/dexarena-citation.bib','community/index.html']){
+    assert(!paths.includes(path),`${path}: not part of the public artifact`);
   }
 });
 
-test('The public server serves only the build output and supports MP4 ranges',async t=>{
+test('The local preview serves only the build output and supports MP4 ranges',async t=>{
   const temporary=await mkdtemp(join(tmpdir(),'dexarena-http-test-'));
   const dist=join(temporary,'dist');
   await mkdir(join(dist,'paper'),{recursive:true});await mkdir(join(dist,'assets'));
@@ -72,6 +98,32 @@ test('The public server serves only the build output and supports MP4 ranges',as
     const r=await fetch(origin+'/paper?x=1',{redirect:'manual'});
     assert.equal(r.status,308);assert.equal(r.headers.get('location'),'/paper/?x=1');
     assert.equal(await(await fetch(origin+'/paper/')).text(),'Paper page');
+  });
+  await t.test('Pages-path preview serves navigation, assets and ranges under the repository prefix',async()=>{
+    const basePath='/DexArena-website/';
+    const preview=await createStaticServer(dist,{basePath});
+    await new Promise(resolve=>preview.listen(0,'127.0.0.1',resolve));
+    const host=`http://127.0.0.1:${preview.address().port}`;
+    try{
+      assert.equal((await fetch(host+basePath)).status,200);
+      const rootRedirect=await fetch(host+basePath.slice(0,-1)+'?task-media=videos',{redirect:'manual'});
+      assert.equal(rootRedirect.status,308);
+      assert.equal(rootRedirect.headers.get('location'),basePath+'?task-media=videos');
+      const redirect=await fetch(host+basePath+'paper?x=1',{redirect:'manual'});
+      assert.equal(redirect.headers.get('location'),basePath+'paper/?x=1');
+      assert.equal(await(await fetch(host+basePath+'paper/')).text(),'Paper page');
+      const media=await fetch(host+basePath+'assets/test.mp4',{headers:{Range:'bytes=10-29'}});
+      assert.equal(media.status,206);
+      assert.deepEqual(Buffer.from(await media.arrayBuffer()),bytes.subarray(10,30));
+      for(const path of ['/', '/assets/test.mp4',basePath+'community/',basePath+'assets/docs/dexarena-paper.pdf',basePath+'outside.txt']){
+        const response=await fetch(host+path);
+        assert.equal(response.status,404,path);
+        await response.text();
+      }
+    }finally{
+      preview.closeAllConnections?.();
+      await new Promise(resolve=>preview.close(resolve));
+    }
   });
   await t.test('health check, HEAD, MIME and conditional responses',async()=>{
     assert.equal(await(await fetch(origin+'/_health')).text(),'ok\n');

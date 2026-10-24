@@ -13,7 +13,7 @@ const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8'
   '.pdf':'application/pdf','.woff2':'font/woff2','.woff':'font/woff'};
 const within=(root,file)=>{const rel=relative(root,file);return !isAbsolute(rel)&&rel!=='..'&&!rel.startsWith('../')};
 
-export async function createStaticServer(directory){
+export async function createStaticServer(directory,{basePath='/'}={}){
   const root=await realpath(directory);
   return createServer(async(req,res)=>{
     res.setHeader('X-Content-Type-Options','nosniff');
@@ -27,6 +27,11 @@ export async function createStaticServer(directory){
     let url,path;
     // Origin-form targets beginning with // are paths, not a different hostname.
     try{url=new URL(req.url.startsWith('/')?'http://localhost'+req.url:req.url,'http://localhost');path=decodeURIComponent(url.pathname)}catch{fail(400,'Bad request');return}
+    if(basePath!=='/'){
+      if(path===basePath.slice(0,-1)){res.writeHead(308,{Location:basePath+url.search,'Content-Length':0});res.end();return}
+      if(!path.startsWith(basePath)){fail(404,'Not found');return}
+      path='/'+path.slice(basePath.length);
+    }
     if(path==='/_health'){res.writeHead(200,{'Content-Type':'text/plain; charset=utf-8','Content-Length':3,'Cache-Control':'no-store'});res.end(req.method==='HEAD'?undefined:'ok\n');return}
     if(path.includes('\0')||path.includes('\\')||path.split('/').some(part=>part.startsWith('.'))){fail(404,'Not found');return}
     // Defense in depth: old manuscript files must not be served from a stale build.

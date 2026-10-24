@@ -2,7 +2,7 @@
 
 Public, English-language website for the DexArena dexterous manipulation benchmark.
 
-Website: **https://dexarena.onrender.com/**
+Website: **https://sipair-elastic.github.io/DexArena-website/**
 
 ## Public release status
 
@@ -20,14 +20,15 @@ The homepage link is labeled **Paper**, and `/paper/` currently displays
 **Paper coming soon**, not a viewer or download. Abstract, citation and direct
 manuscript/OpenReview links are withheld from all generated pages and search.
 `paperPublished` in `src/publication.mjs` controls this independently of Docs.
-The original PDF is retained at `private/paper/dexarena-paper.pdf` in this private
-repository, outside the served directory. The build excludes PDF/BibTeX artifacts
-while withheld; the HTTP server also rejects their old URLs, including stale
-copies. Previously downloaded or third-party-cached copies cannot be recalled.
+The original PDF is retained at `private/paper/dexarena-paper.pdf` in the source
+repository, outside the published directory. The build removes PDF/BibTeX
+artifacts while withheld, including stale generated copies, before uploading
+the Pages artifact. Previously downloaded or third-party-cached copies cannot
+be recalled.
 
-The public website is deployed as a **Render Web Service**. The GitHub repository
-remains private; visitors do not need a GitHub or Render account. Only the
-generated website in `dist/` is served, not the repository or its source files.
+The public website is deployed only through **GitHub Pages**. Visitors do not
+need a GitHub account. The deployment publishes only the generated `dist/`
+directory; source files and `private/` are excluded from the website artifact.
 
 ## Homepage layout
 
@@ -79,33 +80,24 @@ tracks, generated directly from `src/paper-results.json`. Bars share a 0–100%
 scale and scene uncertainty is identified explicitly. All comparisons remain
 readable without JavaScript. The same digest is used on the Evaluation page.
 
-## Render deployment
+## GitHub Pages deployment
 
-The configured service uses Build Command `yarn` and Start Command `yarn start`.
-No dependency packages are required. During Render's install step, the
-`postinstall` hook generates and verifies all 34 pages at the service root. The
-start script serves only `dist/`, binds to `0.0.0.0:$PORT`, and supports HEAD and
-byte-range requests for videos. It never serves the Git checkout or source.
+GitHub Pages is the only supported production host. In repository Settings →
+Pages, select **GitHub Actions** as the publishing source. The
+`.github/workflows/pages.yml` workflow builds, tests and deploys the website
+automatically on pushes to `main`; it can also be started with **Run workflow**.
+Only `dist/` is uploaded. The workflow uses the GitHub Pages environment and a
+short-lived Actions token; no external hosting account or deployment secret is
+required. Node.js 22 or later is required and no npm dependencies are needed.
 
-Explicit settings, if changing the dashboard configuration:
-
-- Branch: `main`; Root Directory: blank (repository root).
-- Build Command: `npm run build` (the existing `yarn` install command also works).
-- Start Command: `npm start` (the existing `yarn start` command also works).
-- Health Check Path: `/_health`.
-- Node.js: 22 or later. Render's Node.js 24 runtime is supported.
-
-`RENDER_EXTERNAL_URL` supplies the actual public origin. Set `SITE_URL` only for
-a verified custom HTTPS root domain; do not set it to the old /DexArena/ URL.
-The start script also builds if an install hook was disabled or the build marker
-does not match the current Render commit. No paid plan upgrade is required by
-these code changes. A free web-service instance may have cold-start delays.
-
-```bash
-npm test
-RENDER_EXTERNAL_URL=https://dexarena.onrender.com npm run build
-PORT=10000 npm start
-```
+The build derives the public hostname and base path from `GITHUB_REPOSITORY`,
+which GitHub Actions sets automatically. Local builds default to
+`SIPAIR-Elastic/DexArena-website`, producing
+`https://sipair-elastic.github.io/DexArena-website/`. A repository named
+`<owner>.github.io` is built at that owner's site root. After renaming or
+transferring the repository, update the local default in
+`scripts/pages-config.mjs` and the documented website links; Actions uses the
+new repository identity automatically.
 
 ## Build
 
@@ -116,29 +108,25 @@ npm run build
 ```
 
 This generates 34 pages, runs benchmark content, navigation and carousel checks,
-builds navigation, media, fonts and search at the Render root path `/`, and verifies
+builds navigation, media, fonts and search under `/DexArena-website/`, and verifies
 the final deployment links. The published output is in `dist/`. Canonical,
-sharing and sitemap URLs use the Render service URL.
+sharing and sitemap URLs use the GitHub Pages address.
+
+```bash
+npm test
+```
 
 For a local preview:
 
 ```bash
-PORT=4173 npm start
+npm start
 ```
 
-Open http://localhost:4173. The server serves only `dist/` and supports partial
-requests for video playback. Public HTML, PDFs and media are accessible to site
-visitors; repository privacy does not make published website assets confidential.
-
-## Optional GitHub Pages deployment (not the selected host)
-
-The retained, manual-only `.github/workflows/pages.yml` workflow uses
-the GitHub Pages environment and a short-lived GitHub Actions token; no personal
-access token or external hosting account is required for visitors.
-
-Automatic Pages publication is disabled while the repository is private. Do not
-make the repository public to deploy the website. The original static build and
-path checks remain available for optional future use.
+Open http://localhost:4173/DexArena-website/. This command rebuilds and starts a
+loopback-only preview of `dist/` at the same base path as GitHub Pages. It
+supports partial requests for video playback and is not a production server.
+Set `PORT` to choose another local port. Public website assets are accessible to
+all visitors; the source repository's visibility is independent of Pages.
 
 ## Homepage task showcase: images and videos
 
@@ -146,7 +134,7 @@ The original image cards remain the default. The Images / Videos switch changes
 only the Simulation tasks card backgrounds, preserving the layout and task links.
 Share the video variant directly at:
 
-**https://dexarena.onrender.com/?task-media=videos#simulation-tasks**
+**https://sipair-elastic.github.io/DexArena-website/?task-media=videos#simulation-tasks**
 
 Videos load only after selecting Videos and bringing cards into view. Pause videos
 also pauses the moving rows; failed videos retain the original image. The showcase
