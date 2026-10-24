@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {test} from 'node:test';
-import {brandVersion,brandFingerPaths,brandPalmPath,brandWristPath,brandPath,brandAssets,brandMark} from '../src/brand.mjs';
+import {brandVersion,brandAssets,brandMark} from '../src/brand.mjs';
+
+const canonicalSvg=readFileSync(new URL('../src/brand/dexarena-logo.svg',import.meta.url),'utf8');
 
 const expectedAssets=[
   'brand/dexarena-mark.svg',
@@ -21,12 +24,6 @@ function elements(svg,name){
   return [...svg.matchAll(new RegExp(`<${name}\\b[^>]*>`,'gi'))].map(match=>attributes(match[0]));
 }
 
-function brandShape(svg){
-  const paths=elements(svg,'path').filter(path=>path.d===brandPath);
-  assert.equal(paths.length,1,'Each variant contains exactly one canonical brand silhouette');
-  return paths[0];
-}
-
 function hexRGB(value){
   const match=/^#([a-f\d]{3}|[a-f\d]{6})$/i.exec(value||'');
   assert(match,`Use a deterministic SVG fill color, received ${value}`);
@@ -34,86 +31,99 @@ function hexRGB(value){
   return [0,2,4].map(offset=>parseInt(hex.slice(offset,offset+2),16));
 }
 
-function isWhite(value){
-  return value?.toLowerCase()==='white'||hexRGB(value).every(channel=>channel===255);
-}
-
 function isBlue(value){
   const [red,green,blue]=hexRGB(value);
-  return blue>red&&blue>=green;
+  return blue>red+40&&blue>green+40;
 }
 
-function isBluePaint(svg,value){
-  const reference=/^url\(#([\w.-]+)\)$/.exec(value||'');
-  if(!reference)return isBlue(value);
-  const gradients=[...svg.matchAll(/<linearGradient\b[^>]*>[\s\S]*?<\/linearGradient>/gi)]
-    .filter(match=>attributes(match[0].slice(0,match[0].indexOf('>')+1)).id===reference[1]);
-  assert.equal(gradients.length,1,'Blue gradient paint resolves to one local definition');
-  const stops=elements(gradients[0][0],'stop');
-  return stops.length>=2&&stops.every(stop=>isBlue(stop['stop-color']));
+function isCharcoal(value){
+  const channels=hexRGB(value);
+  return Math.min(...channels)>=20&&Math.max(...channels)<=110&&Math.max(...channels)-Math.min(...channels)<=35;
 }
 
-test('A single canonical path supplies the four versioned brand assets',()=>{
-  assert.equal(brandVersion,'dexterous-hand-v1');
-  assert.equal(typeof brandPath,'string');
-  assert(brandPath.trim().length>0,'The logo has real vector geometry');
-  assert(/^[Mm]/.test(brandPath.trim()),'SVG geometry starts with a move command');
-  assert(!/[<>]/.test(brandPath),'The exported geometry is path data, not nested markup');
+function paintedPathColors(svg){
+  const colors=[];
+  const fills=['#000000'];
+  for(const match of svg.matchAll(/<\/?([\w:-]+)\b[^>]*>/g)){
+    const tag=match[0];
+    if(tag.startsWith('</')){fills.pop();continue}
+    const attrs=attributes(tag);
+    const fill=attrs.fill||/\bfill\s*:\s*([^;]+)/i.exec(attrs.style||'')?.[1]?.trim()||fills.at(-1);
+    if(match[1].toLowerCase()==='path'){
+      const reference=/^url\(#([\w.-]+)\)$/.exec(fill);
+      if(reference){
+        const gradient=[...svg.matchAll(/<(?:linearGradient|radialGradient)\b[^>]*>[\s\S]*?<\/(?:linearGradient|radialGradient)>/gi)]
+          .find(entry=>attributes(entry[0].slice(0,entry[0].indexOf('>')+1)).id===reference[1]);
+        assert(gradient,'Painted paths resolve to a local gradient');
+        colors.push(...elements(gradient[0],'stop').map(stop=>stop['stop-color']));
+      }else if(/^#(?:[a-f\d]{3}|[a-f\d]{6})$/i.test(fill))colors.push(fill);
+    }
+    if(!tag.endsWith('/>'))fills.push(fill);
+  }
+  return colors;
+}
+
+test('The supplied canonical SVG supplies all four versioned brand asset routes',()=>{
+  assert.equal(brandVersion,'grasped-cube-v1');
   assert(brandAssets instanceof Map);
   assert.deepEqual([...brandAssets.keys()].sort(),[...expectedAssets].sort());
   for(const [name,svg] of brandAssets){
     assert.equal(typeof svg,'string',name);
+    assert.equal(svg,canonicalSvg,`${name}: reuse the supplied colored artwork`);
     const roots=elements(svg,'svg');
     assert.equal(roots.length,1,`${name}: a single SVG root`);
     assert.equal(roots[0].xmlns,'http://www.w3.org/2000/svg');
-    assert.equal(roots[0].viewbox,'0 0 64 64');
+    const viewBox=roots[0].viewbox?.trim().split(/[\s,]+/).map(Number);
+    assert.equal(viewBox?.length,4,`${name}: four viewBox coordinates`);
+    assert(viewBox.every(Number.isFinite)&&viewBox[2]>0&&viewBox[3]>0,`${name}: valid, positive drawing dimensions`);
     assert(svg.trim().endsWith('</svg>'),`${name}: complete SVG document`);
-    assert.equal(brandShape(svg)['fill-rule'],'evenodd',`${name}: retain intentional cut-outs`);
-    assert.equal(brandShape(svg)['data-symbol'],'articulated-hand');
-    assert(svg.includes('<title id="dexarena-title">DexArena dexterous hand</title>'));
+    const openTags=[];
+    for(const match of svg.matchAll(/<\/?([\w:-]+)\b[^>]*>/g)){
+      if(match[0].startsWith('</'))assert.equal(openTags.pop(),match[1],`${name}: balanced SVG elements`);
+      else if(!match[0].endsWith('/>'))openTags.push(match[1]);
+    }
+    assert.equal(openTags.length,0,`${name}: all SVG elements close`);
   }
 });
 
-test('The original geometry contains five digits, joint breaks, a precision palm and wrist coupling',()=>{
-  assert.deepEqual(Object.keys(brandFingerPaths),['index','middle','ring','little','thumb']);
-  for(const name of ['index','middle','ring','little']){
-    assert.equal([...brandFingerPaths[name].matchAll(/M/g)].length,2,`${name}: distinct phalanx segments`);
-  }
-  assert(brandFingerPaths.thumb.includes('L16 31'),'The opposed thumb is diagonal, not a fifth parallel finger');
-  assert.equal([...brandPalmPath.matchAll(/M/g)].length,3,'Palm silhouette, negative-space aperture and grasp center');
-  assert(brandWristPath.length>0,'The hand has a distinct mechanical wrist coupling');
-  assert.equal(brandPath,[...Object.values(brandFingerPaths),brandPalmPath,brandWristPath].join(' '));
-});
-
-test('The transparent mark has blue and white variants without a background tile',()=>{
-  const blue=brandAssets.get('brand/dexarena-mark.svg');
-  const white=brandAssets.get('brand/dexarena-mark-white.svg');
-  assert(isBluePaint(blue,brandShape(blue).fill),'Default mark is a blue silhouette');
-  assert(isWhite(brandShape(white).fill),'Inverse mark is a white silhouette');
-  for(const svg of [blue,white]){
-    assert.equal(elements(svg,'rect').length,0,'Transparent mark assets do not include a background tile');
-    assert(!/background(?:-color)?\s*:/i.test(svg),'Transparent marks do not set a painted SVG background');
+test('The logo uses vector paths for the blue hand and charcoal cube with a transparent exterior',()=>{
+  for(const [name,svg] of brandAssets){
+    const paths=elements(svg,'path');
+    assert(paths.length>0,`${name}: real vector geometry`);
+    for(const path of paths){
+      assert(/^[Mm]/.test(path.d?.trim()),`${name}: path geometry starts with a move command`);
+      assert(!/[<>]|NaN|Infinity/.test(path.d),`${name}: valid finite path data`);
+    }
+    const colors=paintedPathColors(svg);
+    assert(colors.some(isBlue),`${name}: retain the supplied blue hand`);
+    assert(colors.some(isCharcoal),`${name}: retain the supplied charcoal cube`);
+    assert.equal(elements(svg,'rect').length,0,`${name}: no exterior background tile`);
+    assert(!/background(?:-color)?\s*:/i.test(svg),`${name}: no painted SVG background`);
+    assert(!/<image\b|data:image\/|base64|\.(?:png|jpe?g|webp)(?:["'?#\s]|$)/i.test(svg),`${name}: vector artwork without embedded or linked raster data`);
   }
 });
 
-test('The favicon uses the same white silhouette on blue and preserves the legacy alias',()=>{
+test('Header, footer and favicon preserve the same supplied artwork and the legacy favicon alias',()=>{
   const favicon=brandAssets.get('brand/dexarena-favicon.svg');
-  assert(isWhite(brandShape(favicon).fill));
-  assert(elements(favicon,'rect').some(rect=>isBlue(rect.fill)),'The favicon has a deterministic blue tile');
+  assert.equal(brandAssets.get('brand/dexarena-mark.svg'),favicon);
+  assert.equal(brandAssets.get('brand/dexarena-mark-white.svg'),favicon);
   assert.equal(brandAssets.get('favicon.svg'),favicon,'Old favicon URLs resolve to precisely the new identity');
 });
 
 test('Brand SVGs contain no scripts, foreign content, event handlers or external resources',()=>{
   for(const [name,svg] of brandAssets){
+    const ids=new Set([...svg.matchAll(/\bid\s*=\s*(["'])(.*?)\1/gi)].map(match=>match[2]));
     assert(!/<(?:script|foreignObject|iframe|object|embed)\b/i.test(svg),`${name}: no active or foreign content`);
     assert(!/\bon[a-z]+\s*=/i.test(svg),`${name}: no executable event handlers`);
     assert(!/javascript\s*:/i.test(svg),`${name}: no JavaScript URLs`);
     assert(!/<!DOCTYPE|<!ENTITY/i.test(svg),`${name}: no external entities`);
     for(const match of svg.matchAll(/(?:\bxlink:href|\bhref)\s*=\s*(["'])(.*?)\1/gi)){
       assert(/^#[\w.-]+$/.test(match[2]),`${name}: SVG references stay within the same document`);
+      assert(ids.has(match[2].slice(1)),`${name}: referenced SVG element exists`);
     }
     for(const match of svg.matchAll(/\burl\(\s*(["']?)(.*?)\1\s*\)/gi)){
       assert(/^#[\w.-]+$/.test(match[2]),`${name}: paint references stay local`);
+      assert(ids.has(match[2].slice(1)),`${name}: referenced paint definition exists`);
     }
   }
 });
@@ -136,7 +146,7 @@ test('The default wordmark renders a decorative, dimensioned official asset',()=
   assert.equal(brandMark({inverse:false}),markup);
 });
 
-test('The inverse wordmark selects the white asset and preserves decorative accessibility',()=>{
+test('The footer wordmark preserves its asset route and decorative accessibility',()=>{
   const inverse=brandMark({inverse:true});
   assert.equal(elements(inverse,'img').length,1);
   assert.equal(elements(inverse,'span').length,1);

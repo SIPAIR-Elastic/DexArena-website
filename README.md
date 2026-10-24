@@ -31,11 +31,10 @@ generated website in `dist/` is served, not the repository or its source files.
 
 ## Homepage layout
 
-The original DexArena icon depicts an articulated robotic hand: four fingers of
-different lengths, an opposed thumb, visible joint breaks, a precision aperture
-and a mechanical wrist coupling. Navigation uses the cobalt variant; the dark
-footer uses its white inverse. The favicon shares the geometry on a blue tile.
-All SVGs derive from one canonical path in `src/brand.mjs`, not copied artwork.
+The DexArena icon is vector artwork traced from the supplied `Logo.png`: a blue
+robotic hand grasping a charcoal cube. The canonical paths are stored in
+`src/brand/dexarena-logo.svg`, with a transparent exterior and white joint gaps.
+Header, footer and favicon share this colored artwork through `src/brand.mjs`.
 `brandVersion` versions header/footer images and the favicon to avoid stale
 browser icons. Reusable assets are in `dist/assets/brand/`.
 
