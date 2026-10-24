@@ -9,7 +9,7 @@
 .paper-action--primary{background:#1967d2;color:white;border-color:#1967d2}.paper-action--primary span{color:white}.paper-action--primary:hover{background:#174ea6}
 .paper-identity{padding-top:25px;border-top:1px solid var(--line)}
 .paper-identity h2,.paper-metadata dt{font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:#6c7582;margin:0 0 16px}
-.author-list{display:flex;flex-direction:column;align-items:flex-start;gap:0;list-style:none;margin:0;padding:0;max-width:1140px}
+.author-list{display:flex;flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:4px 20px;list-style:none;margin:0;padding:0;max-width:1140px}
 .author-list a{font-size:16px;line-height:1.6;white-space:nowrap}.author-list a:hover{color:#1967d2}
 .author-list sup{margin-left:3px;font:10px var(--mono);color:#1967d2}
 .paper-page .paper-note{font-size:12px;line-height:1.7;color:var(--muted);margin:14px 0 0}

@@ -45,7 +45,8 @@ entry (Shanghai Institute for Physical Artificial Intelligence and Robotics),
 Figures 1 and 3, and baseline findings. Abstract and citation are not rendered
 while the manuscript is withheld. Full manuscript sections are retained in
 source for a future explicit release; `/paper/` remains a publication notice.
-Authors appear one per line, top to bottom, in the original manuscript order.
+Authors share compact rows that wrap to fit the viewport, in the original
+manuscript order.
 Shanghai Jiao Tong University and Tsinghua University lead the institution list;
 author superscripts, accessible titles and school-logo metadata are renumbered
 together without changing anyone's actual affiliation.

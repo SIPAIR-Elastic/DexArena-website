@@ -321,7 +321,7 @@ for(const file of ['sjtu.png','tsinghua.png']){
   assert.equal(buffer.subarray(0,8).toString('hex'),'89504e470d0a1a0a','Institutional mark must be a real PNG');
 }
 const refinement=await readFile(join(dist,'assets','refinement.css'),'utf8');
-assert(/\.author-list\{[^}]*flex-direction:column/.test(refinement),'Authors are stacked vertically in a single column');
+assert(/\.author-list\{[^}]*flex-wrap:wrap/.test(refinement),'Authors wrap horizontally into compact rows');
 const baseStyle=await readFile(join(dist,'assets','site.css'),'utf8');
 const leaderboardBackground=baseStyle.match(/\.leaderboard-page\{([^}]+)\}/)?.[1]||'';
 assert(leaderboardBackground.includes('background:var(--bg)')&&!leaderboardBackground.includes('gradient('),'Leaderboard uses the shared page background, not a unique gradient');
