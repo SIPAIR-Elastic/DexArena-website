@@ -7,6 +7,6 @@
   "scripts": {
     "build": "node scripts/build-github-pages.mjs",
     "start": "node scripts/preview.mjs",
-    "test": "node --test scripts/pages-deployment.test.mjs scripts/public-release.test.mjs scripts/brand-identity.test.mjs scripts/documentation.test.mjs"
+    "test": "node --test scripts/pages-deployment.test.mjs scripts/public-release.test.mjs scripts/brand-identity.test.mjs scripts/documentation.test.mjs scripts/release-urls.test.mjs scripts/publication-guard.test.mjs"
   }
 }

@@ -33,6 +33,16 @@ The citation reference, grouped sidebar, page contents, code-copy controls and
 previous/next links are preserved for restoration, including the responsive
 alignment and focus-visibility fixes. Public paper and Code links are unchanged.
 
+GitHub Pages caches HTML for ten minutes. A content-derived release ID now
+versions every internal document link, stylesheet, script and search request, so
+switching pages cannot mix a refreshed homepage with an older cached navbar.
+Canonical and sitemap URLs stay unversioned. `assets/site-release.json` declares
+the current Docs visibility; the publication guard rechecks it on page entry and
+history restoration, removes unavailable Docs links and refreshes a mismatched
+document at most once per pathname and release. It does not erase browser data,
+install a service worker or reload on a timer. Tabs cached before this guard was
+introduced must first enter a current, release-versioned URL or reload normally.
+
 The public benchmark repository currently contains README/LICENSE and repository
 metadata only. Runnable module examples are explicitly qualified as requiring an
 asset-complete research checkout; the docs do not invent an installable package,

@@ -585,6 +585,7 @@ await copyFile(join(root,"src","carousel.css"),join(dist,"assets","carousel.css"
 await copyFile(join(root,"src","navigation.css"),join(dist,"assets","navigation.css"));
 await copyFile(join(root,"src","footer.css"),join(dist,"assets","footer.css"));
 await copyFile(join(root,"src","navigation.js"),join(dist,"assets","navigation.js"));
+await copyFile(join(root,"src","publication-guard.js"),join(dist,"assets","publication-guard.js"));
 await copyFile(join(root,"src","docs.css"),join(dist,"assets","docs.css"));
 await copyFile(join(root,"src","docs.js"),join(dist,"assets","docs.js"));
 await copyFile(join(root,"src","experience.js"),join(dist,"assets","experience.js"));

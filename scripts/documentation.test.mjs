@@ -33,6 +33,7 @@ function attributes(tag){
 const tags=(html,tag)=>[...html.matchAll(new RegExp(`<${tag}\\b[^>]*>`,'gi'))].map(match=>attributes(match[0]));
 const links=html=>tags(html,'a').filter(node=>node.href);
 const classes=node=>(node.class||'').split(/\s+/);
+const pathname=href=>new URL(decode(href),'https://dexarena.test').pathname;
 
 function cssRules(css,selector){
   const normalize=value=>value.replace(/\s+/g,' ').replace(/\s*>\s*/g,'>').trim();
@@ -69,7 +70,7 @@ test('The published Docs center renders the complete authored reference', {skip:
     const h1=[...html.matchAll(/<h1\b[^>]*>([\s\S]*?)<\/h1>/gi)];
     assert.equal(h1.length,1,`${page.id}: one article title`);
     assert.equal(decode(text(h1[0][1])),decode(page.title),`${page.id}: the authored title is rendered`);
-    assert(links(html).some(link=>link.href===`${basePath}docs/`&&link['aria-current']==='page'&&classes(link).includes('site-nav__link')),`${page.id}: Docs is active in the primary navigation`);
+    assert(links(html).some(link=>pathname(link.href)===`${basePath}docs/`&&link['aria-current']==='page'&&classes(link).includes('site-nav__link')),`${page.id}: Docs is active in the primary navigation`);
   }
 });
 
@@ -120,13 +121,13 @@ test('The Docs shell has accessible page navigation, mobile disclosure, search a
   assert(shell.includes('data-doc-search')&&shell.includes('aria-label="Documentation pages"'),'The retained shell keeps search and accessible page navigation');
   if(docsPublished)for(const id of pageIds){
     const html=await readFile(pageFile(id),'utf8');
-    assert(tags(html,'link').some(node=>node.rel==='stylesheet'&&node.href===`${basePath}assets/docs.css`),`${id}: load Docs styles`);
-    assert(tags(html,'script').some(node=>node.src===`${basePath}assets/docs.js`&&Object.hasOwn(node,'defer')),`${id}: defer Docs behavior`);
+    assert(tags(html,'link').some(node=>node.rel==='stylesheet'&&pathname(node.href)===`${basePath}assets/docs.css`),`${id}: load Docs styles`);
+    assert(tags(html,'script').some(node=>node.src&&pathname(node.src)===`${basePath}assets/docs.js`&&Object.hasOwn(node,'defer')),`${id}: defer Docs behavior`);
     const navigation=tags(html,'nav').filter(node=>!Object.hasOwn(node,'data-nav-desktop')&&node.id!=='site-mobile-nav');
     assert(navigation.filter(node=>(node['aria-label']||'').trim()).length>=2,`${id}: name documentation and on-page navigation`);
     assert(/<details\b[^>]*>[\s\S]*?<summary\b[^>]*>[\s\S]*?<\/summary>/i.test(html),`${id}: mobile contents use a native disclosure`);
     assert(tags(html,'button').some(node=>Object.hasOwn(node,'data-open-search')),`${id}: documentation offers site search`);
-    assert(links(html).some(link=>link.href===`${basePath}${pageRoute(id).slice(1)}`&&link['aria-current']==='page'&&!classes(link).includes('site-nav__link')),`${id}: the article is identified in the documentation navigation`);
+    assert(links(html).some(link=>pathname(link.href)===`${basePath}${pageRoute(id).slice(1)}`&&link['aria-current']==='page'&&!classes(link).includes('site-nav__link')),`${id}: the article is identified in the documentation navigation`);
     for(const button of tags(html,'button').filter(node=>Object.keys(node).some(key=>/copy/.test(key))))assert.equal(button.type,'button',`${id}: copy tools never submit a form`);
   }
 });
@@ -147,7 +148,7 @@ test('Docs navigation uses clearly separated semantic group headings and subordi
       assert.equal(decode(text(headings[0][2])),label,`${id}: the sidebar headings keep their authored order`);
       const children=links(group[1]);
       assert(children.length>0,`${id}: ${label} contains subordinate pages`);
-      if(ids)assert.deepEqual(children.map(link=>link.href),ids.map(target=>`${basePath}${pageRoute(target).slice(1)}`),`${id}: ${label} preserves page order`);
+      if(ids)assert.deepEqual(children.map(link=>pathname(link.href)),ids.map(target=>`${basePath}${pageRoute(target).slice(1)}`),`${id}: ${label} preserves page order`);
       else assert(children.every(link=>link.href.startsWith(`${basePath}tasks/`)),`${id}: simulation task links remain separate from reference pages`);
     }
   }
@@ -178,7 +179,7 @@ test('Docs previous and next navigation has explicit relations and correctly ali
     for(const [relation,target] of expected){
       const link=pageLinks.find(node=>node.rel===relation);
       assert(link,`${id}: the ${relation} link exposes its relation`);
-      assert.equal(link.href,`${basePath}${pageRoute(target).slice(1)}`,`${id}: the ${relation} destination follows the sidebar order`);
+      assert.equal(pathname(link.href),`${basePath}${pageRoute(target).slice(1)}`,`${id}: the ${relation} destination follows the sidebar order`);
     }
   }
   const css=await readFile(join(dist,'assets/docs.css'),'utf8');
