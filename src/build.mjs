@@ -434,7 +434,7 @@ function renderDocumentationPage(page){
   const index=documentationOrder.indexOf(page.id);
   const previous=documentationById.get(documentationOrder[index-1]);
   const following=documentationById.get(documentationOrder[index+1]);
-  const pagination=(target,label)=>target?`<a href="${documentationHref(target.id)}"><span>${label}</span><b>${esc(target.title)}</b></a>`:'<span></span>';
+  const pagination=(target,label,relation)=>target?`<a href="${documentationHref(target.id)}" rel="${relation}"><span>${label}</span><b>${esc(target.title)}</b></a>`:'<span></span>';
   return `<section class="docs-layout" data-docs-center>
     <a class="docs-skip" href="#docs-main">Skip to documentation</a>
     <aside class="docs-sidebar" aria-label="Documentation navigation">
@@ -442,11 +442,11 @@ function renderDocumentationPage(page){
         <a class="docs-home" href="/docs/">DexArena <span>Docs</span></a>
         <button type="button" class="docs-search-button" data-open-search><span>Search docs & tasks</span><kbd>Ctrl K</kbd></button>
         <label><span>Filter documentation</span><input type="search" placeholder="Find a page…" data-doc-search></label>
-        <nav aria-label="Documentation">${documentationGroups.map(([group,ids])=>`<div class="docs-nav-group"><span>${group}</span>${ids.map(id=>documentationById.get(id)).filter(Boolean).map(target=>`<a href="${documentationHref(target.id)}" class="${target.id===page.id?'active':''}" data-doc-link${target.id===page.id?' aria-current="page"':''}>${esc(target.title)}</a>`).join('')}</div>`).join('')}<div class="docs-nav-group"><span>Simulation tasks</span>${tasks.map(task=>`<a href="/tasks/${task.slug}/" data-doc-link>${esc(task.title)}</a>`).join('')}</div></nav>
+        <nav aria-label="Documentation">${documentationGroups.map(([group,ids])=>`<div class="docs-nav-group"><h2 class="docs-nav-heading">${group}</h2>${ids.map(id=>documentationById.get(id)).filter(Boolean).map(target=>`<a href="${documentationHref(target.id)}" class="${target.id===page.id?'active':''}" data-doc-link${target.id===page.id?' aria-current="page"':''}>${esc(target.title)}</a>`).join('')}</div>`).join('')}<div class="docs-nav-group"><h2 class="docs-nav-heading">Simulation tasks</h2>${tasks.map(task=>`<a href="/tasks/${task.slug}/" data-doc-link>${esc(task.title)}</a>`).join('')}</div></nav>
       </div></details>
     </aside>
     <article class="docs-article" id="docs-main" tabindex="-1"><div class="docs-breadcrumb"><a href="/docs/">Docs</a><span aria-hidden="true">/</span><span>${esc(page.title)}</span></div><h1>${esc(page.title)}</h1><p class="docs-lead">${esc(page.lead)}</p>
-      ${page.content}<nav class="docs-pagination" aria-label="Documentation pages">${pagination(previous,'← Previous')}${pagination(following,'Next →')}</nav>
+      ${page.content}<nav class="docs-pagination" aria-label="Documentation pages">${pagination(previous,'← Previous','prev')}${pagination(following,'Next →','next')}</nav>
     </article>
     <aside class="docs-toc" aria-label="On this page"><span>On this page</span><nav aria-label="Page sections">${toc.map(([id,label])=>`<a href="#${id}" data-doc-toc>${esc(label)}</a>`).join('')}</nav></aside>
   </section>`;

@@ -6,6 +6,7 @@
 .report-section-nav>div{width:min(var(--max),calc(100% - var(--gutter)*2));margin:auto;display:flex;gap:28px;overflow:auto;padding:17px 0}
 .report-section-nav a{font-size:13px;color:var(--muted);white-space:nowrap}
 .report-section-nav a:hover,.report-section-nav a:focus-visible{color:var(--blue)}
+.report-section-nav a:focus-visible{outline-offset:-2px}
 .report-page .report-section{padding:46px 0;scroll-margin-top:112px}
 .report-section+.report-section{border-top:1px solid var(--line)}
 .report-section-heading{display:flex;justify-content:space-between;align-items:end;gap:40px;margin-bottom:24px}

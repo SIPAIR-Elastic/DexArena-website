@@ -26,6 +26,7 @@
 .paper-release-note>a{color:#1967d2;flex:none;font-size:12px}
 .paper-section-nav{margin:0 max(var(--gutter),calc((100vw - var(--max))/2));border-block:1px solid var(--line)}
 .paper-section-nav>div{display:flex;gap:30px;overflow:auto;padding:18px 0}.paper-section-nav a{white-space:nowrap;font-size:12px;color:var(--muted)}.paper-section-nav a:hover{color:#1967d2}
+.paper-page .paper-section-nav a:focus-visible{outline-offset:-2px}
 .paper-page section[id]{scroll-margin-top:110px}
 .paper-abstract,.paper-citation{display:grid;grid-template-columns:260px minmax(0,1fr);gap:45px}
 .paper-section-heading>span{display:block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:#1967d2}

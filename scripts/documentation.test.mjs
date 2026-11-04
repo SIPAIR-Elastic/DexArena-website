@@ -12,6 +12,14 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 const dist=join(root,'dist');
 const {basePath}=githubPagesConfig();
 const pageIds=['overview','getting-started','configurations','quick-evaluation','policy-integration','parallel-environments','data','training','randomization','domain-randomization','teleoperation','embodiments','troubleshooting','resources','submission','citation'];
+const navigationGroups=[
+  ['Start here',['overview','getting-started','resources']],
+  ['Using DexArena',['configurations','embodiments','policy-integration','data','teleoperation','training']],
+  ['Evaluation',['quick-evaluation','randomization','domain-randomization','parallel-environments','submission']],
+  ['Reference',['troubleshooting','citation']],
+  ['Simulation tasks',null]
+];
+const navigationOrder=navigationGroups.flatMap(([,ids])=>ids||[]);
 const pageRoute=id=>id==='overview'?'/docs/':`/docs/${id}/`;
 const pageFile=id=>join(dist,pageRoute(id),'index.html');
 const text=html=>html.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
@@ -25,6 +33,21 @@ function attributes(tag){
 const tags=(html,tag)=>[...html.matchAll(new RegExp(`<${tag}\\b[^>]*>`,'gi'))].map(match=>attributes(match[0]));
 const links=html=>tags(html,'a').filter(node=>node.href);
 const classes=node=>(node.class||'').split(/\s+/);
+
+function cssRules(css,selector){
+  const normalize=value=>value.replace(/\s+/g,' ').replace(/\s*>\s*/g,'>').trim();
+  return [...css.replace(/\/\*[\s\S]*?\*\//g,'').matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+    .filter(([,selectors])=>selectors.split(/,\s*(?![^()]*\))/).some(value=>normalize(value)===normalize(selector)))
+    .map(([, ,body])=>Object.fromEntries([...body.matchAll(/([\w-]+)\s*:\s*([^;]+)(?:;|$)/g)].map(([,property,value])=>[property,value.trim()])));
+}
+
+function paddingSides(value=''){
+  const values=value.split(/\s+/).map(token=>/^(?:0|\d+(?:\.\d+)?px)$/.test(token)?Number.parseFloat(token):NaN);
+  if(values.length===1)return Array(4).fill(values[0]);
+  if(values.length===2)return [values[0],values[1],values[0],values[1]];
+  if(values.length===3)return [values[0],values[1],values[2],values[1]];
+  return values;
+}
 
 test('The Docs center publishes the complete authored reference as sixteen real pages',async()=>{
   assert.equal(docsPublished,true);
@@ -98,6 +121,77 @@ test('The Docs shell has accessible page navigation, mobile disclosure, search a
     assert(tags(html,'button').some(node=>Object.hasOwn(node,'data-open-search')),`${id}: documentation offers site search`);
     assert(links(html).some(link=>link.href===`${basePath}${pageRoute(id).slice(1)}`&&link['aria-current']==='page'&&!classes(link).includes('site-nav__link')),`${id}: the article is identified in the documentation navigation`);
     for(const button of tags(html,'button').filter(node=>Object.keys(node).some(key=>/copy/.test(key))))assert.equal(button.type,'button',`${id}: copy tools never submit a form`);
+  }
+});
+
+test('Docs navigation uses clearly separated semantic group headings and subordinate page links',async()=>{
+  for(const id of pageIds){
+    const html=await readFile(pageFile(id),'utf8');
+    const sidebar=html.match(/<aside\b(?=[^>]*\bclass=["']docs-sidebar["'])[^>]*>([\s\S]*?)<\/aside>/i)?.[1]||'';
+    const groups=[...sidebar.matchAll(/<div\b(?=[^>]*\bclass=["']docs-nav-group["'])[^>]*>([\s\S]*?)<\/div>/gi)];
+    assert.equal(groups.length,navigationGroups.length,`${id}: all five sidebar groups remain present`);
+    for(const [index,group] of groups.entries()){
+      const [label,ids]=navigationGroups[index];
+      const headings=[...group[1].matchAll(/<h2\b([^>]*)>([\s\S]*?)<\/h2>/gi)];
+      assert.equal(headings.length,1,`${id}: ${label} has one real heading`);
+      assert(classes(attributes(`<h2${headings[0][1]}>`)).includes('docs-nav-heading'),`${id}: ${label} uses the parent-heading style`);
+      assert.equal(decode(text(headings[0][2])),label,`${id}: the sidebar headings keep their authored order`);
+      const children=links(group[1]);
+      assert(children.length>0,`${id}: ${label} contains subordinate pages`);
+      if(ids)assert.deepEqual(children.map(link=>link.href),ids.map(target=>`${basePath}${pageRoute(target).slice(1)}`),`${id}: ${label} preserves page order`);
+      else assert(children.every(link=>link.href.startsWith(`${basePath}tasks/`)),`${id}: simulation task links remain separate from reference pages`);
+    }
+  }
+  const css=await readFile(join(dist,'assets/docs.css'),'utf8');
+  const heading=cssRules(css,'.docs-layout[data-docs-center] .docs-nav-heading')[0];
+  const child=cssRules(css,'.docs-layout[data-docs-center] .docs-sidebar nav a')[0];
+  assert(heading&&child,'Sidebar parent and child typography have explicit styles');
+  assert(Number.parseFloat(heading['font-size'])>=Number.parseFloat(child['font-size'])+2,'Parent headings are visibly larger than page links');
+  assert(Number.parseFloat(heading['font-weight'])>=650&&Number.parseFloat(child['font-weight'])<=500,'Parent headings have a clearly stronger weight');
+  assert(paddingSides(child.padding)[3]-paddingSides(heading.padding)[3]>=12,'Child labels are indented below their group headings');
+  assert(cssRules(css,'.docs-layout[data-docs-center] .docs-nav-group').some(rule=>rule['align-content']==='start'),'Two-column mobile groups keep child rows aligned instead of stretching short groups');
+  for(const selector of ['.docs-page .site-nav[data-nav-theme="precision"]','.docs-page .site-nav[data-nav-theme="precision"].is-scrolled','.docs-page .site-footer']){
+    assert(cssRules(css,selector).some(rule=>rule['padding-inline']==='var(--docs-shell-gutter)'),`${selector}: the document frame keeps shared left and right edges, including after scrolling`);
+  }
+  assert(cssRules(css,'.docs-layout[data-docs-center]').some(rule=>rule.width==='var(--docs-shell-width)'),'The document grid uses the same responsive shell as navigation and footer');
+});
+
+test('Docs previous and next navigation has explicit relations and correctly aligned destinations',async()=>{
+  for(const [index,id] of navigationOrder.entries()){
+    const html=await readFile(pageFile(id),'utf8');
+    const pagination=[...html.matchAll(/<nav\b([^>]*)>([\s\S]*?)<\/nav>/gi)].find(match=>classes(attributes(`<nav${match[1]}>`)).includes('docs-pagination'))?.[2]||'';
+    assert(pagination,`${id}: page navigation is rendered`);
+    const pageLinks=links(pagination);
+    const expected=[['prev',navigationOrder[index-1]],['next',navigationOrder[index+1]]].filter(([,target])=>target);
+    assert.equal(pageLinks.length,expected.length,`${id}: only existing adjacent pages are linked`);
+    for(const [relation,target] of expected){
+      const link=pageLinks.find(node=>node.rel===relation);
+      assert(link,`${id}: the ${relation} link exposes its relation`);
+      assert.equal(link.href,`${basePath}${pageRoute(target).slice(1)}`,`${id}: the ${relation} destination follows the sidebar order`);
+    }
+  }
+  const css=await readFile(join(dist,'assets/docs.css'),'utf8');
+  assert(cssRules(css,'.docs-layout[data-docs-center] .docs-pagination a[rel="next"]').some(rule=>rule['text-align']==='right'),'Next-page labels use the existing right-alignment hook');
+});
+
+test('Scroll containers preserve visible keyboard focus without clipping or nested mobile overflow',async()=>{
+  const css=await readFile(join(dist,'assets/docs.css'),'utf8');
+  const sidebar=cssRules(css,'.docs-layout[data-docs-center] .docs-sidebar')[0];
+  assert.equal(sidebar?.overflow,'auto','The desktop sidebar remains independently scrollable');
+  assert(paddingSides(sidebar?.padding).length===4&&paddingSides(sidebar?.padding).every(value=>value>=8),'The sidebar reserves a full focus-ring gutter on every edge');
+  const nav=cssRules(css,'.docs-layout[data-docs-center] .docs-sidebar nav')[0];
+  assert.equal(nav?.['max-height'],'none','Legacy mobile navigation height cannot create a second sidebar scrollport');
+  assert.equal(nav?.overflow,'visible','The inner navigation does not clip link outlines');
+  const child=cssRules(css,'.docs-layout[data-docs-center] .docs-sidebar nav a')[0];
+  assert.equal(child?.['white-space'],'normal','Long sidebar labels wrap rather than overflowing or truncating');
+  const mobile=cssRules(css,'.docs-layout[data-docs-center] .docs-sidebar-content').find(rule=>/auto/.test(rule['overflow-y']||rule.overflow||''));
+  assert(mobile&&paddingSides(mobile.padding).every(value=>value>=8),'The mobile disclosure reserves focus-ring space in its bounded scrollport');
+  for(const selector of ['.docs-layout[data-docs-center] .docs-code-block pre:focus-visible','.docs-layout[data-docs-center] .docs-toc a:focus-visible']){
+    assert(cssRules(css,selector).some(rule=>Number.parseFloat(rule['outline-offset'])<=-2),`${selector}: clipped surfaces draw keyboard focus inside their bounds`);
+  }
+  const sharedCss=(await Promise.all(['layout.css','report.css'].map(file=>readFile(join(dist,'assets',file),'utf8')))).join('\n');
+  for(const selector of ['.search-results a:focus-visible','.report-section-nav a:focus-visible']){
+    assert(cssRules(sharedCss,selector).some(rule=>Number.parseFloat(rule['outline-offset'])<=-2),`${selector}: the same focus-clipping defect is prevented outside Docs`);
   }
 });
 
