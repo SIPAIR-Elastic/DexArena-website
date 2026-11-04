@@ -104,6 +104,13 @@ test('Released legacy manuscript links resolve to the official public paper and 
   assert.equal(publishContent(citation),citation,'The generated public citation keeps its local download destination');
 });
 
+test('Published historical conference records keep their destination without bypassing withholding',async()=>{
+  const historical='<a href="https://openreview.net/forum?id=9yr0F1saHs" target="_blank" data-historical-record>Submission record</a>';
+  assert.equal(publishContent(historical),historical,'A labeled conference record is not the latest manuscript action');
+  const withheld=await publicationVariant();
+  assert.equal(withheld.publishContent(historical),paperLink,'Historical-link markup cannot bypass an unpublished paper');
+});
+
 test('A withheld-paper variant sends manuscript and public-record links only to the paper notice',async()=>{
   const withheld=await publicationVariant();
   assert.equal(withheld.docsPublished,false);

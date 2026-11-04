@@ -45,7 +45,7 @@ export function publishContent(html){
     const href=attributes.match(/\bhref\s*=\s*(["'])(.*?)\1/i)?.[2];
     if(!href)return anchor;
     if(isManuscriptLink(href))return paperLink;
-    if(paperPublished){
+    if(paperPublished&&!/\bdata-historical-record(?:\s|=|$)/i.test(attributes)){
       const publicHref=publishedManuscriptUrl(href);
       if(publicHref)return `<a${attributes.replace(/\bhref\s*=\s*(["'])(.*?)\1/i,`href="${publicHref}"`).replace(/\s+download(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?/gi,'')}>${content}</a>`;
     }
