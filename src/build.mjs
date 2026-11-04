@@ -2,6 +2,7 @@
 import { copyFile, mkdir, readFile, writeFile, rm } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createHash } from "node:crypto";
 import { extraDocs, protocolBody, evidenceBody } from "./documentation.mjs";
 import { paperBibtex, renderPaperBody } from "./paper-page.mjs";
 import { documentationPages } from "./docs-content.mjs";
@@ -12,12 +13,15 @@ import { docsPublished, paperPublished, paperArtifactPaths, paperUrl, codeUrl, p
 import { brandAssets, brandMark, brandVersion } from "./brand.mjs";
 import { codeBody } from "./code-page.mjs";
 import { renderLeaderboard } from "./leaderboard.mjs";
+import { resultSnapshot } from "./leaderboard-catalog.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(root, "dist");
 // Retired pages must also disappear when rebuilding an existing checkout.
 await rm(join(dist,"community","index.html"),{force:true});
-const paper = JSON.parse(await readFile(join(root,"src","paper-results.json"),"utf8"));
+const paperRaw = await readFile(join(root,"src","paper-results.json"),"utf8");
+const paper = JSON.parse(paperRaw);
+const resultRelease = {...resultSnapshot,sha256:createHash('sha256').update(paperRaw).digest('hex')};
 const taskPreviewVideos = JSON.parse(await readFile(join(root,"src","task-preview-videos.json"),"utf8"));
 const taskPreviewFiles = new Map(taskPreviewVideos.map(record=>[record.task,record.file]));
 
@@ -372,7 +376,7 @@ function taskDetail(task,index) {
 }
 
 function leaderboardPage() {
-  return renderLeaderboard({paper,tasks,tracks,paperUrl});
+  return renderLeaderboard({paper,tasks,tracks,paperUrl,snapshot:resultRelease,citation:paperPublished?paperBibtex:''});
 }
 
 function evaluationPage() {
@@ -530,6 +534,8 @@ for (const [file,html] of pages) {
 }
 
 await mkdir(join(dist,"assets"),{recursive:true});
+await mkdir(join(dist,"assets","results"),{recursive:true});
+await writeFile(join(dist,"assets","results","release.json"),JSON.stringify(resultRelease,null,2)+'\n');
 for(const [file,svg] of brandAssets){
   const asset=join(dist,"assets",file);
   await mkdir(dirname(asset),{recursive:true});

@@ -1,5 +1,5 @@
 // Progressive enhancements for the results explorer. The shared site script
-// remains responsible for selecting result tracks, presentation modes and rows.
+// remains responsible for selecting result tracks and presentation modes.
 (() => {
   const root = document.querySelector('[data-leaderboard-enhanced]');
   if (!root) return;
@@ -21,8 +21,28 @@
     element.setAttribute('aria-atomic', 'true');
     if (label && !element.getAttribute('aria-label')) element.setAttribute('aria-label', label);
   };
+  const ancestor = (element, predicate) => {
+    for (let node = element; node; node = node.parentElement) if (predicate(node)) return node;
+    return null;
+  };
+  const tabs = all(root, '[data-result-tab]');
+  const views = all(root, '[data-view-button]');
+  const panels = all(root, '[data-result-panel]');
+  const trackOf = element => ancestor(element, node => node.dataset?.resultPanel !== undefined)?.dataset.resultPanel || tabs[0]?.dataset.resultTab || 'stage';
+  const family = root.querySelector('[data-method-filter]');
+  const methodSearch = root.querySelector('[data-method-search]');
+  const order = root.querySelector('[data-rank-order]');
+  const defaults = {track: tabs[0]?.dataset.resultTab || 'stage', view: 'charts', family: 'all', method: '', order: 'score', scale: 'full', task: ''};
+  const boundedText = (value, max = 120) => String(value || '').slice(0, max);
+  const normalize = value => String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+    .replaceAll('π', 'pi').replace(/\bgr00t\b/g, 'groot').replace(/\bpi[\s._-]*0[\s._-]*5\b/g, 'pi05');
+  const familyValue = value => ['all', 'rl', 'imitation', 'vla'].includes(value) ? value : 'all';
+  const browser = typeof window === 'object' ? window : null;
+  let state = {...defaults};
+  let restoring = false;
+  let writeState = () => {};
 
-  all(root, '[data-ranking-chart]').forEach(chart => {
+  const charts = all(root, '[data-ranking-chart]').map(chart => {
     const buttons = all(chart, '[data-chart-scale]');
     const ticks = all(chart, '[data-axis-tick]');
     const note = chart.querySelector('[data-scale-note]');
@@ -30,7 +50,7 @@
     makeStatus(note, 'Chart scale');
     const selectScale = requested => {
       const detailMax = number(chart.dataset.detailScale);
-      const detail = requested === 'detail' && detailMax > 0;
+      const detail = requested === 'detail' && detailMax > 0 && buttons.some(button => button.dataset.chartScale === 'detail');
       const max = detail ? detailMax : number(chart.dataset.fullScale) || 100;
       chart.dataset.scale = detail ? 'detail' : 'full';
       buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.chartScale === chart.dataset.scale)));
@@ -55,8 +75,12 @@
         ? `Detail scale: 0–${max}%. Success rates are unchanged.`
         : fullScaleNote;
     };
-    buttons.forEach(button => button.addEventListener('click', () => selectScale(button.dataset.chartScale)));
+    buttons.forEach(button => button.addEventListener('click', () => {
+      selectScale(button.dataset.chartScale);
+      if (!restoring && trackOf(chart) === state.track) {state.scale = chart.dataset.scale; writeState();}
+    }));
     selectScale('full');
+    return {element: chart, track: trackOf(chart), selectScale};
   });
 
   const heatmaps = all(root, '[data-heatmap]').map(map => {
@@ -105,13 +129,18 @@
       });
       const visibleRows = rows.filter(row => !hiddenWithin(row, map)).length;
       if (count) count.textContent = `${visibleRows} of ${rows.length} ${map.dataset.rowLabel || 'stages'}`;
-      if (empty) empty.hidden = visibleRows > 0;
       const visible = visibleCells();
+      if (empty) {
+        empty.hidden = visible.length > 0;
+        empty.textContent = visibleRows > 0
+          ? 'No matching methods. Adjust the method search or family filter.'
+          : 'No matching tasks or stages. Try a shorter name.';
+      }
       if (!visible.includes(selected)) select(visible[0] || null);
       else select(selected);
       if (!visible.length) {
         setDetail('[data-detail-method]', 'No matching result');
-        setDetail('[data-detail-task]', 'Try a different search or method family.');
+        setDetail('[data-detail-task]', visibleRows > 0 ? 'Adjust the method search or family filter.' : 'Try a different task or stage search.');
         setDetail('[data-detail-stage]', '');
         setDetail('[data-detail-value]', '—');
         setDetail('[data-detail-uncertainty]', '');
@@ -141,28 +170,186 @@
         if (next) select(next, true);
       });
     });
-    search?.addEventListener('input', refresh);
+    search?.addEventListener('input', () => {
+      const value = boundedText(search.value, 160);
+      if (search.value !== value) search.value = value;
+      refresh();
+      if (!restoring && trackOf(map) === state.track) {state.task = search.value; writeState();}
+    });
     refresh();
-    return {refresh};
+    return {refresh, search, track: trackOf(map)};
   });
 
-  const family = root.querySelector('[data-method-filter]');
   const columns = all(root, '[data-method-column][data-family]');
+  const methodRows = all(root, '[data-method-row], [data-visual-method], [data-method-card]');
   const familyStatus = root.querySelector('[data-family-status]');
   makeStatus(familyStatus, 'Visible methods');
-  const syncFamily = () => {
-    const value = family?.value || 'all';
-    columns.forEach(column => column.hidden = value !== 'all' && !column.dataset.family.toLowerCase().includes(value));
-    const chart = root.querySelector('[data-ranking-chart]');
+  const matchesMethod = element => {
+    const value = familyValue(family?.value || state.family);
+    const tokens = normalize(methodSearch?.value || state.method).trim().split(/\s+/).filter(Boolean);
+    const name = normalize(element.dataset.method || element.dataset.distributionMethod || element.textContent);
+    return (value === 'all' || (element.dataset.family || '').toLowerCase().includes(value)) && tokens.every(token => name.includes(token));
+  };
+  const syncMethods = () => {
+    columns.forEach(column => column.hidden = !matchesMethod(column));
+    methodRows.forEach(row => row.hidden = !matchesMethod(row));
+    const chart = charts.find(item => item.track === state.track)?.element || charts[0]?.element;
     const methods = chart ? all(chart, '.chart-row') : [];
-    const shown = methods.filter(method => value === 'all' || (method.dataset.family || '').toLowerCase().includes(value)).length;
+    const shown = methods.filter(matchesMethod).length;
     if (familyStatus) familyStatus.textContent = `${shown} of ${methods.length} methods`;
+    all(root, '[data-method-empty]').forEach(empty => empty.hidden = shown > 0);
     all(root, '[data-group-heading]').forEach(heading => heading.colSpan = shown + 1);
     all(root, '.heatmap-table, .results-table').forEach(table => table.style.setProperty('--visible-methods', String(shown)));
     heatmaps.forEach(map => map.refresh());
   };
-  family?.addEventListener('change', syncFamily);
-  syncFamily();
+  const originalPosition = new Map();
+  all(root, '.chart-row, .distribution-row, [data-method-row]').forEach((row, index) => originalPosition.set(row, index));
+  const syncOrder = () => {
+    const scope = panels.find(panel => panel.dataset.resultPanel === state.track) || root;
+    const means = new Map(all(scope, '.chart-row').map(row => [row.dataset.method, number(row.dataset.mean)]));
+    const parents = new Map();
+    all(scope, '.chart-row, .distribution-row, [data-method-row]').forEach(row => {
+      if (!parents.has(row.parentElement)) parents.set(row.parentElement, []);
+      parents.get(row.parentElement).push(row);
+    });
+    parents.forEach((rows, parent) => {
+      const boundary = rows.at(-1).nextSibling;
+      const mean = row => row.dataset.mean === undefined ? means.get(row.dataset.method) || 0 : number(row.dataset.mean);
+      rows.sort((a, b) => (state.order === 'name'
+        ? (a.dataset.method || '').localeCompare(b.dataset.method || '', 'en', {sensitivity: 'base', numeric: true})
+        : mean(b) - mean(a)) || originalPosition.get(a) - originalPosition.get(b));
+      rows.forEach(row => parent.insertBefore(row, boundary || null));
+    });
+  };
+  const filterChanged = () => {
+    state.family = familyValue(family?.value);
+    state.method = boundedText(methodSearch?.value);
+    if (methodSearch && methodSearch.value !== state.method) methodSearch.value = state.method;
+    syncMethods(); writeState();
+  };
+  family?.addEventListener('change', filterChanged);
+  methodSearch?.addEventListener('input', filterChanged);
+  order?.addEventListener('change', () => {
+    state.order = order.value === 'name' ? 'name' : 'score';
+    syncOrder(); writeState();
+  });
+
+  const url = () => {
+    if (!browser?.location?.href || typeof URL !== 'function') return null;
+    try {return new URL(browser.location.href);} catch {return null;}
+  };
+  const hashTrack = hash => tabs.find(tab => hash === `#results-${tab.dataset.resultTab}`)?.dataset.resultTab;
+  const readState = (preferHash = false) => {
+    const current = url();
+    if (!current) return {...defaults};
+    const query = current.searchParams;
+    const queryTrack = tabs.find(tab => tab.dataset.resultTab === query.get('track'))?.dataset.resultTab;
+    const track = (preferHash && hashTrack(current.hash)) || queryTrack || hashTrack(current.hash) || defaults.track;
+    return {
+      track,
+      view: ['charts', 'heatmap', 'tables'].includes(query.get('view')) ? query.get('view') : 'charts',
+      family: familyValue(query.get('family')),
+      method: boundedText(query.get('method')),
+      order: query.get('order') === 'name' ? 'name' : 'score',
+      scale: track === 'longHorizon' && query.get('scale') === 'detail' ? 'detail' : 'full',
+      task: boundedText(query.get('task'), 160)
+    };
+  };
+  writeState = () => {
+    if (restoring) return;
+    const current = url();
+    if (!current || !browser?.history?.replaceState) return;
+    for (const key of ['track', 'view', 'family', 'order', 'scale']) current.searchParams.set(key, state[key]);
+    for (const key of ['method', 'task']) {
+      if (state[key]) current.searchParams.set(key, state[key]); else current.searchParams.delete(key);
+    }
+    if (hashTrack(current.hash)) current.hash = `results-${state.track}`;
+    if (current.href !== browser.location.href) {
+      try {browser.history.replaceState(browser.history.state, '', current.href);} catch {/* Filtering still works when history access is restricted. */}
+    }
+  };
+  const restore = next => {
+    restoring = true;
+    try {
+      state = {...defaults, ...next};
+      if (family) family.value = state.family;
+      if (methodSearch) methodSearch.value = state.method;
+      if (order) order.value = state.order;
+      tabs.find(tab => tab.dataset.resultTab === state.track)?.click();
+      views.find(view => view.dataset.viewButton === state.view)?.click();
+      const map = heatmaps.find(item => item.track === state.track);
+      if (map?.search) map.search.value = state.task;
+      charts.forEach(item => item.selectScale(item.track === state.track ? state.scale : 'full'));
+      syncMethods(); syncOrder();
+    } finally {restoring = false;}
+  };
+  tabs.forEach(tab => tab.addEventListener('click', () => {
+    if (restoring) return;
+    state.track = tab.dataset.resultTab;
+    state.task = boundedText(heatmaps.find(map => map.track === state.track)?.search?.value, 160);
+    state.scale = charts.find(chart => chart.track === state.track)?.element.dataset.scale || 'full';
+    syncMethods(); syncOrder(); writeState();
+  }));
+  views.forEach(view => view.addEventListener('click', () => {
+    if (restoring) return;
+    state.view = view.dataset.viewButton; writeState();
+  }));
+  const openProfileFromHash = () => {
+    const current = url();
+    if (!current) return;
+    let id;
+    try {id = decodeURIComponent(current.hash.slice(1));} catch {return;}
+    if (!id.startsWith('method-')) return;
+    const card = all(root, '[data-method-card]').find(item => item.id === id);
+    if (!card) return;
+    // Only an explicit profile anchor can relax a conflicting filter. Ordinary
+    // filtering never reopens or unhides a card just because its old hash stays.
+    let changed = false;
+    if (state.family !== 'all' && !(card.dataset.family || '').toLowerCase().includes(state.family)) {
+      state.family = 'all';
+      if (family) family.value = 'all';
+      changed = true;
+    }
+    const name = normalize(card.dataset.method);
+    if (!normalize(state.method).trim().split(/\s+/).filter(Boolean).every(token => name.includes(token))) {
+      state.method = '';
+      if (methodSearch) methodSearch.value = '';
+      changed = true;
+    }
+    if (changed) {syncMethods(); writeState();}
+    if (!card.hidden) card.open = true;
+  };
+  browser?.addEventListener?.('popstate', () => {restore(readState()); openProfileFromHash();});
+  browser?.addEventListener?.('hashchange', () => {restore(readState(true)); openProfileFromHash(); writeState();});
+  root.querySelector('[data-reset-board]')?.addEventListener('click', () => {
+    heatmaps.forEach(map => {if (map.search) map.search.value = '';});
+    restore({...defaults, track: state.track}); writeState();
+  });
+  const copyStatus = root.querySelector('[data-board-link-status]');
+  makeStatus(copyStatus, 'Share current leaderboard view');
+  root.querySelector('[data-copy-board-link]')?.addEventListener('click', async () => {
+    writeState();
+    const current = url();
+    if (!current) return;
+    try {
+      const clipboard = browser?.navigator?.clipboard;
+      if (!clipboard?.writeText) throw new Error('Clipboard unavailable');
+      await clipboard.writeText(current.href);
+      if (copyStatus) copyStatus.textContent = 'Current view link copied.';
+    } catch {
+      if (!copyStatus) return;
+      copyStatus.textContent = 'Copy this link: ';
+      const link = document.createElement('span');
+      link.textContent = current.href;
+      copyStatus.append(link);
+      copyStatus.tabIndex = 0;
+      copyStatus.focus({preventScroll: true});
+      if (document.createRange && browser?.getSelection) {
+        const range = document.createRange(); range.selectNodeContents(link);
+        const selection = browser.getSelection(); selection?.removeAllRanges(); selection?.addRange(range);
+      }
+    }
+  });
 
   // These are pressed-state button groups, not ARIA tablists. Keep the existing
   // click handlers authoritative while offering predictable arrow navigation.
@@ -178,4 +365,6 @@
       next.click(); next.focus();
     }));
   });
+  restore(readState());
+  openProfileFromHash();
 })();

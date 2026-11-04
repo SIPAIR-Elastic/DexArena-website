@@ -61,5 +61,7 @@ test('The result UI has accessible inspectors, truthful scales and unchanged exp
   assert(html.includes('data-chart-scale="detail" aria-pressed="false"'));
   for(const id of trackIds)assert(html.includes(`/assets/results/${id}.csv" download`));
   assert(/scene standard deviation, not confidence intervals/.test(html));
-  assert(!/href="[^\"]*\/docs\//.test(html));
+  const {basePath}=JSON.parse(await readFile(new URL('../dist/assets/site-release.json',import.meta.url),'utf8'));
+  const hrefs=[...html.matchAll(/href="([^"]+)"/g)].map(match=>match[1]);
+  assert(!hrefs.some(href=>href.startsWith(`${basePath}docs/`)||href.startsWith('/docs/')),'Docs routes stay hidden; the public BibTeX asset is not a Docs page');
 });

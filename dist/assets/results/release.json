@@ -1,0 +1,17 @@
+{
+  "id": "manuscript-baselines-v1",
+  "sourceRecorded": "2026-10-15",
+  "sourceRecordedLabel": "Website data snapshot recorded",
+  "sourceCommit": "411442196821048611c1172977163bc96f8eaf12",
+  "sourceUrl": "https://github.com/SIPAIR-Elastic/DexArena-website/blob/411442196821048611c1172977163bc96f8eaf12/src/paper-results.json",
+  "sourcePath": "src/paper-results.json",
+  "sourceTables": {
+    "stage": "tab:stage-level-tasks-performance",
+    "generalization": "tab:generalization-performance",
+    "longHorizon": "tab:long-horizon-performance"
+  },
+  "paperUrl": "https://arxiv.org/abs/2611.02629",
+  "description": "A fixed manuscript-derived score snapshot covering six methods and three evaluation tracks. The recorded date identifies the website source import, not when the experiments were run. Interface updates do not change these scores.",
+  "scoreCount": 420,
+  "sha256": "f2b997f0650d70322e9dda65346bd1680de4f61a2262977194f556cdb9b26d60"
+}
