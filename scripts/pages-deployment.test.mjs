@@ -5,6 +5,8 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createStaticServer} from './serve.mjs';
 import {githubPagesConfig} from './pages-config.mjs';
+import {paperPublished,paperUrl,codeUrl,isWithheldPaperAsset} from '../src/publication.mjs';
+import {paperBibtex} from '../src/paper-page.mjs';
 
 test('GitHub Pages is the only deployment target and main publishes automatically',async()=>{
   const pkg=JSON.parse(await readFile(new URL('../package.json',import.meta.url),'utf8'));
@@ -32,7 +34,7 @@ test('Pages URLs follow the repository owner, name and organization-site convent
   for(const basePath of ['DexArena/','/DexArena','/../','/./','//evil.example/'])assert.throws(()=>githubPagesConfig({SITE_BASE_PATH:basePath}));
 });
 
-test('The published artifact uses Pages URLs and excludes unpublished manuscript files',async()=>{
+test('The published artifact uses Pages URLs, public release links and no obsolete manuscript PDF',async()=>{
   const {basePath,siteUrl}=githubPagesConfig();
   const dist=new URL('../dist/',import.meta.url);
   const paths=await readdir(dist,{recursive:true});
@@ -49,9 +51,16 @@ test('The published artifact uses Pages URLs and excludes unpublished manuscript
   assert(search.length>0&&search.every(entry=>entry.url.startsWith(basePath)));
   const sitemap=await readFile(new URL('sitemap.xml',dist),'utf8');
   assert(sitemap.includes(`<loc>${siteUrl}</loc>`));
-  for(const path of ['.render-build.json','assets/docs/dexarena-paper.pdf','assets/docs/dexarena-citation.bib','community/index.html']){
+  for(const path of ['.render-build.json','assets/docs/dexarena-paper.pdf','community/index.html']){
     assert(!paths.includes(path),`${path}: not part of the public artifact`);
   }
+  const paper=await readFile(new URL('paper/index.html',dist),'utf8');
+  const code=await readFile(new URL('code/index.html',dist),'utf8');
+  assert(paper.includes(`href="${paperUrl}"`));
+  assert(code.includes(`href="${codeUrl}"`));
+  assert(!/Code coming soon|Paper coming soon/.test(paper+code));
+  if(paperPublished)assert.equal(await readFile(new URL('assets/docs/dexarena-citation.bib',dist),'utf8'),paperBibtex);
+  else assert(!paths.includes('assets/docs/dexarena-citation.bib'));
 });
 
 test('The local preview serves only the build output and supports MP4 ranges',async t=>{
@@ -74,7 +83,7 @@ test('The local preview serves only the build output and supports MP4 ranges',as
   // Deliberately leave old manuscript artifacts in the served tree. The release
   // boundary must still reject direct URLs rather than relying on clean builds.
   const privatePdf='%PDF-1.7\nprivate manuscript fixture\n%%EOF';
-  const privateCitation='@misc{private_manuscript_fixture, title={Unreleased manuscript}}';
+  const privateCitation=paperPublished?paperBibtex:'@misc{private_manuscript_fixture, title={Unreleased manuscript}}';
   await writeFile(join(dist,'assets','docs','dexarena-paper.pdf'),privatePdf);
   await writeFile(join(dist,'assets','docs','dexarena-citation.bib'),privateCitation);
   await writeFile(join(dist,'assets','docs','unrelated-paper.pdf'),'%PDF-1.7\npublic comparison fixture\n%%EOF');
@@ -151,7 +160,7 @@ test('The local preview serves only the build output and supports MP4 ranges',as
     }
   });
   await t.test('withheld manuscript artifacts are blocked even when stale files exist',async()=>{
-    for(const path of ['/assets/docs/dexarena-paper.pdf','/assets/docs/dexarena-citation.bib']){
+    for(const path of ['/assets/docs/dexarena-paper.pdf','/assets/docs/dexarena-citation.bib'].filter(isWithheldPaperAsset)){
       const variants=[
         path,
         path+'?download=1',
@@ -188,6 +197,11 @@ test('The local preview serves only the build output and supports MP4 ranges',as
     }
   });
   await t.test('withholding the manuscript preserves figures and unrelated public artifacts',async()=>{
+    if(paperPublished){
+      const citation=await fetch(origin+'/assets/docs/dexarena-citation.bib');
+      assert.equal(citation.status,200);
+      assert.equal(await citation.text(),paperBibtex,'The released citation is available without exposing the old PDF');
+    }
     const figure=await fetch(origin+'/assets/paper/data-collection-pipeline.png');
     assert.equal(figure.status,200);assert.equal(figure.headers.get('content-type'),'image/png');
     assert.equal(await figure.text(),'public flowchart fixture');

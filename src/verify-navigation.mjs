@@ -28,7 +28,7 @@ const classes=node=>(node.attributes.class||'').split(/\s+/);
 const plainText=html=>html.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
 const route=href=>new URL(href,'https://dexarena.invalid').pathname.replace(/\/$/,'')||'/';
 const asset=(value,name)=>new RegExp(`/assets/${name.replaceAll('.','\\.')}(?:[?#].*)?$`).test(value||'');
-const expectedLinks=[['/','Project'],['/tasks/','Tasks'],['/leaderboard/','Leaderboard'],['/evaluation/','Evaluation'],['/docs/','Docs'],['/report/','Report']]
+const expectedLinks=[['/','Project'],['/tasks/','Tasks'],['/leaderboard/','Leaderboard'],['/evaluation/','Evaluation'],['/docs/','Docs'],['/report/','Report'],['/paper/','Paper'],['/code/','Code']]
   .filter(([href])=>docsPublished||route(href)!=='/docs');
 
 export function verifyNavigation({html,css,js}){
@@ -67,9 +67,6 @@ export function verifyNavigation({html,css,js}){
   assert.equal(desktopLinks.length,expectedLinks.length,'Preserve every published desktop destination');
   assert.equal(drawerLinks.length,expectedLinks.length,'Mobile navigation matches the published primary destinations');
   assert.equal(drawerFooter.length,1,'One separate task-catalog entry in the mobile footer');
-  for(const link of elements(header.content,'a')){
-    assert(!/^\/(?:code|paper)(?:\/|$)/.test(route(link.attributes.href||'')),'Code and Paper remain available outside the header, not in desktop or mobile navigation');
-  }
   if(!docsPublished){
     for(const link of elements(header.content,'a'))assert(!/^\/docs(?:\/|$)/.test(route(link.attributes.href||'')),'Unpublished documentation has no header or mobile navigation entry');
   }
@@ -98,7 +95,7 @@ export function verifyNavigation({html,css,js}){
     assert(!/\bCommunity\b/i.test(plainText(link.content)),'Header and footer do not retain a Community link label');
   }
   assert.equal(tagged(siteFooters[0].content,a=>has(a,'data-code-status')).length,0,'Site footer does not repeat a pending-code badge');
-  assert(!/code\s+coming\s+soon/i.test(plainText(siteFooters[0].content)),'Code coming soon is a dedicated page, not repeated footer text');
+  assert(!/code\s+coming\s+soon/i.test(plainText(siteFooters[0].content)),'The shared footer does not retain an obsolete code-release notice');
   const paperActions=elements(header.content,'a').filter(node=>classes(node).includes('nav-paper'));
   assert.equal(paperActions.length,0,'The desktop Read paper action is not part of the header');
   const current=links=>links.filter(link=>link.attributes['aria-current']==='page');
@@ -107,13 +104,17 @@ export function verifyNavigation({html,css,js}){
   const main=elements(html,'main')[0]?.content||'';
   const unavailable=!docsPublished&&tagged(main,a=>has(a,'data-docs-unavailable')).length>0;
   const body=elements(html,'body')[0];
-  const secondaryPage=body&&classes(body).some(name=>['paper-page','code-page'].includes(name));
-  const noHeaderRoute=unavailable||secondaryPage;
+  const noHeaderRoute=unavailable;
   const currentCount=noHeaderRoute?0:1;
   assert.equal(currentDesktop.length,currentCount,noHeaderRoute?'Pages outside the primary navigation do not identify another desktop destination as current':'Exactly one current route in desktop navigation');
   assert.equal(currentMobile.length,currentCount,noHeaderRoute?'Pages outside the primary navigation do not identify another mobile destination as current':'Exactly one current route in mobile navigation');
   if(noHeaderRoute)assert.equal(tagged(header.content,a=>a['aria-current']==='page').length,0,'Pages outside the primary navigation have no current-page claim anywhere in the header');
-  else assert.equal(route(currentDesktop[0].attributes.href),route(currentMobile[0].attributes.href),'Desktop and mobile current routes agree');
+  else{
+    assert.equal(route(currentDesktop[0].attributes.href),route(currentMobile[0].attributes.href),'Desktop and mobile current routes agree');
+    for(const [page,path] of [['paper-page','/paper'],['code-page','/code']]){
+      if(body&&classes(body).includes(page))assert.equal(route(currentDesktop[0].attributes.href),path,`${page} identifies its own primary destination as current`);
+    }
+  }
   for(const node of tagged(header.content,a=>has(a,'role'))){
     assert(!/^(?:menu|menubar|menuitem(?:checkbox|radio)?)$/i.test(node.attributes.role),'Site links use ordinary navigation semantics, not application menus');
   }
@@ -132,6 +133,11 @@ export function verifyNavigation({html,css,js}){
   assert(tagged(header.content,a=>has(a,'data-open-search')).length>0,'Keep the site-wide search entry point');
 
   const rules=[...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(match=>({selector:match[1],body:match[2]}));
+  for(const [name,selector,minimum] of [['Desktop',/site-nav__desktop[^{}]*site-nav__link/,16],['Mobile',/site-nav__drawer[^{}]*site-nav__link/,18]]){
+    const sizes=rules.filter(rule=>selector.test(rule.selector)).flatMap(rule=>[...rule.body.matchAll(/(?:^|;)\s*font(?:-size)?\s*:\s*[^;]*?\b(\d+(?:\.\d+)?)px(?=[\s/;]|$)/gi)].map(match=>Number(match[1])));
+    assert(sizes.length>0,`${name} navigation declares a readable link font size`);
+    assert(sizes.every(size=>size>=minimum),`${name} link fonts stay at least ${minimum}px at every declared breakpoint`);
+  }
   const drawerRules=rules.filter(rule=>/site-nav__drawer|#site-mobile-nav|\[data-drawer\]/.test(rule.selector)).map(rule=>rule.body).join(';');
   assert(/max-height\s*:\s*(?!none\b)[^;]+/i.test(drawerRules),'Mobile drawer has a bounded viewport height');
   assert(/overflow(?:-y)?\s*:\s*(?:auto|scroll)\b/i.test(drawerRules),'Short-screen mobile navigation can scroll');

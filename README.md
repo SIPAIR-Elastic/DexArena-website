@@ -6,25 +6,33 @@ Website: **https://sipair-elastic.github.io/DexArena-website/**
 
 ## Public release status
 
-Docs is temporarily withheld from the navigation, public links, search index and
-sitemap. The primary desktop and mobile navigation shows only Project, Tasks,
-Leaderboard, Evaluation and Report. Code and Paper are not header destinations;
-their pages remain accessible from the content and footer. The homepage Code
-field displays **Code Coming Soon**; `/code/` retains its release notice.
-The footer does not repeat the release status.
+The primary desktop and mobile navigation includes Project, Tasks, Leaderboard,
+Evaluation, Report, Paper and Code. Desktop destination text is 16px; mobile
+drawer links are 18px. The paper and official repository are now publicly linked:
+
+- Paper: **https://arxiv.org/abs/2611.02629**
+- Code: **https://github.com/SIPAIR-Elastic/DexArena**
+
+`/paper/` displays the arXiv preprint, abstract, figures, results and citation.
+`/code/` links to the official repository and issue tracker without inventing
+installation commands or claiming the repository already contains runnable code.
+Homepage metadata and Report use the same released paper and repository links.
+The paper is identified as a preprint, not an accepted conference publication.
+
+Docs remains withheld from navigation, public links, search index and sitemap.
 The 15 existing documentation URLs show only a no-index release notice, never
 the documentation body; the 19 research/task/resource pages remain discoverable.
 All authored Docs renderers, content and styles are retained in source. Set
 `docsPublished` in `src/publication.mjs` to `true` and rebuild to restore them.
-The homepage link is labeled **Paper**, and `/paper/` currently displays
-**Paper coming soon**, not a viewer or download. Abstract, citation and direct
-manuscript/OpenReview links are withheld from all generated pages and search.
-`paperPublished` in `src/publication.mjs` controls this independently of Docs.
+`paperPublished` in `src/publication.mjs` controls paper visibility independently
+of Docs and is now `true`. Shared arXiv/PDF/repository URL constants keep public
+resource links consistent. The downloadable citation is based on arXiv:2611.02629.
 The original PDF is retained at `private/paper/dexarena-paper.pdf` in the source
-repository, outside the published directory. The build removes PDF/BibTeX
-artifacts while withheld, including stale generated copies, before uploading
-the Pages artifact. Previously downloaded or third-party-cached copies cannot
-be recalled.
+repository, outside the published directory. It is an older submission snapshot,
+not the public preprint: the build always removes its generated copy and the
+preview server rejects its legacy URL. PDF actions use the current arXiv URL;
+only the released citation is generated locally. Previously downloaded or
+third-party-cached copies cannot be recalled.
 
 The public website is deployed only through **GitHub Pages**. Visitors do not
 need a GitHub account. The deployment publishes only the generated `dist/`
@@ -42,9 +50,9 @@ browser icons. Reusable assets are in `dist/assets/brand/`.
 The benchmark overview follows the homepage carousel: title, 15 authors,
 eight institutions, with the seven supplied university marks and a typeset PAIR
 entry (Shanghai Institute for Physical Artificial Intelligence and Robotics),
-Figures 1 and 3, and baseline findings. Abstract and citation are not rendered
-while the manuscript is withheld. Full manuscript sections are retained in
-source for a future explicit release; `/paper/` remains a publication notice.
+Figures 1 and 3, abstract, citation and baseline findings. The dedicated Paper
+page includes the same content with verified arXiv metadata; paper submission
+and revision dates are 2 and 3 November 2026 respectively.
 Authors share compact rows that wrap to fit the viewport, in the original
 manuscript order.
 Shanghai Jiao Tong University and Tsinghua University lead the institution list;

@@ -3,7 +3,7 @@ import {readFile,writeFile,readdir,stat,rm} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {dirname,join,relative,resolve} from 'node:path';
 import assert from 'node:assert/strict';
-import {docsPublished,paperPublished,isRetiredRoute} from '../src/publication.mjs';
+import {docsPublished,paperPublished,paperUrl,isRetiredRoute} from '../src/publication.mjs';
 import {githubPagesConfig} from './pages-config.mjs';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
@@ -75,6 +75,6 @@ assert(search.every(entry=>!isRetiredRoute(new URL(entry.url,site).pathname.slic
 assert(!urls.some(url=>isRetiredRoute(new URL(url).pathname.slice(base.length-1))),'Retired pages must not appear in the sitemap');
 assert(runtime.includes(`fetch("${base}assets/search-index.json")`),'Search fetch must use the project path');
 const paperHtml=await readFile(join(dist,'paper','index.html'),'utf8');
-if(paperPublished)assert(paperHtml.includes(`data-copy-text="${site.href}paper/"`),'Shared paper URL must use the public site address');
+if(paperPublished)assert(paperHtml.includes(`data-copy-text="${paperUrl}"`),'Shared paper URL uses the official arXiv record');
 else assert(paperHtml.includes('data-paper-unavailable')&&!/Download PDF|<iframe|<embed|<object|id="abstract"/i.test(paperHtml),'The paper route remains a release notice, not a manuscript viewer');
 console.log(`GitHub Pages build verified: ${htmlFiles.length} English pages, ${links} project-path links/resources; ${site.href}`);

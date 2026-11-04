@@ -51,7 +51,10 @@
       document.body.classList.toggle('menu-open',open);
       if(open&&!wasOpen){
         background.forEach(element=>{priorInert.set(element,element.inert);element.inert=true});
-        drawer.querySelector('a')?.focus({preventScroll:true});
+        // Let the opening visibility transition take effect before focusing.
+        requestAnimationFrame(()=>requestAnimationFrame(()=>{
+          if(open)drawer.querySelector('a')?.focus({preventScroll:true});
+        }));
       }else if(!open&&wasOpen){
         background.forEach(element=>element.inert=priorInert.get(element)||false);
         priorInert.clear();

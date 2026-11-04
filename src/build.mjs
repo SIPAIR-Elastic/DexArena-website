@@ -7,7 +7,7 @@ import { paperBody, paperBibtex, renderPaperBody } from "./paper-page.mjs";
 import { reportBody } from "./report.mjs";
 import { algorithmLink, algorithmDirectory, algorithmReferenceSection } from "./references.mjs";
 import { benchmarkScope, findingsDigest } from "./presentation.mjs";
-import { docsPublished, paperPublished, paperArtifactPaths, publishContent } from "./publication.mjs";
+import { docsPublished, paperPublished, paperArtifactPaths, codeUrl, publishContent } from "./publication.mjs";
 import { brandAssets, brandMark, brandVersion } from "./brand.mjs";
 import { codeBody } from "./code-page.mjs";
 
@@ -139,13 +139,14 @@ const nav = [
   ["/evaluation/","Evaluation","evaluation"],
   ["/docs/","Docs","docs"],
   ["/report/","Report","report"],
+  ["/paper/","Paper","paper"],
   ["/code/","Code","code"]
 ];
 
 const esc = (value) => String(value).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
 const taskImage = (index) => `/assets/tasks/task-${String(index).padStart(2,"0")}.jpg`;
 const publicNav=nav.filter(([, ,id])=>docsPublished||id!=="docs");
-const headerNav=publicNav.filter(([, ,id])=>id!=="code");
+const headerNav=publicNav;
 
 const tracks = [
   {id:"stage",label:"Stage benchmark",scope:"30 stages · training scene",description:"Success rate over 50 episodes per stage. Each policy starts from a valid initial state for that stage."},
@@ -217,10 +218,10 @@ function footer() {
 function layout({title,description,active,body,pageClass=""}) {
   const withheld=pageClass==="docs-page"&&!docsPublished;
   if(withheld){
-    title="Code coming soon — DexArena";
-    description="DexArena code and documentation are not yet publicly available.";
+    title="Documentation coming soon — DexArena";
+    description="Website documentation is being prepared. Visit the official DexArena repository for the current project files.";
     active="";pageClass="release-preview-page";
-    body=`<section class="section release-preview" data-docs-unavailable><span class="release-eyebrow">DexArena · Public release</span><h1>Code coming soon</h1><p>The benchmark code and documentation are not publicly available yet. Explore the benchmark tasks and evaluation results in the meantime.</p><div class="overview-links">${arrowLink('/paper/','Read the paper')}${arrowLink('/tasks/','Explore tasks')}</div></section>`;
+    body=`<section class="section release-preview" data-docs-unavailable><span class="release-eyebrow">DexArena · Documentation</span><h1>Documentation coming soon</h1><p>The website documentation is being prepared. Visit the official repository for current project files and updates, or explore the paper and benchmark tasks.</p><div class="overview-links">${arrowLink(codeUrl,'Official repository')}${arrowLink('/paper/','Read the paper')}${arrowLink('/tasks/','Explore tasks')}</div></section>`;
   }
   return publishContent(`<!doctype html><html lang="en"><head>
     <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -518,8 +519,8 @@ const pages = [
   ["docs/randomization/index.html",layout({title:"Scene evaluation — DexArena",description:"DexArena cross-scene evaluation matrix.",active:"docs",body:randomizationDocs(),pageClass:"docs-page"})],
   ["docs/submission/index.html",layout({title:"Submission preview — DexArena",description:"Prepare a reproducible DexArena leaderboard submission.",active:"docs",body:submissionDocs(),pageClass:"docs-page"})],
   ["report/index.html",layout({title:"Report — DexArena",description:"DexArena research, PAIR institute coverage and academic conference updates.",active:"report",body:reportPage(),pageClass:"report-page"})],
-  ["paper/index.html",layout({title:"Paper — DexArena",description:paperPublished?"DexArena paper, authors, affiliations, abstract, figures and citation. ICLR 2027 Conference Submission.":"The DexArena manuscript is not publicly available yet. Explore the benchmark overview, tasks and evaluation results.",active:"paper",body:paperBody,pageClass:"paper-page"})],
-  ["code/index.html",layout({title:"Code — DexArena",description:"DexArena benchmark code and public release status.",active:"code",body:codeBody,pageClass:"code-page"})]
+  ["paper/index.html",layout({title:"Paper — DexArena",description:paperPublished?"Read the DexArena arXiv preprint (2611.02629), explore the benchmark figures and results, and find the citation.":"The DexArena manuscript is not publicly available yet. Explore the benchmark overview, tasks and evaluation results.",active:"paper",body:paperBody,pageClass:"paper-page"})],
+  ["code/index.html",layout({title:"Code — DexArena",description:"Official DexArena GitHub repository, current project files and release updates.",active:"code",body:codeBody,pageClass:"code-page"})]
 ];
 extraDocs.forEach(page=>pages.push([`${page.href.slice(1)}index.html`,layout({title:`${page.title} — DexArena`,description:page.lead,active:"docs",body:docsShell(page.id,page.title,page.lead,page.content),pageClass:"docs-page"})]));
 pages.push(["leaderboard/protocol/index.html",layout({title:"Leaderboard protocol — DexArena",description:"Score definitions and reproducibility requirements for DexArena results.",active:"leaderboard",body:protocolBody,pageClass:"protocol-page"})]);
@@ -540,7 +541,8 @@ for(const [file,svg] of brandAssets){
 }
 if(paperPublished){
   await mkdir(join(dist,"assets","docs"),{recursive:true});
-  await copyFile(join(root,"private","paper","dexarena-paper.pdf"),join(dist,"assets","docs","dexarena-paper.pdf"));
+  // The public preprint lives on arXiv, not in the older local submission PDF.
+  await rm(join(dist,"assets","docs","dexarena-paper.pdf"),{force:true});
   await writeFile(join(dist,"assets","docs","dexarena-citation.bib"),paperBibtex);
 }else{
   // Remove only known generated manuscript artifacts, including stale builds.

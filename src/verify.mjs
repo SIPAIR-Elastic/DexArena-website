@@ -10,7 +10,7 @@ import {verifyCarousel} from './verify-carousel.mjs';
 import {verifyTaskMedia} from './verify-task-media.mjs';
 import {verifyPresentation} from './verify-presentation.mjs';
 import {verifyNavigation} from './verify-navigation.mjs';
-import {docsPublished,paperPublished,paperArtifactPaths,isRetiredRoute} from './publication.mjs';
+import {docsPublished,paperPublished,paperArtifactPaths,paperUrl,paperPdfUrl,codeUrl,isRetiredRoute} from './publication.mjs';
 import {brandAssets,brandMark,brandVersion} from './brand.mjs';
 import {createHash} from 'node:crypto';
 
@@ -52,7 +52,7 @@ for(const file of paths){
   if(!docsPublished){
     assert(!/href="\/docs(?:\/|[?#"])/.test(html),'No public Docs entry points');
     if(file.startsWith(join(dist,'docs')+'/')){
-      assert(html.includes('data-docs-unavailable')&&html.includes('<h1>Code coming soon</h1>'));
+      assert(html.includes('data-docs-unavailable')&&html.includes('<h1>Documentation coming soon</h1>'));
       assert(html.includes('content="noindex, nofollow"'));
       assert(!html.includes('class="docs-layout"')&&!html.includes('class="docs-article"'),'Old URLs must not expose documentation content');
     }
@@ -137,7 +137,7 @@ assert.equal(searchIndex.length,docsPublished?34:19);
 assert.equal(new Set(searchIndex.map(entry=>entry.url)).size,docsPublished?34:19);
 assert(searchIndex.every(entry=>!isRetiredRoute(entry.url)),'The deleted Community page is excluded from search');
 assert(!/wechat|weixin\.qq\.com|gh_[a-z\d]{10,}/i.test(JSON.stringify(searchIndex)),'Search contains no removed social-account content');
-assert(searchIndex.some(entry=>entry.url==='/code/'&&entry.text.includes('Code coming soon')),'The real Code page is searchable');
+assert(searchIndex.some(entry=>entry.url==='/code/'&&entry.text.includes('public repository')),'The public Code page is searchable');
 if(!paperPublished){
   const searchText=JSON.stringify(searchIndex);
   assert(!searchText.includes(paperAbstract.slice(0,160))&&!/9yr0F1saHs|ping2026dexarena|Download PDF|Copy BibTeX/.test(searchText),'Search must not retain manuscript content or download entries');
@@ -178,10 +178,11 @@ for(const html of [docsOverview,training]){
 if(docsPublished)assert(training.includes(' · DPPO'),'Keep extended DPPO distinct from PPO');
 else{
   assert(docsOverview.includes('data-docs-unavailable')&&training.includes('data-docs-unavailable'));
-  assert(home.includes('<dt>Code</dt><dd><span class="paper-release-status">Code Coming Soon</span></dd>'),'Homepage states the pending code release without implying a repository download');
+  assert(home.includes(`href="${codeUrl}"`),'The homepage links to the official benchmark repository while website Docs stay withheld');
 }
 const codePage=await readFile(join(dist,'code/index.html'),'utf8');
-assert(codePage.includes('data-code-page')&&codePage.includes('<h1>Code coming soon</h1>'),'Code has a dedicated release-status page');
+assert(codePage.includes('data-code-page')&&codePage.includes(`href="${codeUrl}"`),'Code has a dedicated official repository page');
+assert(!/code coming soon|has not been linked yet|being prepared for public release/i.test(codePage),'Published Code does not retain obsolete release notices');
 assert(!codePage.includes('github.com/Qhf7/DexArena'),'Do not expose a private website repository as a public benchmark code release');
 const meal=await readFile(join(dist,'tasks/meal-preparation/index.html'),'utf8');
 assert(meal.includes('data-stage-button="2" data-image="/assets/tasks/task-02.jpg"'));
@@ -269,7 +270,7 @@ assert(authorList,'Authors use a semantic list');
 assert.equal([...authorList.matchAll(/<li>/g)].length,15,'One list item per author, with no inline comma separators');
 assert(!/<\/li>\s*,/.test(authorList));
 if(!paperPublished)assert(home.includes('<dt>Paper</dt><dd><a href="/paper/">Paper ↗</a>'),'The homepage Paper link is labeled Paper');
-assert(home.includes('Code Coming Soon')&&!home.includes('Benchmark release status →'),'The homepage Code field uses the requested availability text');
+assert(home.includes(`href="${codeUrl}"`)&&!home.includes('Code Coming Soon'),'Homepage reflects the public benchmark repository');
 for(const [name,affiliation] of paperAuthors){
   if(paperPublished)assert(paperHtml.includes(`${name}<sup>${affiliation}</sup>`));
   assert(paperBibtex.includes(name));
@@ -288,7 +289,13 @@ for(const html of [home,paperHtml]){
 if(paperPublished){
   for(const id of ['abstract','citation','paper-bibtex'])assert(home.includes(`id="${id}"`));
   assert(home.includes(paperAbstract)&&paperHtml.includes(paperAbstract));
-  assert(paperHtml.includes('datetime="2026-09-11"')&&paperHtml.includes('datetime="2026-10-06"'));
+  assert(paperHtml.includes('datetime="2026-11-02"')&&paperHtml.includes('datetime="2026-11-03"'));
+  for(const html of [home,paperHtml]){
+    assert(html.includes(`href="${paperUrl}"`)&&html.includes(`href="${paperPdfUrl}"`),'Public paper links use the released arXiv record and PDF');
+    assert(html.includes(`href="${codeUrl}"`),'Paper metadata links to the official code repository');
+    assert(!/9yr0F1saHs|ICLR 2027 Conference Submission|Code Coming Soon|supplied local manuscript snapshot|Not publicly available yet/.test(html),'Public paper metadata must not retain the old withheld submission state');
+  }
+  await assert.rejects(stat(join(dist,'assets/docs/dexarena-paper.pdf')),error=>error.code==='ENOENT','Do not publish the obsolete local submission snapshot');
   assert(paperHtml.includes('/assets/paper/data-collection-pipeline.png'));
   assert.equal(await readFile(join(dist,'assets','docs','dexarena-citation.bib'),'utf8'),paperBibtex);
 }else{
