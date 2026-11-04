@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createStaticServer} from './serve.mjs';
 import {githubPagesConfig} from './pages-config.mjs';
-import {paperPublished,paperUrl,codeUrl,isWithheldPaperAsset} from '../src/publication.mjs';
+import {docsPublished,paperPublished,paperUrl,codeUrl,isWithheldPaperAsset} from '../src/publication.mjs';
 import {paperBibtex} from '../src/paper-page.mjs';
 
 test('GitHub Pages is the only deployment target and main publishes automatically',async()=>{
@@ -39,7 +39,8 @@ test('The published artifact uses Pages URLs, public release links and no obsole
   const dist=new URL('../dist/',import.meta.url);
   const paths=await readdir(dist,{recursive:true});
   const htmlPaths=paths.filter(path=>path.endsWith('.html'));
-  assert.equal(htmlPaths.length,35,'34 discoverable pages plus the legacy manuscript redirect');
+  const discoverable=docsPublished?34:18;
+  assert.equal(htmlPaths.length,35,'The complete route set remains, including withheld Docs notices and the legacy manuscript redirect');
   for(const path of htmlPaths){
     const html=await readFile(new URL(path,dist),'utf8');
     const canonical=html.split('<link rel="canonical" href="');
@@ -54,15 +55,16 @@ test('The published artifact uses Pages URLs, public release links and no obsole
     }
   }
   const search=JSON.parse(await readFile(new URL('assets/search-index.json',dist),'utf8'));
-  assert.equal(search.length,34,'Every discoverable page is indexed once');
-  assert.equal(new Set(search.map(entry=>entry.url)).size,34);
+  assert.equal(search.length,discoverable,'Every discoverable page is indexed once');
+  assert.equal(new Set(search.map(entry=>entry.url)).size,discoverable);
   assert(search.every(entry=>entry.url.startsWith(basePath)));
   assert(search.every(entry=>!entry.url.startsWith(`${basePath}paper/`)),'The redirect is excluded from site search');
-  assert.equal(search.filter(entry=>entry.url.startsWith(`${basePath}docs/`)).length,16,'Search contains the complete Docs center');
+  assert.equal(search.filter(entry=>entry.url.startsWith(`${basePath}docs/`)).length,docsPublished?16:0,'Search respects Docs publication independently of retained routes');
   const sitemap=await readFile(new URL('sitemap.xml',dist),'utf8');
   assert(sitemap.includes(`<loc>${siteUrl}</loc>`));
-  assert.equal([...sitemap.matchAll(/<loc>/g)].length,34);
+  assert.equal([...sitemap.matchAll(/<loc>/g)].length,discoverable);
   assert(!sitemap.includes(`<loc>${siteUrl}paper/</loc>`),'The redirect is excluded from the sitemap');
+  assert.equal(sitemap.includes(`<loc>${siteUrl}docs/</loc>`),docsPublished,'Hidden Docs do not enter the sitemap');
   for(const path of ['.render-build.json','assets/docs/dexarena-paper.pdf','community/index.html']){
     assert(!paths.includes(path),`${path}: not part of the public artifact`);
   }

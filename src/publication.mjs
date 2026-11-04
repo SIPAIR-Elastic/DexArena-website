@@ -1,5 +1,5 @@
-// Public usage documentation and citation live in the documentation center.
-export const docsPublished=true;
+// Temporarily hide the documentation center; retain its source for restoration.
+export const docsPublished=false;
 // The project owner has released the paper and public repository.
 export const paperPublished=true;
 export const paperUrl='https://arxiv.org/abs/2611.02629';

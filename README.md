@@ -7,7 +7,7 @@ Website: **https://sipair-elastic.github.io/DexArena-website/**
 ## Public release status
 
 The primary desktop and mobile navigation includes Project, Tasks, Leaderboard,
-Evaluation, Report, Docs and Code. Desktop destination text is 16px; mobile
+Evaluation, Report and Code. Docs is temporarily hidden. Desktop destination text is 16px; mobile
 drawer links are 18px. The paper and official repository are now publicly linked:
 
 - Paper: **https://arxiv.org/abs/2611.02629**
@@ -16,20 +16,22 @@ drawer links are 18px. The paper and official repository are now publicly linked
 Paper actions open arXiv directly. `/paper/` is only a no-index compatibility
 redirect, not a standalone research page. It is excluded from search and sitemap.
 The homepage retains authors, affiliations, abstract, figures and results;
-usage and citation are organized in the public documentation center.
+the public paper citation remains available as a BibTeX download on the homepage.
 `/code/` links to the official repository and issue tracker without inventing
 installation commands or claiming the repository already contains runnable code.
 Homepage metadata and Report use the same released paper and repository links.
 The paper is identified as a preprint, not an accepted conference publication.
 
-Docs is public at **https://sipair-elastic.github.io/DexArena-website/docs/**.
-Its 16 English pages cover setup prerequisites, configurations, embodiments,
+Docs is temporarily withheld: header/footer links, documentation calls to action,
+search entries and sitemap entries are removed. Its old URLs show an English
+no-index "Documentation coming soon" notice without exposing article content.
+All 16 English pages are retained in source and cover setup prerequisites, configurations, embodiments,
 policy integration, demonstrations/replay, teleoperation, six paper baselines,
 quick evaluation, native scenes, optional randomization, parallel evaluation,
 reproducibility, troubleshooting, release availability and citation.
-`/docs/citation/` provides a plain-text reference, copyable BibTeX and .bib download.
-The grouped sidebar, page contents, code-copy controls and previous/next links
-work across desktop and mobile; search indexes article text, not the sidebar.
+The citation reference, grouped sidebar, page contents, code-copy controls and
+previous/next links are preserved for restoration, including the responsive
+alignment and focus-visibility fixes. Public paper and Code links are unchanged.
 
 The public benchmark repository currently contains README/LICENSE and repository
 metadata only. Runnable module examples are explicitly qualified as requiring an
@@ -39,7 +41,8 @@ executable implementation is published. The canonical documentation source is
 `src/docs-content.mjs`; its reading styles and enhancements are in `src/docs.css`
 and `src/docs.js`. Earlier authored renderers are retained but are not published.
 
-`docsPublished` and `paperPublished` in `src/publication.mjs` are both `true`.
+`docsPublished` in `src/publication.mjs` is `false`; set it to `true` and rebuild
+to restore Docs. `paperPublished` remains `true`.
 Shared arXiv/PDF/repository URL constants keep public
 resource links consistent. The downloadable citation is based on arXiv:2611.02629.
 The original PDF is retained at `private/paper/dexarena-paper.pdf` in the source
@@ -131,7 +134,7 @@ Requires Node.js 22 or later. No npm dependencies are needed.
 npm run build
 ```
 
-This generates 34 discoverable pages and one legacy paper redirect, runs benchmark
+This generates 18 discoverable pages, 16 no-index Docs notices and one legacy paper redirect, runs benchmark
 content, documentation, navigation and carousel checks,
 builds navigation, media, fonts and search under `/DexArena-website/`, and verifies
 the final deployment links. The published output is in `dist/`. Canonical,

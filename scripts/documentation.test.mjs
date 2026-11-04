@@ -49,8 +49,7 @@ function paddingSides(value=''){
   return values;
 }
 
-test('The Docs center publishes the complete authored reference as sixteen real pages',async()=>{
-  assert.equal(docsPublished,true);
+test('The complete sixteen-page Docs source is retained independently of public visibility',async()=>{
   assert.equal(documentationPages.length,16);
   assert.deepEqual(documentationPages.map(page=>page.id).sort(),[...pageIds].sort());
   assert.equal(new Set(documentationPages.map(page=>page.id)).size,16);
@@ -59,6 +58,11 @@ test('The Docs center publishes the complete authored reference as sixteen real 
   for(const page of documentationPages){
     for(const field of ['id','title','lead','content'])assert.equal(typeof page[field],'string',`${page.id}: authored ${field}`);
     assert(page.title.trim()&&page.lead.trim()&&text(page.content).length>250,`${page.id}: substantive reference content`);
+  }
+});
+
+test('The published Docs center renders the complete authored reference', {skip:!docsPublished},async()=>{
+  for(const page of documentationPages){
     const html=await readFile(pageFile(page.id),'utf8');
     assert(html.includes('data-docs-center'),`${page.id}: use the Docs center shell`);
     assert(!/data-docs-unavailable|Documentation coming soon/.test(html),`${page.id}: no withheld-documentation notice`);
@@ -69,7 +73,7 @@ test('The Docs center publishes the complete authored reference as sixteen real 
   }
 });
 
-test('Docs headings, table-of-contents anchors and local links resolve without duplicate IDs',async()=>{
+test('Docs headings, table-of-contents anchors and local links resolve without duplicate IDs',{skip:!docsPublished},async()=>{
   for(const id of pageIds){
     const html=await readFile(pageFile(id),'utf8');
     const ids=[...html.matchAll(/\sid=(['"])(.*?)\1/g)].map(match=>match[2]);
@@ -111,7 +115,10 @@ test('The Docs shell has accessible page navigation, mobile disclosure, search a
   assert(/:focus-visible/.test(css),'Docs controls expose keyboard focus');
   assert(/@media/.test(css),'The Docs shell adapts to smaller viewports');
   assert(/clipboard|writeText/.test(js),'Code copying uses the browser clipboard');
-  for(const id of pageIds){
+  const shell=await readFile(join(root,'src/build.mjs'),'utf8');
+  assert(/<details\b[^>]*>[\s\S]*?<summary\b[^>]*>Documentation contents<\/summary>/.test(shell),'The retained mobile menu uses native disclosure');
+  assert(shell.includes('data-doc-search')&&shell.includes('aria-label="Documentation pages"'),'The retained shell keeps search and accessible page navigation');
+  if(docsPublished)for(const id of pageIds){
     const html=await readFile(pageFile(id),'utf8');
     assert(tags(html,'link').some(node=>node.rel==='stylesheet'&&node.href===`${basePath}assets/docs.css`),`${id}: load Docs styles`);
     assert(tags(html,'script').some(node=>node.src===`${basePath}assets/docs.js`&&Object.hasOwn(node,'defer')),`${id}: defer Docs behavior`);
@@ -125,7 +132,9 @@ test('The Docs shell has accessible page navigation, mobile disclosure, search a
 });
 
 test('Docs navigation uses clearly separated semantic group headings and subordinate page links',async()=>{
-  for(const id of pageIds){
+  const shell=await readFile(join(root,'src/build.mjs'),'utf8');
+  assert(/<h2 class="docs-nav-heading">/.test(shell),'The retained Docs shell keeps semantic parent headings');
+  if(docsPublished)for(const id of pageIds){
     const html=await readFile(pageFile(id),'utf8');
     const sidebar=html.match(/<aside\b(?=[^>]*\bclass=["']docs-sidebar["'])[^>]*>([\s\S]*?)<\/aside>/i)?.[1]||'';
     const groups=[...sidebar.matchAll(/<div\b(?=[^>]*\bclass=["']docs-nav-group["'])[^>]*>([\s\S]*?)<\/div>/gi)];
@@ -157,7 +166,9 @@ test('Docs navigation uses clearly separated semantic group headings and subordi
 });
 
 test('Docs previous and next navigation has explicit relations and correctly aligned destinations',async()=>{
-  for(const [index,id] of navigationOrder.entries()){
+  const shell=await readFile(join(root,'src/build.mjs'),'utf8');
+  assert(/rel="\$\{relation\}"/.test(shell),'The retained Docs shell keeps adjacent-page link relations');
+  if(docsPublished)for(const [index,id] of navigationOrder.entries()){
     const html=await readFile(pageFile(id),'utf8');
     const pagination=[...html.matchAll(/<nav\b([^>]*)>([\s\S]*?)<\/nav>/gi)].find(match=>classes(attributes(`<nav${match[1]}>`)).includes('docs-pagination'))?.[2]||'';
     assert(pagination,`${id}: page navigation is rendered`);
@@ -195,8 +206,8 @@ test('Scroll containers preserve visible keyboard focus without clipping or nest
   }
 });
 
-test('The citation reference shares the canonical paper, ordered authors and exact downloadable BibTeX',async()=>{
-  const html=await readFile(pageFile('citation'),'utf8');
+test('The retained citation reference shares the canonical paper, ordered authors and exact downloadable BibTeX',async()=>{
+  const html=docsPublished?await readFile(pageFile('citation'),'utf8'):documentationPages.find(page=>page.id==='citation').content;
   assert(decode(text(html)).includes(paperTitle));
   for(const url of [paperUrl,paperPdfUrl,codeUrl])assert(links(html).some(link=>link.href===url),`Citation links to ${url}`);
   let position=-1;
@@ -207,7 +218,7 @@ test('The citation reference shares the canonical paper, ordered authors and exa
     position=next;
   }
   assert(tags(html,'button').some(node=>Object.hasOwn(node,'data-copy-citation')&&node.type==='button'),'The reference offers Copy BibTeX');
-  assert(links(html).some(node=>node.href===`${basePath}assets/docs/dexarena-citation.bib`&&Object.hasOwn(node,'download')),'The reference offers the generated .bib download');
+  assert(links(html).some(node=>node.href===`${docsPublished?basePath:'/'}assets/docs/dexarena-citation.bib`&&Object.hasOwn(node,'download')),'The reference offers the generated .bib download');
   const code=html.match(/<code\b(?=[^>]*\bid=["']paper-bibtex["'])[^>]*>([\s\S]*?)<\/code>/i)?.[1];
   assert.equal(decode(code||''),paperBibtex,'Copy and download present the same source citation');
   assert.equal(await readFile(join(dist,'assets/docs/dexarena-citation.bib'),'utf8'),paperBibtex);
@@ -219,7 +230,7 @@ test('The citation reference shares the canonical paper, ordered authors and exa
 
 test('Research examples state their checkout requirements and do not invent public artifacts',async()=>{
   for(const page of documentationPages){
-    const html=await readFile(pageFile(page.id),'utf8');
+    const html=docsPublished?await readFile(pageFile(page.id),'utf8'):page.content;
     const visible=decode(text(html));
     const examples=[...page.content.matchAll(/<pre\b[^>]*>\s*<code\b[^>]*>([\s\S]*?)<\/code>\s*<\/pre>/gi)].map(match=>decode(match[1]));
     if(examples.some(code=>/\bpython\b|\b(?:from|import)\s+\w|\bpip\b|\bss\s+-|\bgit\s+clone\b/.test(code)))assert(/(?:research|reference|full)\s+(?:source\s+)?(?:checkout|codebase)/i.test(visible),`${page.id}: runnable examples require the research checkout`);
@@ -233,8 +244,31 @@ test('Research examples state their checkout requirements and do not invent publ
     assert(!/href=["'][^"']*(?:huggingface\.co\/datasets\/[^"']*dexarena|dexarena[^"']*\.(?:pt|pth|ckpt|safetensors|tar\.gz|zip))["']/i.test(html),`${page.id}: no invented model or data artifact`);
   }
   for(const id of ['getting-started','resources']){
-    const visible=decode(text(await readFile(pageFile(id),'utf8')));
+    const visible=decode(text(docsPublished?await readFile(pageFile(id),'utf8'):documentationPages.find(page=>page.id===id).content));
     assert(/README/i.test(visible)&&/LICENSE/i.test(visible),`${id}: explain the public repository's current README and LICENSE contents`);
     assert(/not.{0,80}(?:available|released|contain|complete|runnable|include)|(?:pending|awaiting|only|forthcoming)/i.test(visible),`${id}: public repository scope is explicit`);
   }
+});
+
+test('Temporarily hidden Docs expose only non-indexed notices, never the retained reference',{skip:docsPublished},async()=>{
+  for(const page of documentationPages){
+    const html=await readFile(pageFile(page.id),'utf8');
+    assert(html.includes('data-docs-unavailable'),`${page.id}: old links show the unavailable notice`);
+    assert(/<h1>Documentation coming soon<\/h1>/.test(html),`${page.id}: the unavailable state is explicit`);
+    assert(tags(html,'meta').some(node=>node.name==='robots'&&node.content.split(/\s*,\s*/).includes('noindex')),`${page.id}: hidden documentation cannot be indexed`);
+    assert(!/data-docs-center|data-doc-search|docs-nav-group|docs-code-block|docs-article/.test(html),`${page.id}: neither the document shell nor authored content leaks`);
+    assert(!html.includes(page.lead),`${page.id}: the authored lead is not public`);
+    assert(!links(html).some(link=>new URL(decode(link.href),'https://dexarena.test').pathname.startsWith(`${basePath}docs/`)),`${page.id}: notices do not link to hidden documentation`);
+    assert(links(html).some(link=>link.href===codeUrl),`${page.id}: the released repository remains accessible`);
+    assert(links(html).some(link=>link.href===paperUrl),`${page.id}: the released paper remains accessible`);
+  }
+  const files=(await readdir(dist,{recursive:true})).filter(file=>file.endsWith('.html'));
+  for(const file of files){
+    const html=await readFile(join(dist,file),'utf8');
+    assert(!links(html).some(link=>new URL(decode(link.href),'https://dexarena.test').pathname.startsWith(`${basePath}docs/`)),`${file}: no navigation, footer or contextual action promotes hidden Docs`);
+  }
+  const search=JSON.parse(await readFile(join(dist,'assets/search-index.json'),'utf8'));
+  assert(search.every(entry=>!entry.url.startsWith(`${basePath}docs/`)),'Hidden Docs never appear in search');
+  const sitemap=await readFile(join(dist,'sitemap.xml'),'utf8');
+  assert(!sitemap.includes(`${basePath}docs/`),'Hidden Docs never appear in the sitemap');
 });

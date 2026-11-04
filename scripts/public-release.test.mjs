@@ -7,8 +7,8 @@ import {codeBody} from '../src/code-page.mjs';
 
 const htmlText=value=>value.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
 
-test('The public release publishes Docs, the paper and the official repository',()=>{
-  assert.equal(docsPublished,true);
+test('The current release temporarily hides Docs while keeping the paper and official repository public',()=>{
+  assert.equal(docsPublished,false);
   assert.equal(paperPublished,true);
   assert.equal(paperUrl,'https://arxiv.org/abs/2611.02629');
   assert.equal(paperPdfUrl,'https://arxiv.org/pdf/2611.02629');
@@ -23,7 +23,13 @@ test('Homepage research and Code content expose the official release links',()=>
   {
     const html=publishContent(renderPaperBody({home:true}));
     for(const url of [paperUrl,paperPdfUrl,codeUrl])assert(html.includes(`href="${url}"`),`Paper content links to ${url}`);
-    assert(html.includes('href="/docs/citation/"'),'Homepage research points to the Docs citation reference');
+    if(docsPublished)assert(html.includes('href="/docs/citation/"'),'Homepage research points to the Docs citation reference');
+    else{
+      assert(!/href\s*=\s*["']\/docs(?:[\/"'?#]|$)/i.test(html),'Homepage research never sends visitors to hidden Docs');
+      assert(html.includes('href="#citation"'),'Homepage metadata and reference navigation retain an available citation destination');
+      assert(html.includes('href="/assets/docs/dexarena-citation.bib"'),'The official citation download remains available independently of Docs');
+      assert(html.includes('id="citation"'),'The homepage citation destination actually exists');
+    }
     assert(!/href\s*=\s*["']\/paper(?:[\/"'?#]|$)/i.test(html),'Homepage research does not lead to the retired paper page');
     assert(!/paper\s+coming\s+soon|code\s+coming\s+soon|data-paper-unavailable/i.test(html),'Released paper content does not retain an unpublished notice');
     assert(!/https:\/\/openreview\.net\/(?:forum|pdf)\?id=9yr0F1saHs/.test(html),'Paper content uses the current public record');
@@ -107,7 +113,8 @@ test('Released legacy manuscript links resolve to the official public paper and 
   assert.equal(publishContent(citation),citation,'The generated public citation keeps its local download destination');
 });
 
-test('Legacy paper-page links lead directly to the public record or their current reference section',()=>{
+test('Legacy paper-page links lead directly to the public record or their current reference section',async()=>{
+  const published=await publicationVariant({docs:true,paper:true});
   const destinations=[
     ['/paper/',paperUrl],
     ['/paper',paperUrl],
@@ -120,9 +127,11 @@ test('Legacy paper-page links lead directly to the public record or their curren
     ['/paper/#paper-results','/#paper-results']
   ];
   for(const [before,after] of destinations){
-    const output=publishContent(`<a class="inline-reference" href="${before}">Research reference</a>`);
+    const output=published.publishContent(`<a class="inline-reference" href="${before}">Research reference</a>`);
     assert.equal(output,`<a class="inline-reference" href="${after}">Research reference</a>`);
-    assert.equal(publishContent(output),output,'Legacy-link conversion is stable');
+    assert.equal(published.publishContent(output),output,'Legacy-link conversion is stable');
+    const hiddenDestination=after==='/docs/citation/'&&!docsPublished?paperUrl:after;
+    assert.equal(publishContent(`<a class="inline-reference" href="${before}">Research reference</a>`),`<a class="inline-reference" href="${hiddenDestination}">Research reference</a>`,'Legacy references cannot reintroduce hidden Docs destinations');
   }
 });
 
@@ -180,7 +189,7 @@ test('The deleted Community route and its descendants remain retired across slas
   }
 });
 
-test('Figures, flowcharts, result data, external algorithms and public routes remain byte-identical',()=>{
+test('Figures, flowcharts, result data, external algorithms and public routes remain byte-identical',async()=>{
   const sources=[
     '<a href="/assets/paper/dexarena-overview.png">Benchmark overview ↗</a>',
     '<img src="/assets/paper/data-collection-pipeline.png" alt="Data collection flowchart">',
@@ -194,7 +203,6 @@ test('Figures, flowcharts, result data, external algorithms and public routes re
     `<a href="${paperPdfUrl}">Public PDF ↗</a>`,
     `<a href="${codeUrl}">DexArena source ↗</a>`,
     '<a href="/tasks/package-opening/" class="arrow-link">Explore Package Opening ↗</a>',
-    '<a href="/docs/citation/" class="editorial-link">Citation ↗</a>',
     '<a href="/code/" class="code-resource-link">Code <span aria-hidden="true">↗</span></a>',
     '<a href="/leaderboard/#results-generalization">Cross-scene results ↗</a>',
     '<a href="#existing-section">Existing section ↓</a>',
@@ -204,13 +212,20 @@ test('Figures, flowcharts, result data, external algorithms and public routes re
   for(const source of sources)assert.equal(publishContent(source),source,source);
   const document=`<!doctype html><html lang="en"><body>${sources.join('\n')}</body></html>`;
   assert.equal(publishContent(document),document);
+  const published=await publicationVariant({docs:true,paper:true});
+  const docsLink='<a href="/docs/citation/" class="editorial-link">Citation ↗</a>';
+  assert.equal(published.publishContent(docsLink),docsLink,'Re-enabling Docs restores reference links unchanged');
 });
 
-test('Mixed publication filtering is deterministic and safe to run twice',()=>{
+test('Mixed publication filtering is deterministic and safe to run twice',async()=>{
+  const published=await publicationVariant({docs:true,paper:true});
   const source='<article><h2><a href="/docs/data/">Replay validation</a></h2><p>Protocol text stays.</p><a href="/docs/data/" class="arrow-link">Explore data ↗</a><a href="/docs/resources/">Repository</a><a href="/assets/docs/dexarena-paper.pdf">PDF ↗</a><a href="/tasks/">Tasks →</a></article>';
-  const output=publishContent(source);
+  const output=published.publishContent(source);
   assert.equal(output,`<article><h2><a href="/docs/data/">Replay validation</a></h2><p>Protocol text stays.</p><a href="/docs/data/" class="arrow-link">Explore data ↗</a><a href="/docs/resources/">Repository</a><a href="${paperPdfUrl}">PDF ↗</a><a href="/tasks/">Tasks →</a></article>`);
-  assert.equal(publishContent(output),output);
+  assert.equal(published.publishContent(output),output);
+  const current=publishContent(source);
+  if(!docsPublished)assert.equal(current,`<article><h2><span>Replay validation</span></h2><p>Protocol text stays.</p>${codeLink}<a href="${paperPdfUrl}">PDF ↗</a><a href="/tasks/">Tasks →</a></article>`,'Hidden documentation preserves inline text and the public paper, tasks and code');
+  assert.equal(publishContent(current),current,'The current hidden state is also stable on repeated filtering');
   assert.equal(publishContent(''),'');
   assert.equal(publishContent('Research text without links.'),'Research text without links.');
 });
@@ -262,8 +277,9 @@ test('Enabling both independent release flags preserves Docs while publishing of
 });
 
 test('Published documentation preserves authored links and excludes retired promotion',async()=>{
+  const published=await publicationVariant({docs:true,paper:true});
   const source='<a class="arrow-link" href="/docs/getting-started/">Get started →</a><p>See <a href="/docs/citation/">the citation</a>.</p>';
-  assert.equal(publishContent(source),source,'Published documentation is ordinary navigable content');
+  assert.equal(published.publishContent(source),source,'Published documentation is ordinary navigable content');
   const documentation=await readFile(new URL('../src/docs-content.mjs',import.meta.url),'utf8');
   assert(!/wechat|weixin|gh_6279469803d5|href=["']\/community\//i.test(documentation),'Documentation cannot restore removed account promotion');
 });

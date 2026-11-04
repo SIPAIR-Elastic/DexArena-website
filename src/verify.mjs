@@ -295,7 +295,11 @@ for(const html of [home,citationHtml]){
 if(paperPublished){
   for(const id of ['abstract','citation'])assert(home.includes(`id="${id}"`));
   assert(home.includes(paperAbstract),'Retain the public research overview on the homepage');
-  assert(citationHtml.includes('id="paper-bibtex"')&&citationHtml.includes('data-copy-citation'),'Citation tools live in Docs');
+  if(docsPublished)assert(citationHtml.includes('id="paper-bibtex"')&&citationHtml.includes('data-copy-citation'),'Citation tools live in Docs');
+  else{
+    assert(citationHtml.includes('data-docs-unavailable')&&!citationHtml.includes('id="paper-bibtex"'),'The old citation URL must not expose withheld Docs');
+    assert(home.includes('href="/assets/docs/dexarena-citation.bib" download'),'The public paper citation stays downloadable without revealing documentation');
+  }
   assert(home.includes('datetime="2026-11-02"')&&home.includes('datetime="2026-11-03"'));
   for(const html of [home]){
     assert(html.includes(`href="${paperUrl}"`)&&html.includes(`href="${paperPdfUrl}"`),'Public paper links use the released arXiv record and PDF');
@@ -381,4 +385,4 @@ runInNewContext(js.slice(js.indexOf('const textCopyButtons='),js.indexOf('const 
 });
 await textButton.handlers.click();assert(selectedFallback);
 assert(textStatus.textContent.includes('Select and copy')&&!/\p{Script=Han}/u.test(textStatus.textContent));
-console.log(`Verified 34 English-only pages, ${links} local links/anchors, removed Community route, 4 sourced reports, conference statuses, link-copy success/fallback, paper metadata, palette contrast, search and all 420 task/method scores.`);
+console.log(`Verified ${docsPublished?34:18} discoverable English-only pages, ${links} local links/anchors, removed Community route, 4 sourced reports, conference statuses, link-copy success/fallback, paper metadata, palette contrast, search and all 420 task/method scores.`);
