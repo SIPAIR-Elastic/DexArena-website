@@ -11,6 +11,7 @@ import { benchmarkScope, findingsDigest } from "./presentation.mjs";
 import { docsPublished, paperPublished, paperArtifactPaths, paperUrl, codeUrl, publishContent } from "./publication.mjs";
 import { brandAssets, brandMark, brandVersion } from "./brand.mjs";
 import { codeBody } from "./code-page.mjs";
+import { renderLeaderboard } from "./leaderboard.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(root, "dist");
@@ -167,24 +168,6 @@ function findings() {
   return findingsDigest(paper);
 }
 
-function rankingChart(trackId) {
-  const ranked=paper.models.map((m,i)=>({...m,value:paper[trackId].reportedAverage[i]})).sort((a,b)=>b.value.mean-a.value.mean);
-  return `<div class="ranking-chart"><div class="chart-axis"><span>Average success (%)</span><div><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div><span></span></div>${ranked.map((m,i)=>{
-    const value=m.value, left=Math.max(0,value.mean-(value.std||0)),right=Math.min(100,value.mean+(value.std||0));
-    return `<div class="chart-row" data-visual-method data-family="${m.family.toLowerCase()}"><span class="chart-label"><small>${i+1}</small><b>${m.name}</b><em>${m.family}</em></span><div class="chart-track" role="img" aria-label="${m.name}: ${value.mean}%${value.std===undefined?"":`, scene standard deviation ${value.std}%`}"><div class="chart-bar ${m.family==="VLA"?"is-vla":m.family==="Imitation learning"?"is-il":"is-rl"}" style="width:${value.mean}%"></div>${value.std===undefined?"":`<div class="chart-whisker" style="left:${left}%;width:${right-left}%"></div>`}</div><span class="chart-value">${score(value)}<small>%</small></span></div>`;
-  }).join("")}<p class="chart-note">All tracks use the same 0–100% scale.${trackId==="generalization"?" Whiskers show standard deviation across three scenes.":""}</p></div>`;
-}
-function heatmap(trackId) {
-  const rows=paper[trackId].rows;
-  return `<div class="heatmap-header"><h3>${trackId==="longHorizon"?"Sequence":"Stage"} performance map</h3><div class="heatmap-legend"><span>0%</span><i></i><span>100%</span></div></div><p class="chart-note">All six methods. ${trackId==="generalization"?"Cells show scene-average success; hover for mean ± scene standard deviation.":"Cells show success rate; hover for the exact value."}</p><div class="table-scroll heatmap-scroll"><table class="heatmap-table"><thead><tr><th scope="col">${trackId==="longHorizon"?"Task":"Stage"}</th>${paper.models.map(m=>`<th scope="col">${m.name==="Diffusion Policy"?"DP":m.name}</th>`).join("")}</tr></thead><tbody>${rows.map((row,index)=>{
-    const task=trackId==="longHorizon"?tasks[index]:tasks.find(t=>index>=t.cover&&index<t.cover+t.stages.length);
-    return `<tr><th scope="row"><a href="/tasks/${task.slug}/">${row.name.replace(/([a-z])([A-Z])/g,'$1 $2')}</a></th>${row.values.map((v,i)=>`<td style="--cell-bg:hsl(217 75% ${98-v.mean*.5}%);--cell-fg:${v.mean>65?"#fff":"#17406e"}" title="${paper.models[i].name} · ${row.name}: ${v.mean.toFixed(1)}%${v.std===undefined?"":` ± ${v.std.toFixed(1)} scene std`}">${v.mean.toFixed(1)}</td>`).join("")}</tr>`;
-  }).join("")}</tbody></table></div>`;
-}
-function methodProfiles(){
-  return `<details class="compare-details"><summary>Compare each method across all three tracks</summary><p class="chart-note">Success (%), on a shared 0–100 scale.</p><div class="method-profiles">${paper.models.map((m,i)=>`<article data-visual-method data-family="${m.family.toLowerCase()}"><h3>${m.name}</h3>${tracks.map((track,j)=>`<div class="profile-row"><span>${["Stage","Scene","Sequence"][j]}</span><div><i style="width:${paper[track.id].reportedAverage[i].mean}%;--bar-color:${["#4285f4","#34a853","#a142f4"][j]}"></i></div><b>${paper[track.id].reportedAverage[i].mean.toFixed(1)}</b></div>`).join("")}</article>`).join("")}</div></details>`;
-}
-
 function header(active="") {
   const links = headerNav.map(([href,label,id]) => `<a class="site-nav__link ${active===id?"is-active":""}" href="${href}"${active===id?' aria-current="page"':""}>${label}</a>`).join("");
   const drawerLinks = headerNav.map(([href,label,id],index)=>`<a class="site-nav__link ${active===id?"is-active":""}" href="${href}"${active===id?' aria-current="page"':""}><span class="nav-destination"><small aria-hidden="true">${String(index+1).padStart(2,"0")}</small><span>${label}</span></span><span class="nav-destination-arrow" aria-hidden="true">↗</span></a>`).join("");
@@ -230,7 +213,7 @@ function layout({title,description,active,body,pageClass=""}) {
     <title>${esc(title)}</title><link rel="icon" href="/assets/brand/dexarena-favicon.svg?v=${brandVersion}" type="image/svg+xml" sizes="any">
     <link rel="preload" href="/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${["paper-page","home-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}${["home-page","evaluation-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/experience.css">':""}${pageClass==="home-page"?'<link rel="stylesheet" href="/assets/carousel.css">':""}<link rel="stylesheet" href="/assets/footer.css">${pageClass==="docs-page"?'<link rel="stylesheet" href="/assets/docs.css">':""}<link rel="stylesheet" href="/assets/navigation.css"><script src="/assets/navigation.js" defer></script><script src="/assets/site.js" defer></script>${pageClass==="docs-page"?'<script src="/assets/docs.js" defer></script>':""}${["home-page","evaluation-page"].includes(pageClass)?'<script src="/assets/experience.js" defer></script>':""}
+    <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${["paper-page","home-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}${["home-page","evaluation-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/experience.css">':""}${pageClass==="home-page"?'<link rel="stylesheet" href="/assets/carousel.css">':""}<link rel="stylesheet" href="/assets/footer.css">${pageClass==="docs-page"?'<link rel="stylesheet" href="/assets/docs.css">':""}${pageClass==="leaderboard-body"?'<link rel="stylesheet" href="/assets/leaderboard.css">':""}<link rel="stylesheet" href="/assets/navigation.css"><script src="/assets/navigation.js" defer></script><script src="/assets/site.js" defer></script>${pageClass==="leaderboard-body"?'<script src="/assets/leaderboard.js" defer></script>':""}${pageClass==="docs-page"?'<script src="/assets/docs.js" defer></script>':""}${["home-page","evaluation-page"].includes(pageClass)?'<script src="/assets/experience.js" defer></script>':""}
   </head><body class="${pageClass}">${header(active)}<main>${body}</main>${footer()}<div class="route-progress" aria-hidden="true"></div></body></html>`);
 }
 
@@ -389,23 +372,7 @@ function taskDetail(task,index) {
 }
 
 function leaderboardPage() {
-  const panels=tracks.map(track=>{
-    const data=paper[track.id];
-    const ranking=paper.models.map((model,i)=>({...model,value:data.reportedAverage[i]})).sort((a,b)=>b.value.mean-a.value.mean);
-    const rows=ranking.map((m,i)=>`<tr data-method-row data-family="${m.family.toLowerCase()}"><td><span class="rank">${i+1}</span></td><th scope="row">${m.name}</th><td>${m.family}</td><td class="score-cell">${score(m.value)}</td><td><a href="${docsPublished?'/docs/training/':paperPublished?'/paper/#paper-results':'/#paper-results'}">Paper baseline ↗</a></td></tr>`).join("");
-    return `<section data-result-panel="${track.id}" id="results-${track.id}" aria-labelledby="tab-${track.id}"><div class="board-head"><div><span>${track.scope}</span><h2>${track.label}</h2><p>${track.description}</p></div><a class="arrow-link" href="/assets/results/${track.id}.csv" download>Download CSV ↓</a></div><div data-result-view="charts" class="result-visual">${rankingChart(track.id)}${methodProfiles()}</div><div data-result-view="heatmap" class="result-visual">${heatmap(track.id)}</div><div data-result-view="tables"><div class="table-scroll"><table class="leaderboard-table"><thead><tr><th>Rank</th><th>Method</th><th>Family</th><th>Average success (%) ↑</th><th>Source</th></tr></thead><tbody>${rows}</tbody></table></div><div class="result-full"><h3>All ${track.id==="longHorizon"?"10 tasks":"30 stages"}</h3><p>Success rates (%). Highlighted cells are the highest result in each row.</p>${resultTable(track.id)}</div></div></section>`;
-  }).join("");
-  return `<section class="leaderboard-page">
-    <a class="protocol-banner" href="/leaderboard/protocol/"><span><b>Evaluation protocol</b> 50 episodes per task; cross-scene scores span three held-out scenes.</span><em>Read the protocol →</em></a>
-    <div class="leaderboard-head"><span>DexArena benchmark</span><h1>Leaderboard</h1><p>Skill execution · Cross-scene generalization · Long-horizon composition</p><div class="release-chip">Manuscript baseline results · six methods</div></div>
-    <section class="news-strip"><b>Results</b><ul><li>Six paper baselines now include all stage, cross-scene and long-horizon scores.</li><li>Cross-scene ± denotes standard deviation across scenes, not confidence intervals.</li><li>These are manuscript baselines; community submission intake is not yet open.</li></ul></section>
-    <div class="leaderboard-tabs" aria-label="Result tracks">${tracks.map((t,i)=>`<button type="button" id="tab-${t.id}" class="${i===0?"active":""}" data-result-tab="${t.id}" aria-controls="results-${t.id}" aria-pressed="${i===0}">${t.label}</button>`).join("")}</div>
-    <section class="leaderboard-board">
-      <div class="board-filter"><div class="view-switch" aria-label="Result presentation">${[["charts","Charts"],["heatmap","Heatmap"],["tables","Tables"]].map(([id,label],i)=>`<button type="button" data-view-button="${id}" aria-pressed="${i===0}" class="${i===0?"active":""}">${label}</button>`).join("")}</div><label>Ranking family<select data-method-filter><option value="all">All families</option><option value="imitation">Imitation learning</option><option value="rl">Demo-guided RL</option><option value="vla">VLA</option></select></label></div>
-      ${panels}<p class="result-source">Source: DexArena manuscript, stage-level and generalization experiment tables and long-horizon appendix table. <a href="/assets/results/paper-results.json" download>Download all results (JSON) ↓</a></p>
-    </section>
-    <section class="submission-cta"><div><span>Submit a method</span><h2>Evaluation intake is not open yet.</h2><p>Submission instructions will be shared when evaluation intake opens.</p></div>${docsPublished?arrowLink("/docs/submission/","Submission preview"):''}</section>
-  </section>`;
+  return renderLeaderboard({paper,tasks,tracks,paperUrl});
 }
 
 function evaluationPage() {
@@ -586,6 +553,8 @@ await copyFile(join(root,"src","navigation.css"),join(dist,"assets","navigation.
 await copyFile(join(root,"src","footer.css"),join(dist,"assets","footer.css"));
 await copyFile(join(root,"src","navigation.js"),join(dist,"assets","navigation.js"));
 await copyFile(join(root,"src","publication-guard.js"),join(dist,"assets","publication-guard.js"));
+await copyFile(join(root,"src","leaderboard.css"),join(dist,"assets","leaderboard.css"));
+await copyFile(join(root,"src","leaderboard.js"),join(dist,"assets","leaderboard.js"));
 await copyFile(join(root,"src","docs.css"),join(dist,"assets","docs.css"));
 await copyFile(join(root,"src","docs.js"),join(dist,"assets","docs.js"));
 await copyFile(join(root,"src","experience.js"),join(dist,"assets","experience.js"));

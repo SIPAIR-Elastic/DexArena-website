@@ -66,6 +66,21 @@ The public website is deployed only through **GitHub Pages**. Visitors do not
 need a GitHub account. The deployment publishes only the generated `dist/`
 directory; source files and `private/` are excluded from the website artifact.
 
+## Leaderboard results explorer
+
+The results page preserves all 420 method/row measurements from
+`src/paper-results.json`. Its three tracks offer shared-scale ranking charts,
+reported-success distributions, a cross-track comparison matrix, grouped
+searchable heatmaps and exact result tables with CSV/JSON downloads.
+An explicitly labeled 0–2% detail scale makes low long-horizon averages readable;
+the default remains 0–100%, and zero scores never receive a decorative bar.
+Family filters apply consistently to chart rows and matrix columns. Heatmap
+selection supports pointer, touch and roving keyboard navigation, with persistent
+mean/scene-standard-deviation details and contrast-checked numeric labels.
+Derived summaries use reported averages and positive per-row ties, not inferred
+episode counts or confidence intervals. Rendering, styles and enhancements are
+isolated in `src/leaderboard.mjs`, `src/leaderboard.css` and `src/leaderboard.js`.
+
 ## Homepage layout
 
 The DexArena icon is vector artwork traced from the supplied `Logo.png`: a blue
