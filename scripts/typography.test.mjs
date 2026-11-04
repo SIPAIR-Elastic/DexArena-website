@@ -54,7 +54,7 @@ test('Task categories and search labels use legible typography with usable filte
 
 test('Report navigation and section labels preserve readable desktop and mobile hierarchy',()=>{
   readable(report,'.report-section-nav a',{desktop:16,minimum:15});
-  readable(report,'.report-eyebrow',{desktop:13,minimum:13});
+  readable(report,'.report-eyebrow',{desktop:14,minimum:14});
   readable(report,'.report-section-heading .report-eyebrow',{desktop:15,minimum:15});
   readable(report,'.research-outlook-panel .report-eyebrow',{desktop:15,minimum:15});
   assert(rules(report,'.report-eyebrow').some(rule=>Number.parseInt(rule['font-weight'],10)>=600),'Report labels retain a distinct heading weight');
@@ -62,6 +62,47 @@ test('Report navigation and section labels preserve readable desktop and mobile 
   const navigationRules=rules(report,'.report-section-nav a');
   assert(navigationRules.some(rule=>['flex','inline-flex','grid','inline-grid','block','inline-block'].includes(rule.display)),'Report anchors establish a box that respects their minimum hit-area dimensions');
   assert(navigationRules.some(rule=>Number.parseFloat(rule['min-height'])>=44),'Report links retain at least a 44px tap target');
+});
+
+test('Report explanations and article text remain full-size on desktop and mobile',()=>{
+  for(const selector of [
+    '.report-page .page-hero p',
+    '.report-section-heading>p',
+    '.publication-copy p',
+    '.coverage-copy>p',
+    '.conference-card>p',
+    '.research-notes p',
+    '.research-outlook-panel p',
+    '.report-note'
+  ])readable(report,selector,{desktop:16,minimum:16});
+  const noteLinks=rules(report,'.report-note a');
+  assert.equal(noteLinks.at(-1)?.['font-size'],'inherit','Inline links inherit the full-size explanatory note instead of shrinking its important references');
+});
+
+test('Report dates, categories and source metadata do not become tiny secondary text',()=>{
+  for(const selector of ['.coverage-date time','.conference-card time']){
+    readable(report,selector,{desktop:16,minimum:16});
+  }
+  readable(report,'.conference-card .conference-place',{desktop:15,minimum:15});
+  for(const selector of [
+    '.report-page .page-hero>div>span',
+    '.coverage-date>span',
+    '.report-page .report-byline',
+    '.publication-authors summary',
+    '.publication-authors p',
+    '.publication-meta',
+    '.publication-meta>span',
+    '.conference-status',
+    '.source-language'
+  ])readable(report,selector,{desktop:14,minimum:14});
+});
+
+test('Report action links retain a legible size independently of descriptive text',()=>{
+  for(const selector of [
+    '.publication-links a',
+    '.research-notes article>a',
+    '.research-outlook-actions a'
+  ])readable(report,selector,{desktop:15,minimum:15});
 });
 
 test('Typography-specific styles load after the shared legacy refinements',()=>{
