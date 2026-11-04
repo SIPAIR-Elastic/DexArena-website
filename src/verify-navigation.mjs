@@ -28,7 +28,7 @@ const classes=node=>(node.attributes.class||'').split(/\s+/);
 const plainText=html=>html.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
 const route=href=>new URL(href,'https://dexarena.invalid').pathname.replace(/\/$/,'')||'/';
 const asset=(value,name)=>new RegExp(`/assets/${name.replaceAll('.','\\.')}(?:[?#].*)?$`).test(value||'');
-const expectedLinks=[['/','Project'],['/tasks/','Tasks'],['/leaderboard/','Leaderboard'],['/evaluation/','Evaluation'],['/docs/','Docs'],['/report/','Report'],['/paper/','Paper'],['/code/','Code']]
+const expectedLinks=[['/','Project'],['/tasks/','Tasks'],['/leaderboard/','Leaderboard'],['/evaluation/','Evaluation'],['/report/','Report'],['/docs/','Docs'],['/code/','Code']]
   .filter(([href])=>docsPublished||route(href)!=='/docs');
 
 export function verifyNavigation({html,css,js}){
@@ -93,6 +93,7 @@ export function verifyNavigation({html,css,js}){
   for(const link of [...elements(header.content,'a'),...elements(siteFooters[0].content,'a')]){
     assert(!/^\/community(?:\/|$)/.test(route(link.attributes.href||'')),'Community has no header or footer destination');
     assert(!/\bCommunity\b/i.test(plainText(link.content)),'Header and footer do not retain a Community link label');
+    assert(!/^\/paper(?:\/|$)/.test(route(link.attributes.href||'')),'Header and footer do not expose the legacy manuscript redirect');
   }
   assert.equal(tagged(siteFooters[0].content,a=>has(a,'data-code-status')).length,0,'Site footer does not repeat a pending-code badge');
   assert(!/code\s+coming\s+soon/i.test(plainText(siteFooters[0].content)),'The shared footer does not retain an obsolete code-release notice');
@@ -111,9 +112,10 @@ export function verifyNavigation({html,css,js}){
   if(noHeaderRoute)assert.equal(tagged(header.content,a=>a['aria-current']==='page').length,0,'Pages outside the primary navigation have no current-page claim anywhere in the header');
   else{
     assert.equal(route(currentDesktop[0].attributes.href),route(currentMobile[0].attributes.href),'Desktop and mobile current routes agree');
-    for(const [page,path] of [['paper-page','/paper'],['code-page','/code']]){
+    for(const [page,path] of [['docs-page','/docs'],['code-page','/code']]){
       if(body&&classes(body).includes(page))assert.equal(route(currentDesktop[0].attributes.href),path,`${page} identifies its own primary destination as current`);
     }
+    if(tagged(main,a=>has(a,'data-docs-center')).length)assert.equal(route(currentDesktop[0].attributes.href),'/docs','Every documentation article identifies Docs as the current primary destination');
   }
   for(const node of tagged(header.content,a=>has(a,'role'))){
     assert(!/^(?:menu|menubar|menuitem(?:checkbox|radio)?)$/i.test(node.attributes.role),'Site links use ordinary navigation semantics, not application menus');

@@ -39,24 +39,40 @@ test('The published artifact uses Pages URLs, public release links and no obsole
   const dist=new URL('../dist/',import.meta.url);
   const paths=await readdir(dist,{recursive:true});
   const htmlPaths=paths.filter(path=>path.endsWith('.html'));
-  assert.equal(htmlPaths.length,34);
+  assert.equal(htmlPaths.length,35,'34 discoverable pages plus the legacy manuscript redirect');
   for(const path of htmlPaths){
     const html=await readFile(new URL(path,dist),'utf8');
     const canonical=html.split('<link rel="canonical" href="');
     assert.equal(canonical.length,2,`${path}: exactly one canonical URL`);
-    assert(canonical[1].startsWith(siteUrl),`${path}: canonical uses Pages`);
+    if(path==='paper/index.html')assert(canonical[1].startsWith(`${paperUrl}"`),`${path}: the redirect canonical identifies arXiv`);
+    else assert(canonical[1].startsWith(siteUrl),`${path}: canonical uses Pages`);
     assert(!html.includes('onrender.com')&&!html.includes('qhf7.github.io'),`${path}: no retired host`);
+    for(const link of html.matchAll(/\bhref\s*=\s*(["'])(.*?)\1/gi)){
+      const destination=new URL(link[2],siteUrl);
+      const legacyPath=destination.pathname.replace(/index\.html$/,'').replace(/\/$/,'');
+      assert(destination.origin!==new URL(siteUrl).origin||![`${basePath}paper`,'/paper'].includes(legacyPath),`${path}: internal links do not promote the legacy redirect`);
+    }
   }
   const search=JSON.parse(await readFile(new URL('assets/search-index.json',dist),'utf8'));
-  assert(search.length>0&&search.every(entry=>entry.url.startsWith(basePath)));
+  assert.equal(search.length,34,'Every discoverable page is indexed once');
+  assert.equal(new Set(search.map(entry=>entry.url)).size,34);
+  assert(search.every(entry=>entry.url.startsWith(basePath)));
+  assert(search.every(entry=>!entry.url.startsWith(`${basePath}paper/`)),'The redirect is excluded from site search');
+  assert.equal(search.filter(entry=>entry.url.startsWith(`${basePath}docs/`)).length,16,'Search contains the complete Docs center');
   const sitemap=await readFile(new URL('sitemap.xml',dist),'utf8');
   assert(sitemap.includes(`<loc>${siteUrl}</loc>`));
+  assert.equal([...sitemap.matchAll(/<loc>/g)].length,34);
+  assert(!sitemap.includes(`<loc>${siteUrl}paper/</loc>`),'The redirect is excluded from the sitemap');
   for(const path of ['.render-build.json','assets/docs/dexarena-paper.pdf','community/index.html']){
     assert(!paths.includes(path),`${path}: not part of the public artifact`);
   }
   const paper=await readFile(new URL('paper/index.html',dist),'utf8');
   const code=await readFile(new URL('code/index.html',dist),'utf8');
   assert(paper.includes(`href="${paperUrl}"`));
+  assert(/<meta\b(?=[^>]*\bname=["']robots["'])(?=[^>]*\bcontent=["'][^"']*noindex)[^>]*>/i.test(paper),'Legacy manuscript URLs do not create a second indexed paper page');
+  assert(/<meta\b(?=[^>]*\bhttp-equiv=["']refresh["'])(?=[^>]*\bcontent=["'][^"']*https:\/\/arxiv\.org\/abs\/2611\.02629)[^>]*>/i.test(paper),'The old manuscript URL redirects to the canonical public record');
+  assert(!/<header\b|class=["'][^"']*\b(?:site-nav|paper-masthead|paper-abstract|paper-citation)\b|data-docs-center/i.test(paper),'The legacy URL has no standalone research page or site navigation');
+  assert(!/Long-horizon dexterous manipulation remains a fundamental challenge|Authors in manuscript order/.test(paper),'The redirect does not duplicate homepage research content');
   assert(code.includes(`href="${codeUrl}"`));
   assert(!/Code coming soon|Paper coming soon/.test(paper+code));
   if(paperPublished)assert.equal(await readFile(new URL('assets/docs/dexarena-citation.bib',dist),'utf8'),paperBibtex);

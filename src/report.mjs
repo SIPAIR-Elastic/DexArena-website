@@ -80,7 +80,7 @@ export const reportBody = `
       <details class="publication-authors"><summary>Full author list</summary><p>${paperAuthors.map(([name])=>name).join(', ')}.</p></details>
       <p>Ten long-horizon tasks and thirty stage environments connect skill execution, visual generalization and bimanual composition through physically grounded success conditions.</p>
       <div class="publication-meta"><time datetime="2026-11-02">2 November 2026</time><span>arXiv:2611.02629</span></div>
-      <div class="publication-links">${paperPublished?`<a href="/paper/">Project & paper page ↗</a>${external(paperUrl,"arXiv paper")}${external(paperPdfUrl,"Read PDF")}${external(codeUrl,"Code on GitHub")}`:'<a href="/paper/">Read paper ↗</a>'}<a href="/leaderboard/">Leaderboard ↗</a></div>
+      <div class="publication-links">${paperPublished?`<a href="/docs/">Documentation ↗</a>${external(paperUrl,"arXiv paper")}${external(paperPdfUrl,"Read PDF")}${external(codeUrl,"Code on GitHub")}`:'<a href="/#paper-overview">Benchmark overview ↗</a>'}<a href="/leaderboard/">Leaderboard ↗</a></div>
     </div>
   </article>
   <div class="research-notes">

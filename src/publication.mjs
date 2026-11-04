@@ -1,12 +1,12 @@
-// Documentation renderers stay in source and can be publicly enabled later.
-export const docsPublished=false;
+// Public usage documentation and citation live in the documentation center.
+export const docsPublished=true;
 // The project owner has released the paper and public repository.
 export const paperPublished=true;
 export const paperUrl='https://arxiv.org/abs/2611.02629';
 export const paperPdfUrl='https://arxiv.org/pdf/2611.02629';
 export const codeUrl='https://github.com/SIPAIR-Elastic/DexArena';
 export const codeLink='<a class="code-resource-link" href="/code/">Code <span aria-hidden="true">↗</span></a>';
-export const paperLink='<a class="paper-resource-link" href="/paper/">Read paper <span aria-hidden="true">↗</span></a>';
+export const paperLink=paperPublished?`<a class="paper-resource-link" href="${paperUrl}" target="_blank" rel="noreferrer">Read paper <span aria-hidden="true">↗</span></a>`:'<a class="paper-resource-link" href="/#paper-overview">Benchmark overview <span aria-hidden="true">↗</span></a>';
 export const paperArtifactPaths=['/assets/docs/dexarena-paper.pdf','/assets/docs/dexarena-citation.bib'];
 
 export function isWithheldPaperAsset(path){
@@ -23,6 +23,9 @@ export function isRetiredRoute(path){
 function isManuscriptLink(href){
   try{
     const url=new URL(href.replaceAll('&amp;','&'),'https://dexarena.local');
+    if(url.origin==='https://dexarena.local'&&/^\/paper\/?$/i.test(url.pathname)){
+      return !paperPublished;
+    }
     return !paperPublished&&(isWithheldPaperAsset(decodeURIComponent(url.pathname))||
       (url.hostname==='openreview.net'&&url.searchParams.get('id')==='9yr0F1saHs')||
       (url.hostname==='arxiv.org'&&/^\/(?:abs|pdf)\/2611\.02629(?:v\d+)?(?:\.pdf)?\/?$/i.test(url.pathname)));
@@ -32,6 +35,11 @@ function isManuscriptLink(href){
 function publishedManuscriptUrl(href){
   try{
     const url=new URL(href.replaceAll('&amp;','&'),'https://dexarena.local');
+    if(url.origin==='https://dexarena.local'&&/^\/paper\/?$/i.test(url.pathname)){
+      if(['#citation','#paper-bibtex'].includes(url.hash))return docsPublished?'/docs/citation/':paperUrl;
+      if(['#abstract','#paper-overview','#data-pipeline','#paper-results'].includes(url.hash))return '/'+url.hash;
+      return paperUrl;
+    }
     if(decodeURIComponent(url.pathname).replace(/\/{2,}/g,'/').toLowerCase()==='/assets/docs/dexarena-paper.pdf')return paperPdfUrl;
     if(url.hostname==='openreview.net'&&url.searchParams.get('id')==='9yr0F1saHs')return paperUrl;
   }catch{}

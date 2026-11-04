@@ -3,11 +3,12 @@ import { copyFile, mkdir, readFile, writeFile, rm } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { extraDocs, protocolBody, evidenceBody } from "./documentation.mjs";
-import { paperBody, paperBibtex, renderPaperBody } from "./paper-page.mjs";
+import { paperBibtex, renderPaperBody } from "./paper-page.mjs";
+import { documentationPages } from "./docs-content.mjs";
 import { reportBody } from "./report.mjs";
 import { algorithmLink, algorithmDirectory, algorithmReferenceSection } from "./references.mjs";
 import { benchmarkScope, findingsDigest } from "./presentation.mjs";
-import { docsPublished, paperPublished, paperArtifactPaths, codeUrl, publishContent } from "./publication.mjs";
+import { docsPublished, paperPublished, paperArtifactPaths, paperUrl, codeUrl, publishContent } from "./publication.mjs";
 import { brandAssets, brandMark, brandVersion } from "./brand.mjs";
 import { codeBody } from "./code-page.mjs";
 
@@ -137,9 +138,8 @@ const nav = [
   ["/tasks/","Tasks","tasks"],
   ["/leaderboard/","Leaderboard","leaderboard"],
   ["/evaluation/","Evaluation","evaluation"],
-  ["/docs/","Docs","docs"],
   ["/report/","Report","report"],
-  ["/paper/","Paper","paper"],
+  ["/docs/","Docs","docs"],
   ["/code/","Code","code"]
 ];
 
@@ -209,7 +209,7 @@ function footer() {
     <div class="footer-top">
       <div class="footer-brand"><a class="wordmark wordmark--footer" href="/" aria-label="DexArena home">${brandMark({inverse:true})}<b>DexArena</b></a><p class="footer-tagline">A unified benchmark for long-horizon <strong>bimanual dexterous manipulation.</strong></p></div>
       <nav class="footer-nav-group" aria-label="Explore DexArena"><span class="footer-eyebrow">Explore</span>${publicNav.filter(([, ,id])=>['tasks','leaderboard','evaluation'].includes(id)).map(([href,label])=>`<a href="${href}">${label}<span aria-hidden="true">↗</span></a>`).join('')}</nav>
-      <nav class="footer-nav-group footer-nav-group--research" aria-label="DexArena research and resources"><span class="footer-eyebrow">Research & resources</span><a href="/paper/">Paper<span aria-hidden="true">↗</span></a>${publicNav.filter(([, ,id])=>['report','code'].includes(id)).map(([href,label])=>`<a href="${href}">${label}<span aria-hidden="true">↗</span></a>`).join('')}</nav>
+      <nav class="footer-nav-group footer-nav-group--research" aria-label="DexArena research and resources"><span class="footer-eyebrow">Research & resources</span><a href="${paperUrl}" target="_blank" rel="noreferrer">Paper<span aria-hidden="true">↗</span></a>${publicNav.filter(([, ,id])=>['report','docs','code'].includes(id)).map(([href,label])=>`<a href="${href}">${label}<span aria-hidden="true">↗</span></a>`).join('')}<a href="/docs/citation/">Citation<span aria-hidden="true">↗</span></a></nav>
     </div>
     <div class="footer-bottom"><span class="footer-preview"><i aria-hidden="true"></i>Research preview<span class="footer-year">2026</span></span><span class="footer-built">Built on <strong>SAPIEN</strong><span aria-hidden="true">/</span><strong>ManiSkill</strong></span></div>
   </footer>`;
@@ -230,7 +230,7 @@ function layout({title,description,active,body,pageClass=""}) {
     <title>${esc(title)}</title><link rel="icon" href="/assets/brand/dexarena-favicon.svg?v=${brandVersion}" type="image/svg+xml" sizes="any">
     <link rel="preload" href="/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${["paper-page","home-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}${["home-page","evaluation-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/experience.css">':""}${pageClass==="home-page"?'<link rel="stylesheet" href="/assets/carousel.css">':""}<link rel="stylesheet" href="/assets/footer.css"><link rel="stylesheet" href="/assets/navigation.css"><script src="/assets/navigation.js" defer></script><script src="/assets/site.js" defer></script>${["home-page","evaluation-page"].includes(pageClass)?'<script src="/assets/experience.js" defer></script>':""}
+    <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${["paper-page","home-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}${["home-page","evaluation-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/experience.css">':""}${pageClass==="home-page"?'<link rel="stylesheet" href="/assets/carousel.css">':""}<link rel="stylesheet" href="/assets/footer.css">${pageClass==="docs-page"?'<link rel="stylesheet" href="/assets/docs.css">':""}<link rel="stylesheet" href="/assets/navigation.css"><script src="/assets/navigation.js" defer></script><script src="/assets/site.js" defer></script>${pageClass==="docs-page"?'<script src="/assets/docs.js" defer></script>':""}${["home-page","evaluation-page"].includes(pageClass)?'<script src="/assets/experience.js" defer></script>':""}
   </head><body class="${pageClass}">${header(active)}<main>${body}</main>${footer()}<div class="route-progress" aria-hidden="true"></div></body></html>`);
 }
 
@@ -418,6 +418,41 @@ function evaluationPage() {
   <section class="section integrity-section"><div class="section-head"><span>Reproducibility</span><h2>What an evaluation record should contain.</h2></div><ol class="integrity-list"><li><b>Environment identity</b><span>Exact env ID, task source fingerprint, robot UID, control mode, horizon, and seed.</span></li><li><b>Observation contract</b><span>State layout, camera rig, image size, preprocessing, and language-instruction version.</span></li><li><b>Scene manifest</b><span>Background ID, native table metadata, camera configuration, and reset-time checks.</span></li><li><b>Evidence</b><span>Per-episode success, stage trace, videos, aggregate table, and checkpoint provenance.</span></li></ol><div class="overview-links">${arrowLink("/leaderboard/protocol/","Score protocol")}${arrowLink("/evaluation/evidence/","Rollouts & evidence")}${arrowLink("/docs/quick-evaluation/","Quick evaluation")}</div></section>`;
 }
 
+const documentationGroups=[
+  ['Start here',['overview','getting-started','resources']],
+  ['Using DexArena',['configurations','embodiments','policy-integration','data','teleoperation','training']],
+  ['Evaluation',['quick-evaluation','randomization','domain-randomization','parallel-environments','submission']],
+  ['Reference',['troubleshooting','citation']]
+];
+const documentationById=new Map(documentationPages.map(page=>[page.id,page]));
+const documentationOrder=documentationGroups.flatMap(([,ids])=>ids);
+const documentationHref=id=>id==='overview'?'/docs/':`/docs/${id}/`;
+
+function renderDocumentationPage(page){
+  const toc=[...page.content.matchAll(/<section\b[^>]*\bid="([^"]+)"[^>]*>[\s\S]*?<h2[^>]*>([\s\S]*?)<\/h2>/g)]
+    .map(match=>[match[1],match[2].replace(/<[^>]*>/g,'')]);
+  const index=documentationOrder.indexOf(page.id);
+  const previous=documentationById.get(documentationOrder[index-1]);
+  const following=documentationById.get(documentationOrder[index+1]);
+  const pagination=(target,label)=>target?`<a href="${documentationHref(target.id)}"><span>${label}</span><b>${esc(target.title)}</b></a>`:'<span></span>';
+  return `<section class="docs-layout" data-docs-center>
+    <a class="docs-skip" href="#docs-main">Skip to documentation</a>
+    <aside class="docs-sidebar" aria-label="Documentation navigation">
+      <details class="docs-mobile-menu" data-docs-menu open><summary>Documentation contents</summary><div class="docs-sidebar-content">
+        <a class="docs-home" href="/docs/">DexArena <span>Docs</span></a>
+        <button type="button" class="docs-search-button" data-open-search><span>Search docs & tasks</span><kbd>Ctrl K</kbd></button>
+        <label><span>Filter documentation</span><input type="search" placeholder="Find a page…" data-doc-search></label>
+        <nav aria-label="Documentation">${documentationGroups.map(([group,ids])=>`<div class="docs-nav-group"><span>${group}</span>${ids.map(id=>documentationById.get(id)).filter(Boolean).map(target=>`<a href="${documentationHref(target.id)}" class="${target.id===page.id?'active':''}" data-doc-link${target.id===page.id?' aria-current="page"':''}>${esc(target.title)}</a>`).join('')}</div>`).join('')}<div class="docs-nav-group"><span>Simulation tasks</span>${tasks.map(task=>`<a href="/tasks/${task.slug}/" data-doc-link>${esc(task.title)}</a>`).join('')}</div></nav>
+      </div></details>
+    </aside>
+    <article class="docs-article" id="docs-main" tabindex="-1"><div class="docs-breadcrumb"><a href="/docs/">Docs</a><span aria-hidden="true">/</span><span>${esc(page.title)}</span></div><h1>${esc(page.title)}</h1><p class="docs-lead">${esc(page.lead)}</p>
+      ${page.content}<nav class="docs-pagination" aria-label="Documentation pages">${pagination(previous,'← Previous')}${pagination(following,'Next →')}</nav>
+    </article>
+    <aside class="docs-toc" aria-label="On this page"><span>On this page</span><nav aria-label="Page sections">${toc.map(([id,label])=>`<a href="#${id}" data-doc-toc>${esc(label)}</a>`).join('')}</nav></aside>
+  </section>`;
+}
+
+// Retain the earlier authored renderers as reference material, not published pages.
 const docsNav = [
   ["/docs/","Overview","overview"],
   ["/docs/getting-started/","Getting started","getting-started"],
@@ -512,17 +547,11 @@ const pages = [
   ["tasks/index.html",layout({title:"Tasks — DexArena",description:"Browse 10 long-horizon tasks and 30 canonical stage environments.",active:"tasks",body:tasksIndex(),pageClass:"tasks-page"})],
   ["leaderboard/index.html",layout({title:"Leaderboard — DexArena",description:"DexArena leaderboard and method coverage.",active:"leaderboard",body:leaderboardPage(),pageClass:"leaderboard-body"})],
   ["evaluation/index.html",layout({title:"Evaluation — DexArena",description:"DexArena evaluation tracks, metrics, and reproducibility protocol.",active:"evaluation",body:evaluationPage(),pageClass:"evaluation-page"})],
-  ["docs/index.html",layout({title:"Documentation — DexArena",description:"DexArena task, data, training, and evaluation documentation.",active:"docs",body:docsOverview(),pageClass:"docs-page"})],
-  ["docs/getting-started/index.html",layout({title:"Getting started — DexArena",description:"Install and create DexArena environments.",active:"docs",body:gettingStarted(),pageClass:"docs-page"})],
-  ["docs/data/index.html",layout({title:"Data & replay — DexArena",description:"DexArena demonstration data, restoration, and replay.",active:"docs",body:dataDocs(),pageClass:"docs-page"})],
-  ["docs/training/index.html",layout({title:"Training & baselines — DexArena",description:"DexArena policy learning entry points and baselines.",active:"docs",body:trainingDocs(),pageClass:"docs-page"})],
-  ["docs/randomization/index.html",layout({title:"Scene evaluation — DexArena",description:"DexArena cross-scene evaluation matrix.",active:"docs",body:randomizationDocs(),pageClass:"docs-page"})],
-  ["docs/submission/index.html",layout({title:"Submission preview — DexArena",description:"Prepare a reproducible DexArena leaderboard submission.",active:"docs",body:submissionDocs(),pageClass:"docs-page"})],
   ["report/index.html",layout({title:"Report — DexArena",description:"DexArena research, PAIR institute coverage and academic conference updates.",active:"report",body:reportPage(),pageClass:"report-page"})],
-  ["paper/index.html",layout({title:"Paper — DexArena",description:paperPublished?"Read the DexArena arXiv preprint (2611.02629), explore the benchmark figures and results, and find the citation.":"The DexArena manuscript is not publicly available yet. Explore the benchmark overview, tasks and evaluation results.",active:"paper",body:paperBody,pageClass:"paper-page"})],
+  ["paper/index.html",`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DexArena paper on arXiv</title><meta name="robots" content="noindex, follow"><meta http-equiv="refresh" content="0;url=${paperUrl}"><link rel="canonical" href="${paperUrl}"></head><body><main data-paper-redirect><h1>Read the paper on arXiv</h1><p>The paper is available at <a href="${paperUrl}">arXiv:2611.02629</a>. Usage instructions and citation are in <a href="/docs/citation/">DexArena Docs</a>.</p></main></body></html>`],
   ["code/index.html",layout({title:"Code — DexArena",description:"Official DexArena GitHub repository, current project files and release updates.",active:"code",body:codeBody,pageClass:"code-page"})]
 ];
-extraDocs.forEach(page=>pages.push([`${page.href.slice(1)}index.html`,layout({title:`${page.title} — DexArena`,description:page.lead,active:"docs",body:docsShell(page.id,page.title,page.lead,page.content),pageClass:"docs-page"})]));
+documentationPages.forEach(page=>pages.push([`${documentationHref(page.id).slice(1)}index.html`,layout({title:`${page.title} — DexArena Docs`,description:page.lead,active:"docs",body:renderDocumentationPage(page),pageClass:"docs-page"})]));
 pages.push(["leaderboard/protocol/index.html",layout({title:"Leaderboard protocol — DexArena",description:"Score definitions and reproducibility requirements for DexArena results.",active:"leaderboard",body:protocolBody,pageClass:"protocol-page"})]);
 pages.push(["evaluation/evidence/index.html",layout({title:"Rollouts & evidence — DexArena",description:"Demonstration examples and the evidence required for a reproducible evaluation.",active:"evaluation",body:evidenceBody,pageClass:"evidence-page"})]);
 tasks.forEach((task,index)=>pages.push([`tasks/${task.slug}/index.html`,layout({title:`${task.title} — DexArena`,description:task.summary,active:"tasks",body:taskDetail(task,index),pageClass:"task-detail-page"})]));
@@ -556,11 +585,13 @@ await copyFile(join(root,"src","carousel.css"),join(dist,"assets","carousel.css"
 await copyFile(join(root,"src","navigation.css"),join(dist,"assets","navigation.css"));
 await copyFile(join(root,"src","footer.css"),join(dist,"assets","footer.css"));
 await copyFile(join(root,"src","navigation.js"),join(dist,"assets","navigation.js"));
+await copyFile(join(root,"src","docs.css"),join(dist,"assets","docs.css"));
+await copyFile(join(root,"src","docs.js"),join(dist,"assets","docs.js"));
 await copyFile(join(root,"src","experience.js"),join(dist,"assets","experience.js"));
 await Promise.all([copyFile(join(root,"src","site.css"),join(dist,"assets","site.css")),copyFile(join(root,"src","layout.css"),join(dist,"assets","layout.css")),copyFile(join(root,"src","site.js"),join(dist,"assets","site.js"))]);
 
-const searchEntries=pages.filter(([file])=>docsPublished||!file.startsWith('docs/')).map(([file,html])=>{
-  const content=html.match(/<article class="docs-article">([\s\S]*?)<\/article>/)?.[1]||html.match(/<main>([\s\S]*?)<\/main>/)?.[1]||html;
+const searchEntries=pages.filter(([file])=>file!=='paper/index.html'&&(docsPublished||!file.startsWith('docs/'))).map(([file,html])=>{
+  const content=html.match(/<article\b[^>]*class="docs-article"[^>]*>([\s\S]*?)<\/article>/)?.[1]||html.match(/<main>([\s\S]*?)<\/main>/)?.[1]||html;
   return {url:file==='index.html'?'/':'/'+file.replace(/index\.html$/,''),title:html.match(/<title>(.*?)<\/title>/)?.[1]||'DexArena',text:content.replace(/<script[\s\S]*?<\/script>/g,'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').slice(0,40000)};
 });
 await writeFile(join(dist,'assets','search-index.json'),JSON.stringify(searchEntries));

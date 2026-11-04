@@ -1,30 +1,30 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {readFile} from 'node:fs/promises';
-import {createHash} from 'node:crypto';
 import {docsPublished,paperPublished,paperUrl,paperPdfUrl,codeUrl,codeLink,paperLink,paperArtifactPaths,isWithheldPaperAsset,isRetiredRoute,publishContent} from '../src/publication.mjs';
 import {renderPaperBody,paperBibtex} from '../src/paper-page.mjs';
 import {codeBody} from '../src/code-page.mjs';
 
-const digest=value=>createHash('sha256').update(value).digest('hex');
 const htmlText=value=>value.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
 
-test('The public release publishes the paper and official repository while Docs remain withheld',()=>{
-  assert.equal(docsPublished,false);
+test('The public release publishes Docs, the paper and the official repository',()=>{
+  assert.equal(docsPublished,true);
   assert.equal(paperPublished,true);
   assert.equal(paperUrl,'https://arxiv.org/abs/2611.02629');
   assert.equal(paperPdfUrl,'https://arxiv.org/pdf/2611.02629');
   assert.equal(codeUrl,'https://github.com/SIPAIR-Elastic/DexArena');
   assert.equal(codeLink,'<a class="code-resource-link" href="/code/">Code <span aria-hidden="true">↗</span></a>');
-  assert.equal(paperLink,'<a class="paper-resource-link" href="/paper/">Read paper <span aria-hidden="true">↗</span></a>');
+  assert(paperLink.includes(`href="${paperUrl}"`),'The shared manuscript action opens the public arXiv record');
+  assert(!paperLink.includes('/paper/'),'The legacy paper redirect is not a public destination');
   assert(!/code-coming-soon|data-code-status|Code coming soon/.test(codeLink),'Shared entries link to the Code page instead of repeating its status');
 });
 
-test('Paper and Code pages expose the official release links and citation',()=>{
-  for(const home of [false,true]){
-    const html=publishContent(renderPaperBody({home}));
+test('Homepage research and Code content expose the official release links',()=>{
+  {
+    const html=publishContent(renderPaperBody({home:true}));
     for(const url of [paperUrl,paperPdfUrl,codeUrl])assert(html.includes(`href="${url}"`),`Paper content links to ${url}`);
-    assert(html.includes('href="/assets/docs/dexarena-citation.bib"'),'The released paper offers the generated citation');
+    assert(html.includes('href="/docs/citation/"'),'Homepage research points to the Docs citation reference');
+    assert(!/href\s*=\s*["']\/paper(?:[\/"'?#]|$)/i.test(html),'Homepage research does not lead to the retired paper page');
     assert(!/paper\s+coming\s+soon|code\s+coming\s+soon|data-paper-unavailable/i.test(html),'Released paper content does not retain an unpublished notice');
     assert(!/https:\/\/openreview\.net\/(?:forum|pdf)\?id=9yr0F1saHs/.test(html),'Paper content uses the current public record');
   }
@@ -38,7 +38,8 @@ test('Paper and Code pages expose the official release links and citation',()=>{
   assert(!/openreview\.net|under review|submission 13718/i.test(paperBibtex),'The citation does not retain the old submission record');
 });
 
-test('Repository/resource entries become the same ordinary Code destination link',()=>{
+test('Withheld documentation resource entries become the same ordinary Code destination link',async()=>{
+  const withheld=await publicationVariant({paper:true});
   const sources=[
     '<a href="/docs/resources/">Repository</a>',
     "<a href='/docs/resources/' class='paper-resource'>Code &amp; data release status →</a>",
@@ -46,16 +47,17 @@ test('Repository/resource entries become the same ordinary Code destination link
     "<a aria-label='Source release status' href = '/docs/resources/' data-kind='repository'>Code release</a>"
   ];
   for(const source of sources){
-    const output=publishContent(source);
+    const output=withheld.publishContent(source);
     assert.equal(output,codeLink,source);
     assert.equal([...output.matchAll(/<a\b/g)].length,1,'A resource entry has exactly one real destination');
     assert(!/Code coming soon|data-code-status|code-coming-soon/.test(output),'Shared entries remain ordinary links to the released Code page');
   }
   const wrapped='<dl><div><dt>Repository</dt><dd><a href="/docs/resources/">Code &amp; data release status →</a></dd></div></dl>';
-  assert.equal(publishContent(wrapped),`<dl><div><dt>Repository</dt><dd>${codeLink}</dd></div></dl>`);
+  assert.equal(withheld.publishContent(wrapped),`<dl><div><dt>Repository</dt><dd>${codeLink}</dd></div></dl>`);
 });
 
-test('Documentation call-to-action anchors disappear without removing surrounding content',()=>{
+test('Withheld documentation calls to action disappear without removing surrounding content',async()=>{
+  const withheld=await publicationVariant({paper:true});
   const sources=[
     '<a class="arrow-link" href="/docs/getting-started/">Get started</a>',
     "<a href='/docs/data/' class='on-dark arrow-link'><span>Data protocol</span><b>↗</b></a>",
@@ -66,12 +68,13 @@ test('Documentation call-to-action anchors disappear without removing surroundin
     "<a data-kind='cta' href='/docs/quick-evaluation/'><strong>Evaluation setup</strong> → </a>"
   ];
   for(const source of sources){
-    assert.equal(publishContent(source),'',source);
-    assert.equal(publishContent(`<section>Before${source}After</section>`),'<section>BeforeAfter</section>');
+    assert.equal(withheld.publishContent(source),'',source);
+    assert.equal(withheld.publishContent(`<section>Before${source}After</section>`),'<section>BeforeAfter</section>');
   }
 });
 
-test('Inline documentation references retain their words and semantic nested markup',()=>{
+test('Withheld inline documentation references retain their words and semantic nested markup',async()=>{
+  const withheld=await publicationVariant({paper:true});
   const examples=[
     ['<p>Use the <a href="/docs/policy-integration/">policy adapter</a> to evaluate.</p>','<p>Use the <span>policy adapter</span> to evaluate.</p>'],
     ["<h2><a class='inline-heading' href='/docs/configurations/'>Configuration contract</a></h2>",'<h2><span>Configuration contract</span></h2>'],
@@ -80,7 +83,7 @@ test('Inline documentation references retain their words and semantic nested mar
     ["<a href='/docs/embodiments/' title='Embodiment documentation'><code>29-D</code> actions</a>",'<span><code>29-D</code> actions</span>']
   ];
   for(const [source,expected] of examples){
-    const output=publishContent(source);
+    const output=withheld.publishContent(source);
     assert.equal(output,expected);
     assert.equal(htmlText(output),htmlText(source),'Hiding documentation does not erase the surrounding explanation');
     assert(!/\bhref\s*=/i.test(output));
@@ -104,14 +107,33 @@ test('Released legacy manuscript links resolve to the official public paper and 
   assert.equal(publishContent(citation),citation,'The generated public citation keeps its local download destination');
 });
 
+test('Legacy paper-page links lead directly to the public record or their current reference section',()=>{
+  const destinations=[
+    ['/paper/',paperUrl],
+    ['/paper',paperUrl],
+    ['/paper/?legacy=1',paperUrl],
+    ['/paper/#citation','/docs/citation/'],
+    ['/paper/#paper-bibtex','/docs/citation/'],
+    ['/paper/#abstract','/#abstract'],
+    ['/paper/#paper-overview','/#paper-overview'],
+    ['/paper/#data-pipeline','/#data-pipeline'],
+    ['/paper/#paper-results','/#paper-results']
+  ];
+  for(const [before,after] of destinations){
+    const output=publishContent(`<a class="inline-reference" href="${before}">Research reference</a>`);
+    assert.equal(output,`<a class="inline-reference" href="${after}">Research reference</a>`);
+    assert.equal(publishContent(output),output,'Legacy-link conversion is stable');
+  }
+});
+
 test('Published historical conference records keep their destination without bypassing withholding',async()=>{
   const historical='<a href="https://openreview.net/forum?id=9yr0F1saHs" target="_blank" data-historical-record>Submission record</a>';
   assert.equal(publishContent(historical),historical,'A labeled conference record is not the latest manuscript action');
   const withheld=await publicationVariant();
-  assert.equal(withheld.publishContent(historical),paperLink,'Historical-link markup cannot bypass an unpublished paper');
+  assert.equal(withheld.publishContent(historical),withheld.paperLink,'Historical-link markup cannot bypass an unpublished paper');
 });
 
-test('A withheld-paper variant sends manuscript and public-record links only to the paper notice',async()=>{
+test('A withheld-paper variant sends manuscript and public-record links to the available benchmark overview',async()=>{
   const withheld=await publicationVariant();
   assert.equal(withheld.docsPublished,false);
   assert.equal(withheld.paperPublished,false);
@@ -125,11 +147,13 @@ test('A withheld-paper variant sends manuscript and public-record links only to 
     '<a href="https://openreview.net/forum?id=9yr0F1saHs&amp;referrer=profile">Submission record</a>',
     `<a href="${paperUrl}">arXiv record</a>`,
     `<a href="${paperPdfUrl}">arXiv PDF</a>`,
-    '<a href="https://arxiv.org/pdf/2611.02629v1.pdf">Versioned PDF</a>'
+    '<a href="https://arxiv.org/pdf/2611.02629v1.pdf">Versioned PDF</a>',
+    '<a href="/paper/">Legacy paper</a>',
+    '<a href="/paper/#citation">Legacy citation</a>'
   ];
   for(const source of sources){
-    assert.equal(withheld.publishContent(source),paperLink,source);
-    assert.equal(withheld.publishContent(`<p>Before ${source} after.</p>`),`<p>Before ${paperLink} after.</p>`);
+    assert.equal(withheld.publishContent(source),withheld.paperLink,source);
+    assert.equal(withheld.publishContent(`<p>Before ${source} after.</p>`),`<p>Before ${withheld.paperLink} after.</p>`);
   }
 });
 
@@ -170,7 +194,7 @@ test('Figures, flowcharts, result data, external algorithms and public routes re
     `<a href="${paperPdfUrl}">Public PDF ↗</a>`,
     `<a href="${codeUrl}">DexArena source ↗</a>`,
     '<a href="/tasks/package-opening/" class="arrow-link">Explore Package Opening ↗</a>',
-    '<a href="/paper/" class="editorial-link">Paper ↗</a>',
+    '<a href="/docs/citation/" class="editorial-link">Citation ↗</a>',
     '<a href="/code/" class="code-resource-link">Code <span aria-hidden="true">↗</span></a>',
     '<a href="/leaderboard/#results-generalization">Cross-scene results ↗</a>',
     '<a href="#existing-section">Existing section ↓</a>',
@@ -185,7 +209,7 @@ test('Figures, flowcharts, result data, external algorithms and public routes re
 test('Mixed publication filtering is deterministic and safe to run twice',()=>{
   const source='<article><h2><a href="/docs/data/">Replay validation</a></h2><p>Protocol text stays.</p><a href="/docs/data/" class="arrow-link">Explore data ↗</a><a href="/docs/resources/">Repository</a><a href="/assets/docs/dexarena-paper.pdf">PDF ↗</a><a href="/tasks/">Tasks →</a></article>';
   const output=publishContent(source);
-  assert.equal(output,`<article><h2><span>Replay validation</span></h2><p>Protocol text stays.</p>${codeLink}<a href="${paperPdfUrl}">PDF ↗</a><a href="/tasks/">Tasks →</a></article>`);
+  assert.equal(output,`<article><h2><a href="/docs/data/">Replay validation</a></h2><p>Protocol text stays.</p><a href="/docs/data/" class="arrow-link">Explore data ↗</a><a href="/docs/resources/">Repository</a><a href="${paperPdfUrl}">PDF ↗</a><a href="/tasks/">Tasks →</a></article>`);
   assert.equal(publishContent(output),output);
   assert.equal(publishContent(''),'');
   assert.equal(publishContent('Research text without links.'),'Research text without links.');
@@ -197,7 +221,8 @@ async function publicationVariant({docs=false,paper=false}={}){
   assert(/\bexport\s+const\s+paperPublished\s*=\s*(?:true|false)\b/.test(source));
   const enabled=source
     .replace(/\bexport\s+const\s+docsPublished\s*=\s*(?:true|false)\b/,`export const docsPublished=${docs}`)
-    .replace(/\bexport\s+const\s+paperPublished\s*=\s*(?:true|false)\b/,`export const paperPublished=${paper}`);
+    .replace(/\bexport\s+const\s+paperPublished\s*=\s*(?:true|false)\b/,`export const paperPublished=${paper}`)
+    .replace(/(\bfrom\s*|\bimport\s*)(["'])(\.{1,2}\/[^"']+)\2/g,(_,prefix,quote,specifier)=>`${prefix}${quote}${new URL(specifier,new URL('../src/publication.mjs',import.meta.url)).href}${quote}`);
   // Evaluate release combinations without editing files or relaxing production flags.
   return import(`data:text/javascript;base64,${Buffer.from(enabled).toString('base64')}`);
 }
@@ -208,8 +233,8 @@ test('Enabling Docs independently does not publish the withheld manuscript',asyn
   assert.equal(restored.paperPublished,false);
   const html='<section>  <a href="/docs/resources/">Repository →</a>\n<a class="arrow-link" href="/docs/">Docs ↗</a><h2><a href="/docs/data/">Data</a></h2></section>';
   assert.equal(restored.publishContent(html),html);
-  assert.equal(restored.publishContent('<a href="/assets/docs/dexarena-paper.pdf">Download paper</a>'),paperLink);
-  assert.equal(restored.publishContent('<a href="https://openreview.net/forum?id=9yr0F1saHs">Record</a>'),paperLink);
+  assert.equal(restored.publishContent('<a href="/assets/docs/dexarena-paper.pdf">Download paper</a>'),restored.paperLink);
+  assert.equal(restored.publishContent('<a href="https://openreview.net/forum?id=9yr0F1saHs">Record</a>'),restored.paperLink);
   for(const path of paperArtifactPaths)assert.equal(restored.isWithheldPaperAsset(path),true);
   assert.equal(restored.isRetiredRoute('/community/'),true,'Documentation release cannot restore a deleted route');
 });
@@ -236,16 +261,9 @@ test('Enabling both independent release flags preserves Docs while publishing of
   assert.equal(restored.isRetiredRoute('//COMMUNITY///'),true);
 });
 
-test('Withholding the public Docs entry preserves the authored documentation source',async()=>{
-  // The authored documentation and renderers remain preserved while their
-  // public routes are withheld; the documentation snapshot includes the
-  // reviewed replacement of the removed account/contact promotion.
-  const documentation=await readFile(new URL('../src/documentation.mjs',import.meta.url));
-  assert.equal(digest(documentation),'0dc493647a196bb5255da48defdbb38c1295a1a94ce9c04f3e209a2b6c38a619');
-  assert(!/wechat|weixin|gh_6279469803d5|href=["']\/community\//i.test(documentation.toString()),'A later documentation release cannot restore removed account promotion');
-  const builder=await readFile(new URL('../src/build.mjs',import.meta.url),'utf8');
-  const start=builder.indexOf('function docsShell(');
-  const end=builder.indexOf('function reportPage()',start);
-  assert(start>=0&&end>start,'Keep all documentation renderers available for a future release');
-  assert.equal(digest(builder.slice(start,end)),'aaf2f9ea1cf5ee39ada5e41af9b6db2525537ddf791712b5a33716d3f091433f');
+test('Published documentation preserves authored links and excludes retired promotion',async()=>{
+  const source='<a class="arrow-link" href="/docs/getting-started/">Get started →</a><p>See <a href="/docs/citation/">the citation</a>.</p>';
+  assert.equal(publishContent(source),source,'Published documentation is ordinary navigable content');
+  const documentation=await readFile(new URL('../src/docs-content.mjs',import.meta.url),'utf8');
+  assert(!/wechat|weixin|gh_6279469803d5|href=["']\/community\//i.test(documentation),'Documentation cannot restore removed account promotion');
 });

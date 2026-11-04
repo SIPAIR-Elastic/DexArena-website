@@ -46,7 +46,7 @@ export function renderPaperBody({home=false}={}) {
   const titleTag=home?"h2":"h1";
   return `
 <section class="paper-masthead section">
-${home?'<div class="home-paper-eyebrow"><span>The research behind DexArena</span><a href="/paper/">Paper ↗</a></div>':""}
+${home?`<div class="home-paper-eyebrow"><span>The research behind DexArena</span><a href="${paperUrl}" target="_blank" rel="noreferrer">Paper ↗</a></div>`:""}
   <${titleTag} class="paper-title">${paperTitle}</${titleTag}>
   <div class="paper-identity">
 <div class="paper-authors"><h2>Authors</h2><ol class="author-list" aria-label="Authors in manuscript order">${paperAuthors.map(([name,index])=>'<li><a href="#affiliation-'+index+'" data-affiliation="'+index+'" title="'+paperAffiliations[index-1][0]+'">'+name+'<sup>'+index+'</sup></a></li>').join('')}</ol></div>
@@ -56,7 +56,7 @@ ${home?'<div class="home-paper-eyebrow"><span>The research behind DexArena</span
     <div><dt>Submitted</dt><dd><time datetime="2026-11-02">2 November 2026</time></dd></div>
     <div><dt>Last revised</dt><dd><time datetime="2026-11-03">3 November 2026</time> · v2</dd></div>
     <div><dt>Status</dt><dd><strong>arXiv preprint</strong> · cs.RO</dd></div>
-    <div><dt>Paper</dt><dd class="paper-inline-links"><a href="${paperPdfUrl}" target="_blank" rel="noreferrer">Read PDF ↗</a><a href="${paperUrl}" target="_blank" rel="noreferrer">arXiv:2611.02629 ↗</a><a href="#citation">BibTeX ↓</a></dd></div>
+    <div><dt>Paper</dt><dd class="paper-inline-links"><a href="${paperPdfUrl}" target="_blank" rel="noreferrer">Read PDF ↗</a><a href="${paperUrl}" target="_blank" rel="noreferrer">arXiv:2611.02629 ↗</a><a href="/docs/citation/">Citation &amp; BibTeX →</a></dd></div>
     <div><dt>Code</dt><dd><a href="${codeUrl}" target="_blank" rel="noreferrer">GitHub · SIPAIR-Elastic/DexArena ↗</a></dd></div>
     <div><dt>Leaderboard</dt><dd><a href="/leaderboard/">View benchmark results →</a></dd></div>
     <div><dt>License</dt><dd><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0 ↗</a></dd></div>
@@ -69,7 +69,7 @@ ${home?'<div class="home-paper-eyebrow"><span>The research behind DexArena</span
     <div><dt>Leaderboard</dt><dd><a href="/leaderboard/">View benchmark results →</a></dd></div>
   </dl>`}
 </section>
-${paperPublished?`<nav class="paper-section-nav" aria-label="Paper sections"><div><a href="#abstract">Abstract</a><a href="#paper-overview">Overview</a><a href="#data-pipeline">Data collection</a><a href="#paper-results">Results</a><a href="#citation">Citation</a></div></nav>
+${paperPublished?`<nav class="paper-section-nav" aria-label="Research sections"><div><a href="#abstract">Abstract</a><a href="#paper-overview">Overview</a><a href="#data-pipeline">Data collection</a><a href="#paper-results">Results</a><a href="/docs/citation/">Citation</a></div></nav>
 <section class="section paper-abstract" id="abstract">
   <div class="paper-section-heading"><span>01 · Motivation</span><h2>Abstract</h2><div class="paper-keywords"><span>Dexterous Manipulation</span><span>Benchmark</span></div></div>
   <div><p>${escapeHtml(paperAbstract)}</p><p class="paper-note">Subject area: Robotics (cs.RO).</p></div>
@@ -91,7 +91,7 @@ ${home?'<span class="anchor-alias" id="benchmark-overview" aria-hidden="true"></
   <div class="paper-result-links"><a href="/leaderboard/#results-stage"><span>01</span><h3>Stage execution</h3><p>30 stages · training scene</p><b>Compare policies →</b></a><a href="/leaderboard/#results-generalization"><span>02</span><h3>Visual generalization</h3><p>30 stages × 3 native scenes</p><b>Explore scene transfer →</b></a><a href="/leaderboard/#results-longHorizon"><span>03</span><h3>Long-horizon composition</h3><p>10 sequences · no stage resets</p><b>Inspect sequence success →</b></a></div>
   <p class="paper-note">${paperPublished?'Leaderboard values are extracted from the benchmark manuscript. See the leaderboard for evaluation settings and downloadable tables.':'These are research-preview baseline results, not community submissions.'}</p>
 </section>
-${paperPublished?`<section class="section paper-citation" id="citation"><div class="paper-section-heading"><span>05 · Reference</span><h2>Citation</h2><p class="paper-note">Cite the DexArena arXiv preprint.</p></div><div><div class="citation-toolbar"><a href="/assets/docs/dexarena-citation.bib" download>Download .bib ↓</a><button type="button" data-copy-citation>Copy BibTeX</button></div><pre><code id="paper-bibtex">${escapeHtml(paperBibtex)}</code></pre><p class="citation-feedback" role="status" aria-live="polite" data-citation-status></p></div></section>
+${paperPublished?`<section class="section paper-citation" id="citation"><div class="paper-section-heading"><span>05 · Reference</span><h2>Build on DexArena.</h2><p class="paper-note">Find usage instructions, evaluation requirements and the official arXiv citation in the documentation.</p></div><div class="overview-links"><a class="arrow-link" href="/docs/"><span>Read the documentation</span><b aria-hidden="true">↗</b></a><a class="arrow-link" href="/docs/citation/"><span>Citation &amp; BibTeX</span><b aria-hidden="true">↗</b></a></div></section>
 <section class="section paper-footnotes"><p class="paper-note">Author metadata follows the public preprint and project affiliation record. Institutional names link to their official homepages; university marks identify affiliations only and do not imply institutional sponsorship or endorsement.</p></section>`:''}
 `;
 }

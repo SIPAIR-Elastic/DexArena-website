@@ -7,25 +7,40 @@ Website: **https://sipair-elastic.github.io/DexArena-website/**
 ## Public release status
 
 The primary desktop and mobile navigation includes Project, Tasks, Leaderboard,
-Evaluation, Report, Paper and Code. Desktop destination text is 16px; mobile
+Evaluation, Report, Docs and Code. Desktop destination text is 16px; mobile
 drawer links are 18px. The paper and official repository are now publicly linked:
 
 - Paper: **https://arxiv.org/abs/2611.02629**
 - Code: **https://github.com/SIPAIR-Elastic/DexArena**
 
-`/paper/` displays the arXiv preprint, abstract, figures, results and citation.
+Paper actions open arXiv directly. `/paper/` is only a no-index compatibility
+redirect, not a standalone research page. It is excluded from search and sitemap.
+The homepage retains authors, affiliations, abstract, figures and results;
+usage and citation are organized in the public documentation center.
 `/code/` links to the official repository and issue tracker without inventing
 installation commands or claiming the repository already contains runnable code.
 Homepage metadata and Report use the same released paper and repository links.
 The paper is identified as a preprint, not an accepted conference publication.
 
-Docs remains withheld from navigation, public links, search index and sitemap.
-The 15 existing documentation URLs show only a no-index release notice, never
-the documentation body; the 19 research/task/resource pages remain discoverable.
-All authored Docs renderers, content and styles are retained in source. Set
-`docsPublished` in `src/publication.mjs` to `true` and rebuild to restore them.
-`paperPublished` in `src/publication.mjs` controls paper visibility independently
-of Docs and is now `true`. Shared arXiv/PDF/repository URL constants keep public
+Docs is public at **https://sipair-elastic.github.io/DexArena-website/docs/**.
+Its 16 English pages cover setup prerequisites, configurations, embodiments,
+policy integration, demonstrations/replay, teleoperation, six paper baselines,
+quick evaluation, native scenes, optional randomization, parallel evaluation,
+reproducibility, troubleshooting, release availability and citation.
+`/docs/citation/` provides a plain-text reference, copyable BibTeX and .bib download.
+The grouped sidebar, page contents, code-copy controls and previous/next links
+work across desktop and mobile; search indexes article text, not the sidebar.
+
+The public benchmark repository currently contains README/LICENSE and repository
+metadata only. Runnable module examples are explicitly qualified as requiring an
+asset-complete research checkout; the docs do not invent an installable package,
+dataset mirror or checkpoint URL. Update the release-status copy when the
+executable implementation is published. The canonical documentation source is
+`src/docs-content.mjs`; its reading styles and enhancements are in `src/docs.css`
+and `src/docs.js`. Earlier authored renderers are retained but are not published.
+
+`docsPublished` and `paperPublished` in `src/publication.mjs` are both `true`.
+Shared arXiv/PDF/repository URL constants keep public
 resource links consistent. The downloadable citation is based on arXiv:2611.02629.
 The original PDF is retained at `private/paper/dexarena-paper.pdf` in the source
 repository, outside the published directory. It is an older submission snapshot,
@@ -50,8 +65,8 @@ browser icons. Reusable assets are in `dist/assets/brand/`.
 The benchmark overview follows the homepage carousel: title, 15 authors,
 eight institutions, with the seven supplied university marks and a typeset PAIR
 entry (Shanghai Institute for Physical Artificial Intelligence and Robotics),
-Figures 1 and 3, abstract, citation and baseline findings. The dedicated Paper
-page includes the same content with verified arXiv metadata; paper submission
+Figures 1 and 3, abstract, citation entry points and baseline findings.
+The homepage uses verified arXiv metadata; paper submission
 and revision dates are 2 and 3 November 2026 respectively.
 Authors share compact rows that wrap to fit the viewport, in the original
 manuscript order.
@@ -116,7 +131,8 @@ Requires Node.js 22 or later. No npm dependencies are needed.
 npm run build
 ```
 
-This generates 34 pages, runs benchmark content, navigation and carousel checks,
+This generates 34 discoverable pages and one legacy paper redirect, runs benchmark
+content, documentation, navigation and carousel checks,
 builds navigation, media, fonts and search under `/DexArena-website/`, and verifies
 the final deployment links. The published output is in `dist/`. Canonical,
 sharing and sitemap URLs use the GitHub Pages address.

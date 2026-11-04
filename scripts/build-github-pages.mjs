@@ -27,7 +27,7 @@ for(const file of files){
     html=html.replace(/\b(href|src|poster|data-image|data-copy-text|data-task-preview)="(\/(?!\/)[^"]*)"/g,(_,attribute,url)=>`${attribute}="${withBase(url)}"`);
     html=html.replaceAll(oldOrigin,site.origin+base.slice(0,-1));
     const url=new URL(relative(dist,file).replaceAll('\\','/').replace(/index\.html$/,''),site).href;
-    html=html.replace('</head>',`<link rel="canonical" href="${url}"><meta property="og:url" content="${url}"></head>`);
+    if(relative(dist,file).replaceAll('\\','/')!=='paper/index.html')html=html.replace('</head>',`<link rel="canonical" href="${url}"><meta property="og:url" content="${url}"></head>`);
     await writeFile(file,html);
   }else if(file.endsWith('.css')){
     const css=(await readFile(file,'utf8')).replace(/url\((['"]?)\/(?!\/)/g,(_,quote)=>`url(${quote}${base}`);
@@ -42,7 +42,7 @@ const search=JSON.parse(await readFile(searchPath,'utf8'));
 for(const entry of search){entry.url=withBase(entry.url);entry.text=entry.text.replaceAll(oldOrigin,site.origin+base.slice(0,-1))}
 await writeFile(searchPath,JSON.stringify(search));
 await writeFile(join(dist,'.nojekyll'),'');
-const urls=htmlFiles.filter(file=>docsPublished||!relative(dist,file).replaceAll('\\','/').startsWith('docs/')).map(file=>new URL(relative(dist,file).replaceAll('\\','/').replace(/index\.html$/,''),site).href);
+const urls=htmlFiles.filter(file=>relative(dist,file).replaceAll('\\','/')!=='paper/index.html'&&(docsPublished||!relative(dist,file).replaceAll('\\','/').startsWith('docs/'))).map(file=>new URL(relative(dist,file).replaceAll('\\','/').replace(/index\.html$/,''),site).href);
 await writeFile(join(dist,'sitemap.xml'),`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map(url=>`<url><loc>${url}</loc></url>`).join('')}</urlset>\n`);
 
 // Validate the actual project-path build, including poster images and dynamic stage images.
@@ -75,6 +75,6 @@ assert(search.every(entry=>!isRetiredRoute(new URL(entry.url,site).pathname.slic
 assert(!urls.some(url=>isRetiredRoute(new URL(url).pathname.slice(base.length-1))),'Retired pages must not appear in the sitemap');
 assert(runtime.includes(`fetch("${base}assets/search-index.json")`),'Search fetch must use the project path');
 const paperHtml=await readFile(join(dist,'paper','index.html'),'utf8');
-if(paperPublished)assert(paperHtml.includes(`data-copy-text="${paperUrl}"`),'Shared paper URL uses the official arXiv record');
-else assert(paperHtml.includes('data-paper-unavailable')&&!/Download PDF|<iframe|<embed|<object|id="abstract"/i.test(paperHtml),'The paper route remains a release notice, not a manuscript viewer');
+assert(paperHtml.includes('data-paper-redirect')&&paperHtml.includes(`content="0;url=${paperUrl}"`),'Old paper bookmarks redirect to arXiv instead of retaining a separate page');
+assert(!search.some(entry=>entry.url===withBase('/paper/'))&&!urls.includes(new URL('paper/',site).href),'The retired standalone paper page is not discoverable');
 console.log(`GitHub Pages build verified: ${htmlFiles.length} English pages, ${links} project-path links/resources; ${site.href}`);
