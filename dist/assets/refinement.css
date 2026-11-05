@@ -65,8 +65,13 @@ h1,h2{text-wrap:balance}h3{line-height:1.3}
 .paper-masthead h1{max-width:960px;font-size:32px;line-height:1.18;letter-spacing:-.035em;margin-top:0;margin-bottom:28px;color:#202124}
 .paper-status{background:#fff;color:#5f6368;border:1px solid #dadce0}
 .paper-identity{border-top:0;padding-top:0}
-.paper-authors,.paper-affiliations{display:grid;grid-template-columns:112px minmax(0,1fr);gap:14px;margin:0;padding:10px 0}
-.paper-identity h2,.paper-metadata dt{font-family:var(--font);color:#5f6368;font-size:10px;font-weight:600;letter-spacing:.09em;line-height:1.6;margin:4px 0 0;text-transform:uppercase}
+/* One aligned label column accommodates the full-size research headings. */
+.paper-authors,.paper-affiliations,.paper-metadata>div{display:grid;grid-template-columns:168px minmax(0,1fr);gap:12px 32px;align-items:start}
+.paper-authors,.paper-affiliations{margin:0;padding:10px 0}
+.paper-authors>*,.paper-affiliations>*,.paper-metadata>div>*{min-width:0;max-width:100%}
+.paper-identity h2,.paper-metadata dt{font-family:var(--font);color:#5f6368;font-size:10px;font-weight:600;letter-spacing:.09em;line-height:1.6;margin:0;text-transform:uppercase;white-space:normal;overflow-wrap:anywhere}
+/* Align the heading with the first 62px-high university-logo link row. */
+.paper-affiliations>h2{padding-block-start:18px}
 .author-list{display:flex;flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:4px 20px;margin:0;padding:0;list-style:none;font-size:15px;line-height:1.7;max-width:none}
 .author-list li{flex:0 0 auto;margin:0;padding:0}
 .author-list a{display:inline-flex;align-items:baseline;min-height:26px;padding:0;font-size:15px;line-height:1.7;color:#202124;white-space:nowrap}
@@ -90,7 +95,7 @@ h1,h2{text-wrap:balance}h3{line-height:1.3}
 .paper-affiliations li>a:hover .affiliation-caption>span:nth-child(2){text-decoration:underline;text-underline-offset:3px}
 .affiliation-number{font-size:9px;color:var(--blue);align-self:flex-start;padding-top:2px}.affiliation-arrow{font-size:11px;color:var(--blue)}
 .paper-metadata{display:block;padding:0;margin:12px 0 0;border:0;border-radius:0;background:none}
-.paper-metadata>div{display:grid;grid-template-columns:112px minmax(0,1fr);gap:14px;padding:7px 0;align-items:start}
+.paper-metadata>div{padding:7px 0}
 .paper-metadata>div:nth-child(7){border-top:1px solid var(--line);padding-top:18px;margin-top:12px}
 .paper-metadata dd{font-size:14px;line-height:1.8;color:#202124;margin:0}
 .paper-metadata a{color:var(--blue);font-weight:500}.paper-metadata a:hover{text-decoration:underline;text-underline-offset:3px}
@@ -109,7 +114,8 @@ h1,h2{text-wrap:balance}h3{line-height:1.3}
 :focus-visible{outline:2px solid var(--blue);outline-offset:4px}
 @media(max-width:760px){
  .paper-masthead h1{font-size:32px;line-height:1.2;margin-bottom:24px}
- .paper-authors,.paper-affiliations,.paper-metadata>div{grid-template-columns:1fr;gap:7px;padding:11px 0}
+ .paper-authors,.paper-affiliations,.paper-metadata>div{grid-template-columns:1fr;gap:12px;padding:11px 0}
+ .paper-affiliations>h2{padding-block-start:0}
  .paper-identity h2,.paper-metadata dt{margin:0}.author-list,.author-list a{font-size:14px;line-height:1.8}
  .paper-affiliations ol{display:flex;gap:8px}.paper-affiliations li{max-width:100%}
  .paper-affiliations li>a{padding:4px 0;min-height:32px}
