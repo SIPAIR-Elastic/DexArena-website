@@ -1,0 +1,252 @@
+/* Shared reading scale. This layer follows component styles so responsive
+   rules cannot quietly shrink essential text. Display titles stay distinct. */
+:root {
+  --type-body: 18px;
+  --type-small: 16px;
+  --type-meta: 14px;
+  --reading-line: 1.75;
+}
+body { font-size: var(--type-body); line-height: 1.6; }
+input, select, textarea { font-size: var(--type-small); }
+body main p:not(.cover-title):not(.page-subtitle),
+body .home-paper .paper-abstract > div > p:first-child,
+.overview-prose p {
+  font-size: var(--type-body);
+  line-height: var(--reading-line);
+}
+body :is(.section-head, .feature-copy, .scene-copy, .overview-prose) p { max-width: 70ch; }
+body :is(.task-card__body > span, .protocol-grid p, .eval-card p,
+  .metric-table p, .integrity-list li, .protocol-content > section li,
+  .docs-article section p, .docs-article section li, .docs-lead) {
+  font-size: var(--type-body);
+  line-height: var(--reading-line);
+}
+body .code-preview .code-preview-lead { font-size: 21px; line-height: 1.55; }
+
+/* Supporting copy, labels and controls have a readable size of their own. */
+body :is(.section-label, .section-head > span, .feature-copy > span,
+  .scene-copy > span, .leaderboard-cta__card span, .editorial-label,
+  .home-paper-eyebrow > span, .paper-kicker, .paper-status,
+  .paper-identity h2, .paper-metadata dt, .paper-section-heading > span,
+  .code-eyebrow, .release-eyebrow, .task-eyebrow, .page-hero > div > span,
+  .task-protocol > div:first-child > span, .report-eyebrow,
+  .report-section-heading .report-eyebrow, .research-outlook-panel .report-eyebrow,
+  .scope-primary dt, .scope-data dt, .scope-scenes dt, .finding-tab-label,
+  .finding-story .editorial-label, .flow-body > span, .capability-body > b,
+  .capability-body > a, .native-scene-card span, .scene-matrix span,
+  .paper-metadata dd, .affiliation-institute-name, .affiliation-caption,
+  .affiliation-english-name,
+  .paper-data-notes h3, .author-list a, .skill-tags span,
+  .breadcrumbs, .task-gallery__rail button b, .task-facts b,
+  .task-pagination a, .eval-card > span, .metric-table > div > span,
+  .publication-links a, .research-notes article > a, .research-outlook-actions a,
+  .report-section-nav a, .paper-section-nav a, .paper-footnotes summary,
+  .publication-authors summary, .coverage-date time, .conference-card time,
+  .conference-card .conference-place, .source-language,
+  .marquee-card span, .copy-status,
+  .search-field, .search-status, .search-results strong, .search-results p) {
+  font-size: var(--type-small);
+  line-height: 1.65;
+}
+body .home-paper .paper-section-nav a { font-size: var(--type-small); }
+body .home-paper-eyebrow > a { font-size: var(--type-small); }
+body .task-card__body strong { font-size: 25px; line-height: 1.3; }
+body .task-card__body em { font-size: var(--type-small); line-height: 1.6; }
+body .native-scene-card h3 { font-size: 20px; line-height: 1.4; }
+body .search-dialog-head h2 { font-size: 21px; line-height: 1.4; }
+body :is(.arrow-link, .editorial-link, .paper-action, .paper-result-links b,
+  .overview-links .arrow-link, .report-paper-card .arrow-link,
+  .filter-pills button, .task-search, .task-search input,
+  .task-media-switch button, .task-media-playback, .search-close,
+  .search-field input, .citation-toolbar a, .citation-toolbar button,
+  .text-copy-button, .docs-copy-button, .docs-search-button,
+  .paper-release-note > a, .overview-figure figcaption a,
+  .official-image-credit, .findings-source a, .task-pagination span,
+  .evidence-gallery a, .algorithm-reference-grid article > a,
+  .result-details summary) {
+  font-size: var(--type-small);
+  line-height: 1.5;
+}
+body :is(.arrow-link, .paper-action, .filter-pills button,
+  .task-media-switch button, .task-media-playback, .search-close,
+  .citation-toolbar button, .text-copy-button) { min-height: 44px; }
+body :is(.paper-section-nav a, .report-section-nav a) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+body .paper-section-nav > div { flex-wrap: wrap; gap: 4px 26px; overflow: visible; }
+
+/* Compact data remains compact, but never depends on tiny type to fit. */
+body :is(.scope-stage-map figcaption, .scope-stage-groups > a > span,
+  .scope-data-footer, .scope-equation, .scope-scene-matrix > div > span,
+  .scope-scene-matrix figcaption, .finding-tab-index, .finding-tab-detail,
+  .finding-axis, .finding-insight > span, .finding-insight > strong > small,
+  .finding-comparison figcaption, .finding-comparison figcaption > span:last-child,
+  .finding-method, .finding-score, .finding-score > small, .findings-source,
+  .overview-figure figcaption, .research-figure figcaption, .paper-figure p,
+  .paper-keywords span, .affiliation-number, .affiliation-arrow,
+  .affiliation-monogram, .paper-affiliations li > a, .citation-feedback,
+  .paper-result-links > a > span, .task-card__index, .task-card__body small, .task-gallery__media > span,
+  .task-gallery__rail button span, .task-gallery__rail button small,
+  .task-facts span, .task-facts code, .definition-table code,
+  .definition-table th, .definition-table td, .definition-table strong,
+  .native-scene-card code, .capability-sequence span, .task-media-note,
+  .page-hero__stats span, .protocol-grid article > span, .protocol-grid article > b,
+  .affiliation-english-name sup, .findings-tabs strong > small,
+  .results-table th, .results-table td, .results-table td small,
+  .results-table tbody th, .leaderboard-table td small,
+  .protocol-content th, .protocol-content td, .algorithm-reference-grid article > span, .publication-meta,
+  .publication-meta > span, .conference-status, .coverage-date > span,
+  .site-nav[data-nav-theme="precision"] .nav-search kbd,
+  .wordmark__type small, .nav-drawer-heading, .nav-destination small,
+  .site-footer .footer-eyebrow, .site-footer .footer-bottom,
+  .site-footer .footer-year, .site-footer .footer-built strong,
+  .site-footer .footer-nav-group > a > span, kbd) {
+  font-size: var(--type-meta);
+  line-height: 1.6;
+}
+body :is(.definition-table, .protocol-content) :is(th, td) { letter-spacing: 0; line-height: 1.7; }
+body :is(.paper-citation pre, .protocol-content pre, .docs-code pre,
+  .docs-code code, .docs-article pre, .docs-article code) {
+  font-size: var(--type-meta);
+  line-height: 1.75;
+}
+body .author-list sup { font-size: var(--type-meta); }
+body .author-list { gap: 6px 20px; }
+body .paper-affiliations li > a { min-height: 62px; }
+body :is(.paper-metadata dd, .task-facts code, .native-scene-card code) { overflow-wrap: anywhere; }
+body :is(.home-paper-eyebrow, .scope-stage-map figcaption,
+  .scope-data-heading, .finding-comparison figcaption,
+  .findings-source, .flow-footer) { flex-wrap: wrap; }
+body .scope-stage-groups { gap: 6px; }
+body .scope-stage-map figcaption > span { min-width: 0; }
+body .scope-scenes { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+body .scope-equation { text-align: left; }
+body .scope-scene-matrix figcaption { margin-top: 14px; }
+body .finding-comparison li { grid-template-columns: 135px minmax(0,1fr) 116px; }
+body .finding-axis { margin-left: 147px; margin-right: 128px; }
+body .finding-comparison figcaption > span:last-child { white-space: normal; }
+body .findings-tabs > button { grid-template-columns: 26px minmax(0,1fr); }
+body .finding-tab-label { overflow-wrap: anywhere; }
+body .finding-tab-detail { line-height: 1.6; }
+body .finding-insight > span { max-width: 26ch; }
+body .scope-stage-map figcaption > span:last-child { font-size: var(--type-meta); }
+body .flow-footer { font-size: var(--type-small); line-height: 1.7; }
+body .eval-card li { font-size: var(--type-body); line-height: var(--reading-line); }
+body .task-gallery__rail button b { white-space: normal; overflow: visible; text-overflow: clip; }
+body .home-paper .paper-data-notes p,
+body .home-paper .paper-result-links p {
+  font-size: var(--type-body);
+  line-height: var(--reading-line);
+}
+body .leaderboard-cta__card .arrow-link.on-dark span { font-size: var(--type-small); }
+
+/* Larger navigation must wrap or simplify, not shrink on a phone. */
+body .site-nav[data-nav-theme="precision"] .site-nav__desktop .site-nav__link { font-size: 17px; }
+body .site-nav[data-nav-theme="precision"] .nav-search { font-size: var(--type-small); }
+body .nav-drawer-footer { font-size: var(--type-small); }
+body .wordmark__type { gap: 5px; }
+body .wordmark__type small { letter-spacing: .035em; }
+body .site-footer .footer-tagline { font-size: var(--type-body); line-height: var(--reading-line); }
+body .site-footer .footer-nav-group > a { font-size: var(--type-small); min-height: 44px; }
+body .site-footer .footer-top { grid-template-columns: minmax(0,1.5fr) minmax(0,.65fr) minmax(0,.8fr); }
+body .site-footer :is(.footer-top > *, .footer-nav-group) { min-width: 0; }
+body .site-footer .footer-built { flex-wrap: wrap; }
+
+/* Image-led introduction: preserve the display titles and full-canvas text. */
+body .cover .cover-kicker { font-size: var(--type-small); line-height: 1.6; }
+body .cover .cover-copy p:not(.cover-title) { font-size: var(--type-body); line-height: 1.7; }
+body .cover .cover-copy .arrow-link { font-size: var(--type-small); }
+body .cover .cover-mosaic__item span { font-size: var(--type-meta); line-height: 1.5; }
+
+/* Keep result values stable while expanding explanatory text and controls. */
+body .leaderboard-page :is(.view-switch button, .board-filter label,
+  .board-filter-label, .chart-label b, .chart-scale-controls button,
+  .heatmap-tools label, .heatmap-tools input, .heatmap-inspector a,
+  .lb-explorer-tools input, .lb-explorer-tools select,
+  .lb-explorer-tools label, .lb-explorer-tools button,
+  .leaderboard-jump-nav a, .lb-method-resources a, .lb-release-actions a,
+  .lb-citation button, .board-head .arrow-link span,
+  .board-context > p a, .board-context > a, .track-insight > a,
+  .submission-cta .arrow-link span) { font-size: var(--type-small); }
+body .leaderboard-page .chart-label b { line-height: 1.55; }
+body .leaderboard-page .lb-method-card > summary { font-size: var(--type-small); }
+body .leaderboard-page .chart-row { min-height: 76px; }
+body .leaderboard-page .leaderboard-board > .result-source {
+  font-size: var(--type-body);
+  line-height: var(--reading-line);
+}
+body .leaderboard-page .lb-method-body .lb-method-note {
+  font-size: var(--type-body);
+  line-height: var(--reading-line);
+}
+
+@media (max-width: 1250px) {
+  body .site-nav[data-nav-theme="precision"] .nav-search kbd { display: none; }
+}
+@media (max-width: 1100px) {
+  body .finding-comparison li { grid-template-columns: 112px minmax(0,1fr) 110px; gap: 9px; }
+  body .finding-axis { margin-left: 121px; margin-right: 119px; }
+}
+@media (max-width: 760px) {
+  :root { --type-body: 17px; }
+  body .home-paper .paper-abstract > div > p:first-child { font-size: var(--type-body); }
+  body .site-footer .footer-top { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+  body .site-footer .footer-brand { grid-column: 1 / -1; }
+  body .findings-tabs > button,
+  body .findings-tabs > button + button { padding-inline: 10px; }
+  body .findings-tabs > button:first-child { padding-left: 0; }
+  body .finding-tab-label { font-size: var(--type-small); min-height: 52px; }
+  body .finding-comparison li {
+    grid-template-columns: minmax(0,1fr) auto;
+    gap: 8px 12px;
+    padding-block: 12px;
+  }
+  body .finding-method { grid-column: 1; grid-row: 1; font-size: var(--type-small); }
+  body .finding-score { grid-column: 2; grid-row: 1; font-size: var(--type-small); }
+  body .finding-bar { grid-column: 1 / -1; grid-row: 2; height: 9px; }
+  body .finding-axis { margin: 18px 0 4px; }
+  body .task-gallery__rail { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  body .task-gallery__rail button b { white-space: normal; overflow: visible; text-overflow: clip; }
+  body .cover .cover-mosaic__item span { padding: 5px 7px; right: 8px; }
+  body .cover .cover-copy p:not(.cover-title) { line-height: 1.65; }
+  body .scope-stage-groups { gap: 4px; }
+  body .leaderboard-page .view-switch button { padding-inline: 12px; }
+}
+@media (max-width: 600px) {
+  body .wordmark__type small { display: none; }
+  body .findings-tabs { grid-template-columns: 1fr; }
+  body .findings-tabs > button,
+  body .findings-tabs > button + button {
+    display: grid;
+    grid-template-columns: 24px minmax(0,1fr) auto;
+    align-items: center;
+    gap: 10px;
+    min-height: 72px;
+    padding: 14px 0;
+    border-right: 0;
+    border-bottom: 1px solid #e0e6ee;
+  }
+  body .finding-tab-index { grid-column: 1; grid-row: 1; }
+  body .finding-tab-label {
+    grid-column: 2;
+    grid-row: 1;
+    min-height: 0;
+    max-width: none;
+    overflow-wrap: normal;
+  }
+  body .findings-tabs strong { grid-column: 3; grid-row: 1; font-size: 30px; }
+  body .scope-scenes { grid-template-columns: 1fr; gap: 20px; }
+  body .collection-flow { grid-template-columns: 1fr; }
+  body .flow-media { height: auto; aspect-ratio: 16 / 9; }
+  body .scope-data-heading { align-items: flex-start; }
+  body .scope-equation { flex-basis: 100%; }
+  body .home-paper .paper-metadata { grid-template-columns: 1fr; }
+  body .task-gallery__media > span { max-width: calc(100% - 28px); white-space: normal; }
+}
+@media (max-width: 360px) {
+  body .scope-stage-groups { gap: 3px; }
+  body .finding-tab-label { font-size: var(--type-small); }
+  body .findings-tabs strong { font-size: 30px; }
+}

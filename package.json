@@ -7,6 +7,6 @@
   "scripts": {
     "build": "node scripts/build-github-pages.mjs",
     "start": "node scripts/preview.mjs",
-    "test": "node --test scripts/pages-deployment.test.mjs scripts/public-release.test.mjs scripts/brand-identity.test.mjs scripts/documentation.test.mjs scripts/release-urls.test.mjs scripts/publication-guard.test.mjs scripts/leaderboard.test.mjs scripts/leaderboard-behavior.test.mjs scripts/leaderboard-catalog.test.mjs scripts/leaderboard-platform.test.mjs scripts/typography.test.mjs"
+    "test": "node --test scripts/pages-deployment.test.mjs scripts/public-release.test.mjs scripts/brand-identity.test.mjs scripts/documentation.test.mjs scripts/release-urls.test.mjs scripts/publication-guard.test.mjs scripts/leaderboard.test.mjs scripts/leaderboard-behavior.test.mjs scripts/leaderboard-catalog.test.mjs scripts/leaderboard-platform.test.mjs scripts/typography.test.mjs scripts/readability.test.mjs"
   }
 }

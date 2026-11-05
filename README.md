@@ -55,12 +55,12 @@ and `src/docs.js`. Earlier authored renderers are retained but are not published
 to restore Docs. `paperPublished` remains `true`.
 Shared arXiv/PDF/repository URL constants keep public
 resource links consistent. The downloadable citation is based on arXiv:2611.02629.
-The original PDF is retained at `private/paper/dexarena-paper.pdf` in the source
-repository, outside the published directory. It is an older submission snapshot,
-not the public preprint: the build always removes its generated copy and the
-preview server rejects its legacy URL. PDF actions use the current arXiv URL;
-only the released citation is generated locally. Previously downloaded or
-third-party-cached copies cannot be recalled.
+PDF actions use the current arXiv URL; only the released citation is generated
+locally. Older submission snapshots are not versioned or required to build the
+website. Local research files can be retained under the ignored `private/`
+directory. The build removes any obsolete generated PDF copy, and the preview
+server rejects its legacy URL. Previously downloaded or third-party-cached
+copies cannot be recalled.
 
 The public website is deployed only through **GitHub Pages**. Visitors do not
 need a GitHub account. The deployment publishes only the generated `dist/`
@@ -80,6 +80,15 @@ mean/scene-standard-deviation details and contrast-checked numeric labels.
 Derived summaries use reported averages and positive per-row ties, not inferred
 episode counts or confidence intervals. Rendering, styles and enhancements are
 isolated in `src/leaderboard.mjs`, `src/leaderboard.css` and `src/leaderboard.js`.
+
+## Typography and readability
+
+`src/readability.css` is the final stylesheet on every site shell. Shared tokens
+set explanatory text to 18px (17px on narrow screens), controls to 16px and compact
+metadata to at least 14px. Display titles retain their separate hierarchy. Dense
+charts, task controls and navigation reflow rather than shrinking text on phones.
+`scripts/readability.test.mjs` protects the shared scale and stylesheet order;
+responsive browser checks also cover expanded content, search and mobile menus.
 
 ## Homepage layout
 

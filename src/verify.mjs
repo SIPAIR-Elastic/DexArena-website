@@ -151,7 +151,6 @@ if(!paperPublished){
   for(const path of paperArtifactPaths){
     await assert.rejects(stat(join(dist,path)),error=>error.code==='ENOENT','Withheld manuscript files must be absent from the public build');
   }
-  assert((await stat(join(root,'private/paper/dexarena-paper.pdf'))).size>0,'Keep the manuscript source outside the public build');
 }
 if(!docsPublished)assert(searchIndex.every(entry=>!entry.url.startsWith('/docs/')),'Unpublished Docs are excluded from search');
 for(const entry of searchIndex){

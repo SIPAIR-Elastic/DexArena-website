@@ -45,7 +45,8 @@ export function verifyNavigation({html,css,js}){
   const head=elements(html,'head')[0]?.content||'';
   const styles=tagged(head,a=>(a.rel||'').split(/\s+/).includes('stylesheet'));
   assert.equal(styles.filter(node=>asset(node.attributes.href,'navigation.css')).length,1,'Load navigation styles exactly once');
-  assert(asset(styles.at(-1)?.attributes.href,'navigation.css'),'Navigation stylesheet must follow legacy presentation styles');
+  assert(asset(styles.at(-2)?.attributes.href,'navigation.css'),'Navigation stylesheet must follow legacy presentation styles');
+  assert(asset(styles.at(-1)?.attributes.href,'readability.css'),'Only the shared readability scale follows navigation styles');
   const scripts=tagged(head,a=>asset(a.src,'navigation.js'));
   assert.equal(scripts.length,1,'Load navigation behavior exactly once');
   assert(has(scripts[0].attributes,'defer'),'Defer navigation behavior until markup is available');

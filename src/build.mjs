@@ -218,6 +218,7 @@ function layout({title,description,active,body,pageClass=""}) {
     <link rel="preload" href="/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${["paper-page","home-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}${["home-page","evaluation-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/experience.css">':""}${pageClass==="home-page"?'<link rel="stylesheet" href="/assets/carousel.css">':""}<link rel="stylesheet" href="/assets/footer.css">${pageClass==="docs-page"?'<link rel="stylesheet" href="/assets/docs.css">':""}${pageClass==="leaderboard-body"?'<link rel="stylesheet" href="/assets/leaderboard.css">':""}<link rel="stylesheet" href="/assets/navigation.css"><script src="/assets/navigation.js" defer></script><script src="/assets/site.js" defer></script>${pageClass==="leaderboard-body"?'<script src="/assets/leaderboard.js" defer></script>':""}${pageClass==="docs-page"?'<script src="/assets/docs.js" defer></script>':""}${["home-page","evaluation-page"].includes(pageClass)?'<script src="/assets/experience.js" defer></script>':""}
+    <link rel="stylesheet" href="/assets/readability.css">
   </head><body class="${pageClass}">${header(active)}<main>${body}</main>${footer()}<div class="route-progress" aria-hidden="true"></div></body></html>`);
 }
 
@@ -557,6 +558,7 @@ await copyFile(join(root,"src","experience.css"),join(dist,"assets","experience.
 await copyFile(join(root,"src","carousel.css"),join(dist,"assets","carousel.css"));
 await copyFile(join(root,"src","navigation.css"),join(dist,"assets","navigation.css"));
 await copyFile(join(root,"src","footer.css"),join(dist,"assets","footer.css"));
+await copyFile(join(root,"src","readability.css"),join(dist,"assets","readability.css"));
 await copyFile(join(root,"src","navigation.js"),join(dist,"assets","navigation.js"));
 await copyFile(join(root,"src","publication-guard.js"),join(dist,"assets","publication-guard.js"));
 await copyFile(join(root,"src","leaderboard.css"),join(dist,"assets","leaderboard.css"));
