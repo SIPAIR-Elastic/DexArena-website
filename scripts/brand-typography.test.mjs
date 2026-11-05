@@ -37,7 +37,7 @@ async function htmlFiles(directory) {
 }
 
 test('The two brand faces ship as compact WOFF2 binaries with their original open-font licenses', async () => {
-  for (const [file, project] of [['syne', 'Syne'], ['space-grotesk', 'Space Grotesk']]) {
+  for (const [file, project] of [['oxanium', 'Oxanium'], ['space-grotesk', 'Space Grotesk']]) {
     const binary = await readFile(new URL(`dist/assets/fonts/${file}.woff2`, root));
     assert.equal(binary.subarray(0, 4).toString('ascii'), 'wOF2', `${project}: actual WOFF2 data, not an HTML download error`);
     assert.equal(binary.readUInt32BE(8), binary.length, `${project}: complete WOFF2 file length`);
@@ -52,8 +52,9 @@ test('The two brand faces ship as compact WOFF2 binaries with their original ope
 
 test('Brand font faces are self-hosted variable fonts with a usable fallback during loading', () => {
   const faces = rules(navigation).filter(rule => rule.selector === '@font-face');
+  assert(!/syne\.woff2|font-family:\s*Syne/.test(navigation), 'The previous wordmark font is retained as an asset, not loaded by the current navigation');
   for (const [family, file, minimum, maximum, used] of [
-    ['Syne', 'syne', 400, 800, 700],
+    ['Oxanium', 'oxanium', 200, 800, 600],
     ['Space Grotesk', 'space-grotesk', 300, 700, 400]
   ]) {
     const matches = faces.filter(rule => rule['font-family']?.replace(/["']/g, '') === family);
@@ -71,9 +72,9 @@ test('Brand font faces are self-hosted variable fonts with a usable fallback dur
 test('The header pairs an expressive wordmark with a restrained geometric descriptor', () => {
   const authored = rules(navigation);
   const wordmark = authored.filter(rule => rule.selector === '.site-nav[data-nav-theme="precision"] .wordmark__type b');
-  assert(wordmark.some(rule => /^700\s+21px\/1\.1\s+Syne,\s*var\(--display\)$/.test(rule.font || '')), 'The desktop identity uses Syne at a deliberate 21 px / 700 weight');
+  assert(wordmark.some(rule => /^600\s+21px\/1\.1\s+Oxanium,\s*var\(--display\)$/.test(rule.font || '')), 'The desktop identity uses Oxanium at a deliberate 21 px / 600 weight');
   assert(wordmark.some(rule => rule['font-size'] === '20px'), 'Phone and tablet identity keeps the established 20 px scale');
-  assert(wordmark.some(rule => rule['letter-spacing'] === '-.025em'), 'The wider display face gets its own optical tracking');
+  assert(wordmark.some(rule => rule['letter-spacing'] === '.005em'), 'The angular display face uses subtle open tracking');
   const descriptor = authored.filter(rule => rule.selector === '.site-nav[data-nav-theme="precision"] .wordmark__type small');
   assert(descriptor.some(rule => /^400\s+14px\/1\.4\s+["']Space Grotesk["'],\s*var\(--font\)$/.test(rule.font || '')), 'The descriptor uses Space Grotesk without shrinking the 14 px metadata floor');
   assert(descriptor.some(rule => rule['letter-spacing'] === '.035em'), 'Subtle descriptor spacing complements the display wordmark');
@@ -82,7 +83,7 @@ test('The header pairs an expressive wordmark with a restrained geometric descri
 });
 
 test('Art-directed font families stay in the header identity instead of replacing the site reading faces', () => {
-  const brandRules = rules(navigation).filter(rule => rule.selector !== '@font-face' && /Syne|Space Grotesk/.test(`${rule.font || ''} ${rule['font-family'] || ''}`));
+  const brandRules = rules(navigation).filter(rule => rule.selector !== '@font-face' && /Oxanium|Space Grotesk/.test(`${rule.font || ''} ${rule['font-family'] || ''}`));
   assert.equal(brandRules.length, 2, 'Exactly the name and tagline adopt new typefaces');
   assert(brandRules.every(rule => /^\.site-nav\[data-nav-theme="precision"\] \.wordmark__type (?:b|small)$/.test(rule.selector)), 'Artistic fonts are scoped to the two header identity lines');
   const tokens = rules(refinement).find(rule => rule.selector === ':root');
@@ -94,20 +95,21 @@ test('Art-directed font families stay in the header identity instead of replacin
   }
   const footerIdentity = rules(footer).find(rule => rule.selector === '.site-footer .wordmark--footer');
   assert.match(footerIdentity.font, /var\(--display\)$/, 'Footer branding is deliberately unchanged');
-  assert(!/Syne|Space Grotesk/.test(refinement + readability + footer), 'Global type tokens and supporting layers do not leak the decorative faces');
+  assert(!/Oxanium|Space Grotesk/.test(refinement + readability + footer), 'Global type tokens and supporting layers do not leak the decorative faces');
 });
 
-test('Every generated shell preloads Syne once and retains selectable, accessible brand text', async () => {
-  assert.match(build, /<link\b[^>]*\brel="preload"[^>]*\bhref="\/assets\/fonts\/syne\.woff2"/, 'The shared source shell owns the priority brand font');
+test('Every generated shell preloads Oxanium once and retains selectable, accessible brand text', async () => {
+  assert.match(build, /<link\b[^>]*\brel="preload"[^>]*\bhref="\/assets\/fonts\/oxanium\.woff2"/, 'The shared source shell owns the priority brand font');
   let checked = 0;
   for (const file of await htmlFiles('dist')) {
     const html = await readFile(new URL(file, root), 'utf8');
     if (html.includes('data-paper-redirect')) continue;
     const links = [...html.matchAll(/<link\b[^>]*>/g)].map(([tag]) => attributes(tag));
-    const preloads = links.filter(link => link.rel === 'preload' && /(?:^|\/)syne\.woff2(?:\?|$)/.test(link.href || ''));
-    assert.equal(preloads.length, 1, `${file}: one shared Syne preload`);
+    const preloads = links.filter(link => link.rel === 'preload' && /(?:^|\/)oxanium\.woff2(?:\?|$)/.test(link.href || ''));
+    assert(!links.some(link => link.rel === 'preload' && /(?:^|\/)syne\.woff2(?:\?|$)/.test(link.href || '')), `${file}: the replaced wordmark font is no longer preloaded`);
+    assert.equal(preloads.length, 1, `${file}: one shared Oxanium preload`);
     const preload = preloads[0];
-    assert.equal(preload.href.split('?')[0], `${basePath}assets/fonts/syne.woff2`, `${file}: priority request resolves at the deployed project base`);
+    assert.equal(preload.href.split('?')[0], `${basePath}assets/fonts/oxanium.woff2`, `${file}: priority request resolves at the deployed project base`);
     assert.equal(preload.as, 'font', `${file}: correct preload destination`);
     assert.equal(preload.type, 'font/woff2', `${file}: correct preload format`);
     assert(Object.hasOwn(preload, 'crossorigin'), `${file}: font preload matches the anonymous font request mode`);
@@ -123,7 +125,7 @@ test('Deployed font URLs follow the Pages project base and the stylesheet introd
   const deployed = await readFile(new URL('dist/assets/navigation.css', root), 'utf8');
   const expected = navigation.replace(/url\((['"]?)\/(?!\/)/g, (_, quote) => `url(${quote}${basePath}`);
   assert.equal(deployed, expected, 'The deployed navigation asset exactly matches source with the intentional project-base rewrite');
-  for (const file of ['syne', 'space-grotesk']) {
+  for (const file of ['oxanium', 'space-grotesk']) {
     const match = rules(deployed).find(rule => rule.selector === '@font-face' && rule.src?.includes(`/fonts/${file}.woff2`));
     assert(match, `${file}: the deployed font-face exists`);
     assert(match.src.includes(`${basePath}assets/fonts/${file}.woff2`), `${file}: a nested route cannot resolve fonts outside the site project`);
