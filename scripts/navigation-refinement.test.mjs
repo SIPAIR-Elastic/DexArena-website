@@ -69,7 +69,7 @@ test('Refined navigation uses a compact display face without shrinking usable hi
 
 test('Brand typography steps down coherently while body and metadata scales remain intact', () => {
   const brand = ending(navigation, '.wordmark__type b');
-  assert(brand.some(rule => /700\s+21px\/1\.1\s+Syne,/.test(rule.font || '')), 'The desktop wordmark retains its compact 21 px size with the dedicated brand face');
+  assert(brand.some(rule => /600\s+21px\/1\.1\s+Oxanium,/.test(rule.font || '')), 'The desktop wordmark retains its compact 21 px size with the dedicated brand face');
   assert(brand.some(rule => rule['font-size'] === '20px'), 'Narrow screens step the wordmark down to 20 px');
   const descriptor = ending(navigation, '.wordmark__type small');
   assert(descriptor.some(rule => size(rule) === 14), 'The descriptor remains readable at 14 px');
