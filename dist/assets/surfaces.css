@@ -1,0 +1,153 @@
+/* Shared corner geometry. Component layout, media and focus remain unchanged. */
+:root {
+  --radius-hero: 44px;
+  --radius-dock: 30px;
+  --radius-panel: 32px;
+  --radius-card: 24px;
+  --radius-inset: 20px;
+  --radius-control: 16px;
+}
+
+/* Large visual frames use a more generous curve than their inset controls. */
+body .overview-figure,
+body .research-figure,
+body .paper-figure,
+body .scene-figure,
+body .feature-media,
+body .task-gallery__media,
+body .leaderboard-cta__card,
+body .report-paper-card,
+body.report-page .publication-row,
+body .search-dialog,
+body .leaderboard-page .leaderboard-board {
+  border-radius: var(--radius-panel);
+}
+
+body .capability-card,
+body .collection-flow li,
+body .native-scene-card,
+body .task-card,
+body .finding-grid article,
+body .protocol-grid article,
+body .eval-card,
+body .evidence-gallery article,
+body .method-profiles article,
+body .paper-data-notes article,
+body .paper-result-links > a,
+body .report-grid article,
+body .report-grid article:nth-child(n),
+body .conference-card,
+body .research-outlook-panel,
+body .task-pagination a,
+body .result-details,
+body .submission-cta,
+body .protocol-banner,
+body .news-strip,
+body .leaderboard-page .protocol-banner,
+body .leaderboard-page .news-strip,
+body .leaderboard-page .leaderboard-tabs [data-result-tab],
+body .leaderboard-page .lb-method-card,
+body .leaderboard-page .lb-release-panel {
+  border-radius: var(--radius-card);
+}
+
+body .marquee-card,
+body .paper-figure img,
+body .report-feature__media,
+body .paper-release-note,
+body .table-scroll,
+body .protocol-content pre,
+body .paper-citation pre,
+body .leaderboard-page .table-scroll,
+body .leaderboard-page .heatmap-inspector,
+body .leaderboard-page .track-insight,
+body .leaderboard-page .lb-citation pre {
+  border-radius: var(--radius-inset);
+}
+
+/* Connected header/footer surfaces follow the board, without clipping focus. */
+body .leaderboard-page .leaderboard-board > .board-filter {
+  border-radius: calc(var(--radius-panel) - 1px) calc(var(--radius-panel) - 1px) 0 0;
+}
+
+body .leaderboard-page .leaderboard-board > .result-source {
+  border-radius: 0 0 calc(var(--radius-panel) - 1px) calc(var(--radius-panel) - 1px);
+}
+
+body .leaderboard-page .lb-method-card > summary,
+body .leaderboard-page .lb-method-card > summary:focus-visible {
+  border-radius: calc(var(--radius-card) - 1px);
+}
+
+body .leaderboard-page .lb-method-card[open] > summary,
+body .leaderboard-page .lb-method-card[open] > summary:focus-visible {
+  border-radius: calc(var(--radius-card) - 1px) calc(var(--radius-card) - 1px) 0 0;
+}
+
+/* Segmented controls retain a smaller, concentric inset curve. Pills stay pills. */
+body .leaderboard-page .view-switch,
+body .leaderboard-page .chart-scale-controls {
+  border-radius: var(--radius-inset);
+}
+
+body .task-gallery__rail button,
+body .search-field input,
+body .search-close,
+body .search-results a,
+body .citation-toolbar button,
+body .docs-search-button,
+body .docs-algorithm-links > a,
+body .leaderboard-page .view-switch button,
+body .leaderboard-page .chart-scale-controls button,
+body .leaderboard-page .board-filter select,
+body .leaderboard-page .board-head .arrow-link,
+body .leaderboard-page .heatmap-tools input,
+body .leaderboard-page .lb-explorer-tools :is(input, select),
+body .leaderboard-page .lb-explorer-tools button,
+body .leaderboard-page .lb-citation button {
+  border-radius: var(--radius-control);
+}
+
+/* Retained documentation uses the same scale when publication is enabled. */
+body .algorithm-reference-grid article,
+body .docs-stat-row,
+body .docs-figure,
+body .docs-layout[data-docs-center] .docs-card-grid > :is(a, div) {
+  border-radius: var(--radius-card);
+}
+
+body .docs-layout[data-docs-center] .docs-availability,
+body .docs-layout[data-docs-center] .docs-article pre,
+body .docs-layout[data-docs-center] .docs-code-block,
+body .docs-layout[data-docs-center] .docs-article table {
+  border-radius: var(--radius-inset);
+}
+
+body .docs-layout[data-docs-center] .docs-search-button,
+body .docs-layout[data-docs-center] .docs-sidebar input,
+body .docs-layout[data-docs-center] .docs-sidebar nav a,
+body .docs-layout[data-docs-center] .docs-pagination a,
+body .docs-layout[data-docs-center] .docs-mobile-menu,
+body .docs-layout[data-docs-center] [data-copy-citation],
+body .docs-layout[data-docs-center] [data-doc-copy] {
+  border-radius: var(--radius-control);
+}
+
+body .docs-layout[data-docs-center] .docs-callout {
+  border-radius: 0 var(--radius-inset) var(--radius-inset) 0;
+}
+
+body .docs-layout[data-docs-center] .docs-code-block pre {
+  border-radius: 0;
+}
+
+@media (max-width: 760px) {
+  :root {
+    --radius-hero: 32px;
+    --radius-dock: 24px;
+    --radius-panel: 26px;
+    --radius-card: 22px;
+    --radius-inset: 18px;
+    --radius-control: 14px;
+  }
+}
