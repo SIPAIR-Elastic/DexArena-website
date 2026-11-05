@@ -3,7 +3,7 @@
 .cover .cover-track{height:var(--cover-height);gap:18px;transition:transform .85s cubic-bezier(.22,.7,.15,1)}
 .cover .cover-slide{flex:0 0 min(1440px,calc(100vw - 160px));height:var(--cover-height);padding:100px 0 104px}
 .cover .cover-slide:first-child{margin-left:var(--cover-inset)}
-.cover .cover-card{background:#091725;border:1px solid #10283e24;border-radius:28px;box-shadow:0 14px 38px -25px #102a4a70;isolation:isolate;transform:scale(1);transition:transform .85s cubic-bezier(.22,.7,.15,1),opacity .5s}
+.cover .cover-card{background:#091725;border:1px solid #10283e24;border-radius:var(--radius-hero);box-shadow:0 14px 38px -25px #102a4a70;isolation:isolate;transform:scale(1);transition:transform .85s cubic-bezier(.22,.7,.15,1),opacity .5s}
 .cover .cover-slide:not(.is-active) .cover-card{transform:scale(.985);opacity:.78;filter:none}
 .cover .cover-slide.is-active .cover-card{opacity:1;filter:none}
 .cover .cover-card:after{content:"";position:absolute;z-index:1;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(115deg,transparent 35%,#81b7ff0a 53%,transparent 69%)}
@@ -71,7 +71,7 @@
 @media(max-width:1100px){.home-page .cover{--cover-inset:60px}.cover .cover-slide{flex-basis:calc(100vw - 120px)}.cover .cover-copy{padding:42px}.cover .cover-copy h1{font-size:clamp(72px,10.5vw,112px)}.cover .cover-copy .cover-title{font-size:clamp(64px,8.7vw,92px)}.cover .cover-copy h2{font-size:32px;max-width:650px}.cover .cover-copy p:not(.cover-title){max-width:520px;font-size:14px}.cover .cover-peek-cue{width:30px;height:30px;left:7px}.cover .is-prev-preview .cover-peek-cue{right:7px}}
 @media(max-width:760px){
  .home-page .cover{--cover-height:clamp(710px,98svh,900px);--cover-inset:28px}
- .cover .cover-track{gap:12px}.cover .cover-slide{flex-basis:calc(100vw - 56px);padding:88px 0 100px}.cover .cover-card{border-radius:24px}
+ .cover .cover-track{gap:12px}.cover .cover-slide{flex-basis:calc(100vw - 56px);padding:88px 0 100px}.cover .cover-card{border-radius:var(--radius-hero)}
  .cover .cover-slide:not(.is-active) .cover-card{transform:scale(.99);opacity:.84}
  .cover .cover-mosaic{inset:0;grid-template-columns:minmax(0,1.28fr) minmax(0,1fr);gap:2px}.cover .cover-mosaic__item span{top:15px;right:10px;bottom:auto;font-size:11px;padding:5px 8px;border-radius:14px}
  .cover .cover-scrim{background:linear-gradient(0deg,#051326eb 0%,#051326a6 38%,#05132647 70%,#0513260d)}
