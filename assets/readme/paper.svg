@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="40" viewBox="0 0 160 40" role="img" aria-labelledby="paper-title paper-desc">
+  <title id="paper-title">Read paper</title>
+  <desc id="paper-desc">Read the DexArena paper.</desc>
+  <rect width="160" height="40" rx="8" fill="#9F243D"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M19 10h9l6 6v14H19zM28 10v6h6M23 21h7M23 25h7"/>
+  </g>
+  <text x="44" y="25" fill="#FFFFFF" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="600">Read paper</text>
+</svg>

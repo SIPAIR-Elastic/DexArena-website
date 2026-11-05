@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="40" viewBox="0 0 160 40" role="img" aria-labelledby="website-title website-desc">
+  <title id="website-title">Live website</title>
+  <desc id="website-desc">Open the public DexArena website.</desc>
+  <rect width="160" height="40" rx="8" fill="#175CD3"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="25" cy="20" r="9"/>
+    <ellipse cx="25" cy="20" rx="4" ry="9"/>
+    <path d="M16 20h18M18.4 14.1h13.2M18.4 25.9h13.2"/>
+  </g>
+  <text x="44" y="25" fill="#FFFFFF" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="600">Live website</text>
+</svg>
