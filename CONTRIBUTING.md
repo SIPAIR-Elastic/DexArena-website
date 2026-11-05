@@ -77,6 +77,7 @@ Use the authored source rather than patching generated HTML directly.
 | Navigation, carousel or footer | The matching CSS/JS in [`src/`](src/) |
 | Shared type sizes and responsive reading rules | [`src/readability.css`](src/readability.css), loaded after component styles |
 | Shared corner sizes for navigation, media, cards and controls | [`src/surfaces.css`](src/surfaces.css); keep nested corners and circular controls consistent |
+| Header brand typography | [`src/navigation.css`](src/navigation.css); Syne and Space Grotesk are self-hosted with OFL notices in [`dist/assets/fonts/`](dist/assets/fonts/) |
 | Docs content, if a release is approved | [`src/docs-content.mjs`](src/docs-content.mjs), [`docs.css`](src/docs.css), [`docs.js`](src/docs.js) |
 | Public resource URLs, visibility and route rules | [`src/publication.mjs`](src/publication.mjs) |
 

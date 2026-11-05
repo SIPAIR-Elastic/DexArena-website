@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {readFile, readdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {test} from 'node:test';
+import {githubPagesConfig} from './pages-config.mjs';
 
 const root = new URL('../', import.meta.url);
 const [navigation, readability, surfaces, behavior, verifier] = await Promise.all([
@@ -68,7 +69,7 @@ test('Refined navigation uses a compact display face without shrinking usable hi
 
 test('Brand typography steps down coherently while body and metadata scales remain intact', () => {
   const brand = ending(navigation, '.wordmark__type b');
-  assert(brand.some(rule => /600\s+21px\//.test(rule.font || '')), 'The desktop wordmark uses a restrained 21 px semibold face');
+  assert(brand.some(rule => /700\s+21px\/1\.1\s+Syne,/.test(rule.font || '')), 'The desktop wordmark retains its compact 21 px size with the dedicated brand face');
   assert(brand.some(rule => rule['font-size'] === '20px'), 'Narrow screens step the wordmark down to 20 px');
   const descriptor = ending(navigation, '.wordmark__type small');
   assert(descriptor.some(rule => size(rule) === 14), 'The descriptor remains readable at 14 px');
@@ -127,7 +128,9 @@ test('The compact drawer stays bounded, scrollable and keyboard-dismissible', ()
 });
 
 test('Every generated shell receives the same refined navigation asset before the readability layer', async () => {
-  assert.equal(await readFile(new URL('dist/assets/navigation.css', root), 'utf8'), navigation, 'Deployment uses the authored navigation styles verbatim');
+  const {basePath} = githubPagesConfig();
+  const deployedNavigation = navigation.replace(/url\((['"]?)\/(?!\/)/g, (_, quote) => `url(${quote}${basePath}`);
+  assert.equal(await readFile(new URL('dist/assets/navigation.css', root), 'utf8'), deployedNavigation, 'Deployment changes only the known project-path font URL prefix');
   assert.equal(await readFile(new URL('dist/assets/navigation.js', root), 'utf8'), behavior, 'The tested navigation behavior is copied verbatim');
   let checked = 0;
   for (const path of await htmlFiles('dist')) {

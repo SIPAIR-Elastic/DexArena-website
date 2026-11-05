@@ -1,3 +1,6 @@
+/* Header-only brand faces; local assets keep the identity independent of font CDNs. */
+@font-face{font-family:Syne;src:url("/DexArena-website/assets/fonts/syne.woff2") format("woff2");font-style:normal;font-weight:400 800;font-display:swap}
+@font-face{font-family:"Space Grotesk";src:url("/DexArena-website/assets/fonts/space-grotesk.woff2") format("woff2");font-style:normal;font-weight:300 700;font-display:swap}
 /* Precision dock: optical glass, compact typography and a cobalt light trail. */
 .code-resource-link,.paper-resource-link{display:inline-flex;align-items:center;gap:8px;color:#1967d2;font-size:12px;line-height:1.6}
 .code-resource-link:hover,.paper-resource-link:hover{text-decoration:underline;text-underline-offset:4px}
@@ -18,8 +21,8 @@
 .site-nav[data-nav-theme="precision"] .wordmark__mark:after{display:none}
 .site-nav[data-nav-theme="precision"] .wordmark:hover .wordmark__mark{transform:translateY(-1px) scale(1.04);filter:drop-shadow(0 3px 4px #1769e626)}
 .site-nav[data-nav-theme="precision"] .wordmark__type{display:grid;gap:2px;white-space:nowrap}
-.site-nav[data-nav-theme="precision"] .wordmark__type b{font:600 21px/1.1 var(--display);letter-spacing:-.045em}
-.site-nav[data-nav-theme="precision"] .wordmark__type small{font:400 14px/1.4 var(--font);text-transform:none;letter-spacing:.015em;color:#526780}
+.site-nav[data-nav-theme="precision"] .wordmark__type b{font:700 21px/1.1 Syne,var(--display);letter-spacing:-.025em;font-kerning:normal}
+.site-nav[data-nav-theme="precision"] .wordmark__type small{font:400 14px/1.4 "Space Grotesk",var(--font);text-transform:none;letter-spacing:.035em;color:#526780}
 .site-nav[data-nav-theme="precision"] .site-nav__desktop{position:relative;isolation:isolate;flex:none;gap:4px;margin-inline:auto;padding:3px 0;border:0;border-radius:0;background:none;box-shadow:none}
 .site-nav[data-nav-theme="precision"] .site-nav__desktop .site-nav__link{z-index:1;display:inline-flex;align-items:center;justify-content:center;flex:none;min-height:44px;padding:9px 12px;border-radius:var(--radius-control);background:none;color:#42566f;font:550 15px/1.45 var(--display);letter-spacing:.005em;white-space:nowrap;transition:color .2s}
 .site-nav[data-nav-theme="precision"] .site-nav__desktop .site-nav__link:hover,.site-nav[data-nav-theme="precision"] .site-nav__desktop .site-nav__link:focus-visible,.site-nav[data-nav-theme="precision"] .site-nav__desktop .site-nav__link.is-active{color:#135dca}
