@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="40" viewBox="0 0 160 40" role="img" aria-labelledby="code-title code-desc">
+  <title id="code-title">Code repository</title>
+  <desc id="code-desc">Open the DexArena benchmark code repository.</desc>
+  <rect width="160" height="40" rx="8" fill="#6642A6"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="m21 14-5 6 5 6M29 14l5 6-5 6M27 11l-4 18"/>
+  </g>
+  <text x="44" y="25" fill="#FFFFFF" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="600">Code repository</text>
+</svg>
