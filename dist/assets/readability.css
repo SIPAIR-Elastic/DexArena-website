@@ -142,12 +142,7 @@ body .home-paper .paper-result-links p {
 }
 body .leaderboard-cta__card .arrow-link.on-dark span { font-size: var(--type-small); }
 
-/* Larger navigation must wrap or simplify, not shrink on a phone. */
-body .site-nav[data-nav-theme="precision"] .site-nav__desktop .site-nav__link { font-size: 17px; }
-body .site-nav[data-nav-theme="precision"] .nav-search { font-size: var(--type-small); }
-body .nav-drawer-footer { font-size: var(--type-small); }
-body .wordmark__type { gap: 5px; }
-body .wordmark__type small { letter-spacing: .035em; }
+/* Navigation owns its compact type scale; reading and data scales stay unchanged. */
 body .site-footer .footer-tagline { font-size: var(--type-body); line-height: var(--reading-line); }
 body .site-footer .footer-nav-group > a { font-size: var(--type-small); min-height: 44px; }
 body .site-footer .footer-top { grid-template-columns: minmax(0,1.5fr) minmax(0,.65fr) minmax(0,.8fr); }

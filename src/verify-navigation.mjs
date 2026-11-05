@@ -136,10 +136,11 @@ export function verifyNavigation({html,css,js}){
   assert(tagged(header.content,a=>has(a,'data-open-search')).length>0,'Keep the site-wide search entry point');
 
   const rules=[...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(match=>({selector:match[1],body:match[2]}));
-  for(const [name,selector,minimum] of [['Desktop',/site-nav__desktop[^{}]*site-nav__link/,16],['Mobile',/site-nav__drawer[^{}]*site-nav__link/,18]]){
+  for(const [name,selector,minimum] of [['Desktop',/site-nav__desktop[^{}]*site-nav__link/,15],['Mobile',/site-nav__drawer[^{}]*site-nav__link/,16]]){
     const sizes=rules.filter(rule=>selector.test(rule.selector)).flatMap(rule=>[...rule.body.matchAll(/(?:^|;)\s*font(?:-size)?\s*:\s*[^;]*?\b(\d+(?:\.\d+)?)px(?=[\s/;]|$)/gi)].map(match=>Number(match[1])));
     assert(sizes.length>0,`${name} navigation declares a readable link font size`);
     assert(sizes.every(size=>size>=minimum),`${name} link fonts stay at least ${minimum}px at every declared breakpoint`);
+    assert(rules.filter(rule=>selector.test(rule.selector)).some(rule=>/min-height\s*:\s*(?:4[4-9]|[5-9]\d|\d{3,})px\b/.test(rule.body)),`${name} navigation retains at least a 44px interaction target independently of font size`);
   }
   const drawerRules=rules.filter(rule=>/site-nav__drawer|#site-mobile-nav|\[data-drawer\]/.test(rule.selector)).map(rule=>rule.body).join(';');
   assert(/max-height\s*:\s*(?!none\b)[^;]+/i.test(drawerRules),'Mobile drawer has a bounded viewport height');

@@ -95,7 +95,7 @@ Markdown-only edits should not change the website release or generated pages.
 ### Visual and interaction checks
 
 - Check desktop and narrow mobile layouts, including long labels and opened details.
-- Keep body text at 18px, or 17px on narrow screens; controls at least 16px and compact metadata at least 14px.
+- Keep body text at 18px, or 17px on narrow screens; content controls at least 16px and compact metadata at least 14px. The header deliberately uses 15px desktop links, 16px mobile links and a 14px Search label, with interaction targets of at least 44px.
 - Preserve keyboard operation, visible focus, touch targets and reduced-motion behavior.
 - Test carousel controls, search, task filters and any affected result view.
 - Check the image fallback and pause controls when changing video presentation.
