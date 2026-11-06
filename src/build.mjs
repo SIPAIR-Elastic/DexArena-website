@@ -3,13 +3,13 @@ import { copyFile, mkdir, readFile, writeFile, rm } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
-import { extraDocs, protocolBody, evidenceBody } from "./documentation.mjs";
+import { extraDocs, protocolBody } from "./documentation.mjs";
 import { paperBibtex, renderPaperBody } from "./paper-page.mjs";
 import { documentationPages } from "./docs-content.mjs";
 import { reportBody } from "./report.mjs";
 import { algorithmLink, algorithmDirectory, algorithmReferenceSection } from "./references.mjs";
-import { benchmarkScope, findingsDigest } from "./presentation.mjs";
-import { docsPublished, paperPublished, paperArtifactPaths, paperUrl, codeUrl, publishContent } from "./publication.mjs";
+import { benchmarkScope } from "./presentation.mjs";
+import { docsPublished, paperPublished, paperArtifactPaths, paperUrl, codeUrl, publishContent, isRedirectRoute } from "./publication.mjs";
 import { brandAssets, brandMark, brandVersion } from "./brand.mjs";
 import { codeBody } from "./code-page.mjs";
 import { renderLeaderboard } from "./leaderboard.mjs";
@@ -142,7 +142,6 @@ const nav = [
   ["/","Project","project"],
   ["/tasks/","Tasks","tasks"],
   ["/leaderboard/","Leaderboard","leaderboard"],
-  ["/evaluation/","Evaluation","evaluation"],
   ["/report/","Report","report"],
   ["/docs/","Docs","docs"],
   ["/code/","Code","code"]
@@ -158,18 +157,8 @@ const tracks = [
   {id:"generalization",label:"Cross-scene",scope:"30 stages × 3 held-out scenes",description:"Fixed policies, no adaptation. Mean ± standard deviation across three kitchen scenes, with 50 episodes per stage per scene."},
   {id:"longHorizon",label:"Long-horizon",scope:"10 complete sequences",description:"End-to-end success over 50 episodes per task. The environment is never reset between stages. π0.5 switches stage policies; GR00T uses one model trained on pooled stage data."}
 ];
-const score = value => `${Number(value.mean).toFixed(1)}${value.std===undefined?"":` <small>± ${value.std.toFixed(1)}</small>`}`;
-function resultTable(trackId, selectedRows=null) {
-  const data=paper[trackId], rows=selectedRows||data.rows;
-  const headers=paper.models.map(m=>`<th scope="col">${esc(m.name)}</th>`).join("");
-  const body=rows.map(r=>{const best=Math.max(...r.values.map(v=>v.mean));return `<tr><th scope="row">${esc(r.name)}</th>${r.values.map(v=>`<td class="score-cell ${v.mean===best&&best>0?"best-score":""}">${score(v)}</td>`).join("")}</tr>`}).join("");
-  return `<div class="table-scroll"><table class="results-table"><caption class="sr-only">${tracks.find(t=>t.id===trackId).label}: success rates in percent</caption><thead><tr><th scope="col">${trackId==="longHorizon"?"Task":"Stage"}</th>${headers}</tr></thead><tbody>${body}</tbody>${selectedRows?"":`<tfoot><tr><th scope="row">Average</th>${data.reportedAverage.map(v=>`<td class="score-cell">${score(v)}</td>`).join("")}</tr></tfoot>`}</table></div>`;
-}
 function researchFigure(file,alt,caption) {
   return `<figure class="research-figure"><a href="/assets/paper/${file}" target="_blank" rel="noreferrer" aria-label="Open ${esc(alt)} at full resolution"><img src="/assets/paper/${file}" alt="${esc(alt)}" loading="lazy"></a><figcaption>${caption} <a href="/assets/paper/${file}" target="_blank" rel="noreferrer">Full resolution ↗</a></figcaption></figure>`;
-}
-function findings() {
-  return findingsDigest(paper);
 }
 
 function header(active="") {
@@ -195,7 +184,7 @@ function footer() {
   return `<footer class="site-footer">
     <div class="footer-top">
       <div class="footer-brand"><a class="wordmark wordmark--footer" href="/" aria-label="DexArena home">${brandMark({inverse:true})}<b>DexArena</b></a><p class="footer-tagline">A unified benchmark for long-horizon <strong>bimanual dexterous manipulation.</strong></p></div>
-      <nav class="footer-nav-group" aria-label="Explore DexArena"><span class="footer-eyebrow">Explore</span>${publicNav.filter(([, ,id])=>['tasks','leaderboard','evaluation'].includes(id)).map(([href,label])=>`<a href="${href}">${label}<span aria-hidden="true">↗</span></a>`).join('')}</nav>
+      <nav class="footer-nav-group" aria-label="Explore DexArena"><span class="footer-eyebrow">Explore</span>${publicNav.filter(([, ,id])=>['tasks','leaderboard'].includes(id)).map(([href,label])=>`<a href="${href}">${label}<span aria-hidden="true">↗</span></a>`).join('')}<a href="/leaderboard/#evaluation">Evaluation protocol<span aria-hidden="true">↗</span></a></nav>
       <nav class="footer-nav-group footer-nav-group--research" aria-label="DexArena research and resources"><span class="footer-eyebrow">Research & resources</span><a href="${paperUrl}" target="_blank" rel="noreferrer">Paper<span aria-hidden="true">↗</span></a>${publicNav.filter(([, ,id])=>['report','docs','code'].includes(id)).map(([href,label])=>`<a href="${href}">${label}<span aria-hidden="true">↗</span></a>`).join('')}${docsPublished?'<a href="/docs/citation/">Citation<span aria-hidden="true">↗</span></a>':''}</nav>
     </div>
     <div class="footer-bottom"><span class="footer-preview"><i aria-hidden="true"></i>Research preview<span class="footer-year">2026</span></span><span class="footer-built">Built on <strong>SAPIEN</strong><span aria-hidden="true">/</span><strong>ManiSkill</strong></span></div>
@@ -218,7 +207,7 @@ function layout({title,description,active,body,pageClass=""}) {
     <link rel="preload" href="/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/oxanium.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${["paper-page","home-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}${["home-page","evaluation-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/experience.css">':""}${pageClass==="home-page"?'<link rel="stylesheet" href="/assets/carousel.css">':""}<link rel="stylesheet" href="/assets/footer.css">${pageClass==="docs-page"?'<link rel="stylesheet" href="/assets/docs.css">':""}${pageClass==="leaderboard-body"?'<link rel="stylesheet" href="/assets/leaderboard.css">':""}<link rel="stylesheet" href="/assets/surfaces.css"><link rel="stylesheet" href="/assets/navigation.css"><script src="/assets/navigation.js" defer></script><script src="/assets/site.js" defer></script>${pageClass==="leaderboard-body"?'<script src="/assets/leaderboard.js" defer></script>':""}${pageClass==="docs-page"?'<script src="/assets/docs.js" defer></script>':""}${["home-page","evaluation-page"].includes(pageClass)?'<script src="/assets/experience.js" defer></script>':""}
+    <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${["paper-page","home-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}${pageClass==="home-page"?'<link rel="stylesheet" href="/assets/carousel.css"><link rel="stylesheet" href="/assets/homepage.css">':""}<link rel="stylesheet" href="/assets/footer.css">${pageClass==="docs-page"?'<link rel="stylesheet" href="/assets/docs.css">':""}${pageClass==="leaderboard-body"?'<link rel="stylesheet" href="/assets/leaderboard.css"><link rel="stylesheet" href="/assets/leaderboard-evaluation.css">':""}<link rel="stylesheet" href="/assets/surfaces.css"><link rel="stylesheet" href="/assets/navigation.css"><script src="/assets/navigation.js" defer></script><script src="/assets/site.js" defer></script>${pageClass==="leaderboard-body"?'<script src="/assets/leaderboard.js" defer></script><script src="/assets/leaderboard-evaluation.js" defer></script>':""}${pageClass==="docs-page"?'<script src="/assets/docs.js" defer></script>':""}${pageClass==="home-page"?'<script src="/assets/homepage.js" defer></script>':""}
     <link rel="stylesheet" href="/assets/readability.css">
   </head><body class="${pageClass}">${header(active)}<main>${body}</main>${footer()}<div class="route-progress" aria-hidden="true"></div></body></html>`);
 }
@@ -276,7 +265,7 @@ const homeBody = `
           <p class="cover-title">Same skill.<br>New scene.</p>
           <h2>Change the scene. Keep the task.</h2>
           <p>Evaluate all 30 canonical stages on three native scene surfaces with fixed policy cameras.</p>
-          ${arrowLink(docsPublished?"/docs/randomization/":"/evaluation/",docsPublished?"Explore randomization":"Explore generalization","on-dark")}
+          ${arrowLink("/leaderboard/#evaluation-scenes","Explore generalization","on-dark")}
         </div>
       </div>
     </article>
@@ -317,44 +306,14 @@ const homeBody = `
 
 ${benchmarkScope(tasks,paper.protocol)}
 
-<section class="section capability-section">
-  <div class="section-head reveal"><span>Benchmark design</span><h2>Measure the transition <span class="text-accent text-accent--teal">from a skill</span> <span class="text-accent text-accent--violet">to a behavior.</span></h2></div>
-  <div class="capability-grid">
-    <article class="capability-card reveal"><div class="capability-media"><img src="/assets/tasks/task-12.jpg" alt="Dexterous hand turning a nut on a bolt" loading="lazy"></div><div class="capability-body"><b>01</b><h3>Skill execution</h3><p>Persistent physical predicates distinguish stable completion from transient contact.</p><a href="/tasks/nut-bolt/">Explore a precise skill ↗</a></div></article>
-<article class="capability-card reveal"><div class="capability-media capability-scenes">${[2,1,6].map(i=>`<img src="/assets/media/native-scene-${i}.png" alt="Pipette task in native kitchen scene ${i}" loading="lazy">`).join("")}</div><div class="capability-body"><b>02</b><h3>Visual generalization</h3><p>Keep task definitions fixed while changing the native kitchen environment.</p><a href="/docs/randomization/">Compare scene settings ↗</a></div></article>
-    <article class="capability-card reveal"><div class="capability-media capability-sequence">${[16,17,18].map((i,j)=>`<div><img src="${taskImage(i)}" alt="Furniture assembly stage ${j+1}: ${["lay panel flat","insert rail","fasten screw"][j]}" loading="lazy"><span>0${j+1}</span></div>`).join("")}</div><div class="capability-body"><b>03</b><h3>Long-horizon composition</h3><p>Execute connected stages in sequence, preserving the physical state between them.</p><a href="/tasks/furniture-assembly/">Follow a complete sequence ↗</a></div></article>
-  </div>
-</section>
-
-<section class="feature-split section-wide">
-  <div class="feature-media reveal"><img src="/assets/media/package-scene.png" alt="Bimanual package-opening task"></div>
-  <div class="feature-copy reveal"><span>Embodiment</span><h2>29 dimensions with one hand. 58 with two.</h2>
-    <p>The released canonical data uses Panda arms with 22-DoF Sharpa hands and absolute joint-position targets: 7 arm + 22 hand joints per side.</p>
-    <ul><li>Single-arm and bimanual variants</li><li>Shared task and success interfaces</li><li>Parallel-jaw, Sharpa, Wuji, and XHand simulation support</li></ul>
-    ${arrowLink("/docs/getting-started/","Read the interface guide")}
-  </div>
-</section>
-
-<section class="section data-section">
-  <div class="section-head reveal"><span>Human demonstrations</span><h2>Recorded, reviewed, restored, replayed.</h2><p>The data pipeline retains the simulator state needed for deterministic restoration and offline multi-view rendering.</p></div>
-  <ol class="collection-flow">
-    <li class="reveal"><div class="flow-media flow-media--official"><img src="/assets/media/manus-metagloves-pro.png" alt="MANUS Metagloves Pro, official manufacturer product image" loading="lazy"><a href="https://www.manus-meta.com/products/metagloves-pro" target="_blank" rel="noreferrer" class="official-image-credit">MANUS · Official product image ↗</a></div><div class="flow-body"><span>01 · Capture</span><h3>Recorded</h3><p>Human wrist and finger motion becomes robot joint targets at 20 Hz.</p></div></li>
-    <li class="reveal"><div class="flow-media"><img src="/assets/tasks/task-00.jpg" alt="A lunch-box opening demonstration for review" loading="lazy"></div><div class="flow-body"><span>02 · Quality check</span><h3>Reviewed</h3><p>Review the episode and retain demonstrations that complete the task.</p></div></li>
-    <li class="reveal"><div class="flow-media"><img src="/assets/media/native-scene-1.png" alt="Robot and pipette objects restored in a native scene" loading="lazy"></div><div class="flow-body"><span>03 · State restoration</span><h3>Restored</h3><p>Recover saved simulator states for offline multi-view rendering.</p></div></li>
-    <li class="reveal"><div class="flow-media"><video autoplay muted loop playsinline preload="metadata" poster="/assets/media/hero-scene-replay.jpg"><source src="/assets/media/hero-scene-replay.mp4" type="video/mp4"></video></div><div class="flow-body"><span>04 · Action replay</span><h3>Replayed</h3><p>Replay recorded actions and select 100 successful episodes per stage.</p></div></li>
-  </ol><div class="flow-footer"><span><b>3,000</b> demonstrations <i>·</i> <b>9.1 h</b> <i>·</i> <b>20 Hz</b></span>${arrowLink("/docs/data/","Explore the data pipeline")}</div>
-</section>
-
-<section class="scene-section section-wide">
-  <div class="scene-heading"><div class="section-head reveal"><span>Generalization</span><h2>One task. Three native scenes.</h2><p>The same pipette workstation in blue stone, light wood and warm wood kitchens. Evaluate all 30 stages across these three native backgrounds.</p></div><div class="scene-matrix"><b>30 × 3</b><span>90 task–scene combinations</span></div></div>
-  <div class="native-scene-grid">${[[2,"Blue kitchen","Stone island"],[1,"Light wood kitchen","Wood island"],[6,"Warm wood kitchen","Stone island"]].map(([i,name,detail])=>`<article class="native-scene-card reveal"><img src="/assets/media/native-scene-${i}.png" alt="${name}: the same pipette task with unchanged object layout" loading="lazy"><div><h3>${name}</h3><span>${detail}</span><code>robocasa_l3_s${i}</code></div></article>`).join("")}</div>
-  <div class="flow-footer"><p>Fixed policy cameras and shared task definitions. Optional LabUtopia laboratory for further studies.</p>${arrowLink("/docs/randomization/","Cross-scene protocol")}</div>
-</section>
-
-<section class="leaderboard-cta section">
-  <div class="section-head reveal"><span>Experimental results</span><h2>Learning a skill is only the beginning.</h2><p>Six baselines evaluated on execution, visual generalization and long-horizon composition. All scores below are reported in the supplied manuscript.</p></div>
-  ${findings()}
-  <div class="leaderboard-cta__card reveal"><div><span>Paper baselines</span><h2>Explore every result.</h2><p>Compare PPO, RLPD, ACT, Diffusion Policy, GR00T and π0.5 across all stages and complete sequences.</p></div>${arrowLink("/leaderboard/","Open leaderboard","on-dark")}</div>
+<section class="home-resource-links section" aria-labelledby="home-resources-title">
+  <header><span>Explore DexArena</span><h2 id="home-resources-title">Compare results. Reproduce the benchmark.</h2><p>Inspect the policies under a shared protocol, then use the code to run an evaluation.</p></header>
+  <nav aria-label="Explore DexArena resources">
+    <a href="/leaderboard/#lb-results"><div class="home-resource-copy"><small>Results</small><strong>Compare the six baselines.</strong><p>Charts, task heatmaps, exact scores and downloadable tables.</p></div><b aria-hidden="true">↗</b></a>
+    <a href="/leaderboard/#evaluation"><div class="home-resource-copy"><small>Protocol</small><strong>Understand the evaluation.</strong><p>Tracks, metrics, scene settings and the evidence behind a result.</p></div><b aria-hidden="true">↗</b></a>
+    <a href="/code/"><div class="home-resource-copy"><small>Build</small><strong>Start with the benchmark code.</strong><p>Find the official repository and current project resources.</p></div><b aria-hidden="true">↗</b></a>
+  </nav>
+  <div class="home-track-links" role="group" aria-label="Leaderboard tracks"><span>Jump to a track</span><a href="/leaderboard/#results-stage">Stage execution →</a><a href="/leaderboard/#results-generalization">Cross-scene →</a><a href="/leaderboard/#results-longHorizon">Long-horizon →</a></div>
 </section>`;
 
 function tasksIndex() {
@@ -372,7 +331,7 @@ function taskDetail(task,index) {
   </section>
   <section class="task-facts"><div><span>Long environment</span><code>${task.longEnv}</code></div><div><span>Embodiment</span><b>${task.embodiment}</b></div><div><span>Observation</span><b>${task.observation} state dims</b></div><div><span>Action</span><b>${task.action} targets</b></div><div><span>Horizon</span><b>${task.horizon} steps</b></div></section>
   <section class="section task-definition"><div class="section-head"><span>Stage definitions</span><h2>Exact slices of the parent sequence.</h2><p>Canonical instructions, handedness, action width, horizon, and success conditions are drawn from the current task registry and success-contract documentation.</p></div><div class="table-scroll"><table class="definition-table"><thead><tr><th>#</th><th>Stage / environment</th><th>Hand</th><th>Action</th><th>Max steps</th><th>Success summary</th></tr></thead><tbody>${rows}</tbody></table></div></section>
-  <section class="section task-results"><div class="section-head"><span>Paper results</span><h2>${task.title} in the benchmark.</h2><p>Stage success in the training scene (%, 50 episodes). Best scores in each row are highlighted.</p></div>${resultTable("stage",paper.stage.rows.slice(task.cover,task.cover+task.stages.length))}<details class="result-details"><summary>Cross-scene results · mean ± scene standard deviation</summary>${resultTable("generalization",paper.generalization.rows.slice(task.cover,task.cover+task.stages.length))}</details><details class="result-details"><summary>Complete sequence · end-to-end success (%)</summary>${resultTable("longHorizon",[paper.longHorizon.rows[index]])}</details><p class="result-source">Source: manuscript experiment tables. <a href="/leaderboard/">Compare all methods and tasks →</a></p></section>
+  <aside class="section task-results-link"><div class="section-head"><span>Benchmark results</span><h2>Compare policies on ${task.title}.</h2><p>All scores, comparisons and evaluation settings are collected in the Leaderboard.</p></div><div class="overview-links">${arrowLink(`/leaderboard/?view=heatmap&task=${encodeURIComponent(task.title)}#results-stage`,"Stage results")}${arrowLink(`/leaderboard/?view=heatmap&task=${encodeURIComponent(task.title)}#results-generalization`,"Cross-scene results")}${arrowLink(`/leaderboard/?view=heatmap&task=${encodeURIComponent(task.title)}#results-longHorizon`,"Complete-task results")}</div></aside>
   <section class="task-protocol section-wide"><div><span>Shared contract</span><h2>Same workstation.<br>Same predicates.</h2></div><div class="protocol-grid"><article><b>01</b><h3>Stage alignment</h3><p>Each stage-level environment uses the matching physical success predicate from the long task.</p></article><article><b>02</b><h3>Persistence</h3><p>Hold counters or latches prevent unstable contact from being counted as task completion.</p></article><article><b>03</b><h3>Replay</h3><p>State and action traces can be restored and replayed for validation and offline rendering.</p></article></div></section>
   <nav class="task-pagination section"><a href="/tasks/${prev.slug}/"><span>← Previous</span><b>${prev.title}</b></a><a href="/tasks/${next.slug}/"><span>Next →</span><b>${next.title}</b></a></nav>`;
 }
@@ -381,14 +340,9 @@ function leaderboardPage() {
   return renderLeaderboard({paper,tasks,tracks,paperUrl,snapshot:resultRelease,citation:paperPublished?paperBibtex:''});
 }
 
-function evaluationPage() {
-  return `<section class="page-hero"><div><span>Evaluation protocol</span><h1>Evaluation</h1><h2 class="page-subtitle">Three levels. One physical contract.</h2><p>DexArena separates failures in execution, generalization, and composition while preserving matching task definitions.</p></div></section>
-  <section class="eval-dimensions section"><article class="eval-card reveal"><b>01</b><span>Stage level</span><h2>Skill execution</h2><p>Run each of the 30 canonical stage environments with its registered robot, horizon, action layout, and physical success predicate.</p><ul><li>Success rate across fixed seeds</li><li>Persistent success, not transient contact</li><li>29-D single-arm or 58-D bimanual actions</li></ul></article>
-  <article class="eval-card reveal"><b>02</b><span>Scene level</span><h2>Visual generalization</h2><p>Evaluate every stage on three native scene surfaces using identical object placement and the fixed 256 × 256 policy camera rig.</p><ul><li>90 task × scene combinations</li><li>Shared seeds across algorithms</li><li>Saved background manifest</li></ul></article>
-  <article class="eval-card reveal"><b>03</b><span>Sequence level</span><h2>Skill composition</h2><p>Execute two to five dependent stages in their parent long-horizon environment and report complete-sequence success.</p><ul><li>Stage progress and terminal success</li><li>Inherited state between stages</li><li>Single-arm and bimanual tasks</li></ul></article></section>
-  <section class="metric-section section-wide"><div class="section-head"><span>Metric contract</span><h2>Report the failure mode, not only the final number.</h2></div><div class="metric-table"><div><b>Stage Success Rate</b><p>Fraction of evaluation episodes whose stage predicate is satisfied for its required hold duration.</p></div><div><b>Cross-scene Average</b><p>Mean stage success over robocasa_l3_s2, robocasa_l3_s1, and robocasa_l3_s6 with matched seeds.</p></div><div><b>Generalization Gap</b><p>Difference between the reference collection workspace and native-scene performance.</p></div><div><b>Composition Rate</b><p>Fraction of complete long-horizon episodes reaching the final task success state.</p></div></div></section>
-  <section class="section"><div class="section-head"><span>Paper protocol</span><h2>Fifty episodes. Three distinct questions.</h2><p>All six baselines use image observations and robot proprioception, with matched task horizons, randomization and embodiments. Stage and long-horizon success are measured over 50 episodes per task; generalization uses 50 episodes in each of three held-out kitchens without further adaptation.</p></div><div class="protocol-grid"><article><b>01</b><h3>Recorded evaluation seeds</h3><p>The manuscript specifies stage seeds 50000–50049 for ACT and DP. GR00T uses 10001–10050, reused for each generalization scene and the long-horizon protocol. Record the seed manifest alongside each result.</p></article><article><b>02</b><h3>Scene-level uncertainty</h3><p>Generalization reports mean ± standard deviation across three scenes. The average row aggregates stage performance within each scene before reporting variation across scenes.</p></article><article><b>03</b><h3>Transitions without resets</h3><p>PPO, RLPD, ACT, DP and π0.5 switch between learned stage policies when the stage succeeds. GR00T uses one task model trained on pooled stage data, with a new instruction at each transition.</p></article></div>${findings()}${arrowLink("/leaderboard/","Explore all results")}</section>
-  <section class="section integrity-section"><div class="section-head"><span>Reproducibility</span><h2>What an evaluation record should contain.</h2></div><ol class="integrity-list"><li><b>Environment identity</b><span>Exact env ID, task source fingerprint, robot UID, control mode, horizon, and seed.</span></li><li><b>Observation contract</b><span>State layout, camera rig, image size, preprocessing, and language-instruction version.</span></li><li><b>Scene manifest</b><span>Background ID, native table metadata, camera configuration, and reset-time checks.</span></li><li><b>Evidence</b><span>Per-episode success, stage trace, videos, aggregate table, and checkpoint provenance.</span></li></ol><div class="overview-links">${arrowLink("/leaderboard/protocol/","Score protocol")}${arrowLink("/evaluation/evidence/","Rollouts & evidence")}${arrowLink("/docs/quick-evaluation/","Quick evaluation")}</div></section>`;
+function evaluationRedirect({evidence=false}={}) {
+  const target=`/leaderboard/#${evidence?'evaluation-evidence':'evaluation'}`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Evaluation is now in Leaderboard — DexArena</title><meta name="robots" content="noindex, follow"><meta http-equiv="refresh" content="1;url=${target}"><link rel="canonical" href="/leaderboard/"><link rel="icon" href="/assets/brand/dexarena-favicon.svg?v=${brandVersion}" type="image/svg+xml" sizes="any"><script src="/assets/evaluation-redirect.js" defer></script></head><body><main data-evaluation-redirect><h1>Evaluation is now in Leaderboard.</h1><p>The evaluation tracks, metrics, protocol and evidence are available together with the benchmark results.</p><a href="${target}" data-evaluation-destination>Continue to Leaderboard →</a></main></body></html>`;
 }
 
 const documentationGroups=[
@@ -519,14 +473,14 @@ const pages = [
   ["index.html",layout({title:"DexArena — Long-Horizon Dexterous Manipulation",description:"A unified benchmark for long-horizon bimanual dexterous manipulation.",active:"project",body:homeBody,pageClass:"home-page"})],
   ["tasks/index.html",layout({title:"Tasks — DexArena",description:"Browse 10 long-horizon tasks and 30 canonical stage environments.",active:"tasks",body:tasksIndex(),pageClass:"tasks-page"})],
   ["leaderboard/index.html",layout({title:"Leaderboard — DexArena",description:"DexArena leaderboard and method coverage.",active:"leaderboard",body:leaderboardPage(),pageClass:"leaderboard-body"})],
-  ["evaluation/index.html",layout({title:"Evaluation — DexArena",description:"DexArena evaluation tracks, metrics, and reproducibility protocol.",active:"evaluation",body:evaluationPage(),pageClass:"evaluation-page"})],
+  ["evaluation/index.html",evaluationRedirect()],
   ["report/index.html",layout({title:"Report — DexArena",description:"DexArena research, benchmark design notes and reproducible evaluation.",active:"report",body:reportPage(),pageClass:"report-page"})],
   ["paper/index.html",`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DexArena paper on arXiv</title><meta name="robots" content="noindex, follow"><meta http-equiv="refresh" content="0;url=${paperUrl}"><link rel="canonical" href="${paperUrl}"></head><body><main data-paper-redirect><h1>Read the paper on arXiv</h1><p>The paper is available at <a href="${paperUrl}">arXiv:2611.02629</a>.${docsPublished?' Usage instructions and citation are in <a href="/docs/citation/">DexArena Docs</a>.':''}</p></main></body></html>`],
   ["code/index.html",layout({title:"Code — DexArena",description:"Official DexArena GitHub repository, current project files and release updates.",active:"code",body:codeBody,pageClass:"code-page"})]
 ];
 documentationPages.forEach(page=>pages.push([`${documentationHref(page.id).slice(1)}index.html`,layout({title:`${page.title} — DexArena Docs`,description:page.lead,active:"docs",body:renderDocumentationPage(page),pageClass:"docs-page"})]));
 pages.push(["leaderboard/protocol/index.html",layout({title:"Leaderboard protocol — DexArena",description:"Score definitions and reproducibility requirements for DexArena results.",active:"leaderboard",body:protocolBody,pageClass:"protocol-page"})]);
-pages.push(["evaluation/evidence/index.html",layout({title:"Rollouts & evidence — DexArena",description:"Demonstration examples and the evidence required for a reproducible evaluation.",active:"evaluation",body:evidenceBody,pageClass:"evidence-page"})]);
+pages.push(["evaluation/evidence/index.html",evaluationRedirect({evidence:true})]);
 tasks.forEach((task,index)=>pages.push([`tasks/${task.slug}/index.html`,layout({title:`${task.title} — DexArena`,description:task.summary,active:"tasks",body:taskDetail(task,index),pageClass:"task-detail-page"})]));
 
 for (const [file,html] of pages) {
@@ -553,6 +507,8 @@ if(paperPublished){
   for(const path of paperArtifactPaths)await rm(join(dist,path),{force:true});
 }
 await copyFile(join(root,"src","paper.css"),join(dist,"assets","paper.css"));
+await copyFile(join(root,"src","homepage.css"),join(dist,"assets","homepage.css"));
+await copyFile(join(root,"src","homepage.js"),join(dist,"assets","homepage.js"));
 await copyFile(join(root,"src","refinement.css"),join(dist,"assets","refinement.css"));
 await copyFile(join(root,"src","report.css"),join(dist,"assets","report.css"));
 await copyFile(join(root,"src","experience.css"),join(dist,"assets","experience.css"));
@@ -565,12 +521,15 @@ await copyFile(join(root,"src","navigation.js"),join(dist,"assets","navigation.j
 await copyFile(join(root,"src","publication-guard.js"),join(dist,"assets","publication-guard.js"));
 await copyFile(join(root,"src","leaderboard.css"),join(dist,"assets","leaderboard.css"));
 await copyFile(join(root,"src","leaderboard.js"),join(dist,"assets","leaderboard.js"));
+await copyFile(join(root,"src","leaderboard-evaluation.css"),join(dist,"assets","leaderboard-evaluation.css"));
+await copyFile(join(root,"src","leaderboard-evaluation.js"),join(dist,"assets","leaderboard-evaluation.js"));
+await copyFile(join(root,"src","evaluation-redirect.js"),join(dist,"assets","evaluation-redirect.js"));
 await copyFile(join(root,"src","docs.css"),join(dist,"assets","docs.css"));
 await copyFile(join(root,"src","docs.js"),join(dist,"assets","docs.js"));
 await copyFile(join(root,"src","experience.js"),join(dist,"assets","experience.js"));
 await Promise.all([copyFile(join(root,"src","site.css"),join(dist,"assets","site.css")),copyFile(join(root,"src","layout.css"),join(dist,"assets","layout.css")),copyFile(join(root,"src","site.js"),join(dist,"assets","site.js"))]);
 
-const searchEntries=pages.filter(([file])=>file!=='paper/index.html'&&(docsPublished||!file.startsWith('docs/'))).map(([file,html])=>{
+const searchEntries=pages.filter(([file])=>!isRedirectRoute('/'+file.replace(/index\.html$/,''))&&(docsPublished||!file.startsWith('docs/'))).map(([file,html])=>{
   const content=html.match(/<article\b[^>]*class="docs-article"[^>]*>([\s\S]*?)<\/article>/)?.[1]||html.match(/<main>([\s\S]*?)<\/main>/)?.[1]||html;
   return {url:file==='index.html'?'/':'/'+file.replace(/index\.html$/,''),title:html.match(/<title>(.*?)<\/title>/)?.[1]||'DexArena',text:content.replace(/<script[\s\S]*?<\/script>/g,'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').slice(0,40000)};
 });

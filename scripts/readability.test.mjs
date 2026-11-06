@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {readFile, readdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {test} from 'node:test';
+import {isRedirectRoute} from '../src/publication.mjs';
 
 const root = new URL('../', import.meta.url);
 const [css, build] = await Promise.all([
@@ -52,7 +53,7 @@ test('Overview prose and the reported benchmark-design paragraph adopt the body 
   assert(overview.every(rule => !rule['font-size'] || rule['font-size'] === 'var(--type-body)'), 'A narrow override cannot quietly restore the old 14px overview copy');
   assert(rules('body main p:not(.cover-title):not(.page-subtitle)').some(rule => rule['font-size'] === 'var(--type-body)'), 'Explanatory paragraphs receive the body scale rather than relying on an inherited metadata size');
   const home = await readFile(new URL('dist/index.html', root), 'utf8');
-  assert.match(home, /class="section-head"[^>]*>[\s\S]*?<p>Ten complete tasks and thirty matched stage environments/, 'The reported benchmark-design paragraph remains covered by the shared paragraph rule');
+  assert.match(home, /class="home-overview-heading"[^>]*>[\s\S]*?<p>Ten complete tasks and thirty matched stage environments/, 'The concise benchmark-design paragraph remains covered by the shared paragraph rule');
   assert(css.includes('var(--type-small)'), 'The compact text token is applied, not just declared');
   assert(css.includes('var(--type-meta)'), 'The minimum metadata token is applied, not just declared');
 });
@@ -65,7 +66,7 @@ test('The shared readability asset is copied verbatim and loads last in every re
   let checked = 0;
   for (const file of files) {
     const html = await readFile(new URL(file, root), 'utf8');
-    if (html.includes('data-paper-redirect')) continue;
+    if (isRedirectRoute('/'+file.replace(/^dist\//,'').replace(/index\.html$/,''))) continue;
     const sheets = [...html.matchAll(/<link\b(?=[^>]*\brel="stylesheet")[^>]*\bhref="([^"]+)"[^>]*>/g)].map(([, href]) => href);
     assert(sheets.length, `${file}: a styled site shell`);
     assert.match(sheets.at(-1), /\/assets\/readability\.css(?:\?|$)/, `${file}: readability is the final stylesheet in the cascade`);
@@ -73,7 +74,7 @@ test('The shared readability asset is copied verbatim and loads last in every re
     assert(sheets.some(href => /\/assets\/navigation\.css(?:\?|$)/.test(href)), `${file}: navigation keeps its original layout stylesheet`);
     checked++;
   }
-  assert(checked >= 18, 'The full site, not only the home page, receives the type scale');
+  assert.equal(checked, 32, 'The full styled site, not only the home page, receives the type scale');
 });
 
 test('Shared readability rules never author sub-14px text or undersized compact controls', () => {

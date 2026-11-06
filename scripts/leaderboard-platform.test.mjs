@@ -31,7 +31,7 @@ test('Leaderboard platform sections have one aligned navigation destination each
     const names = [...tag.matchAll(/([\w-]+)="[^"]*"/g)].map(([, name]) => name);
     assert.equal(new Set(names).size, names.length, `No duplicate quoted attributes: ${tag.slice(0, 160)}`);
   }
-  const expected = ['lb-overview', 'lb-updates', 'lb-results', 'lb-methods', 'lb-provenance'];
+  const expected = ['lb-overview', 'lb-updates', 'lb-results', 'lb-methods', 'evaluation', 'evaluation-evidence', 'lb-provenance'];
   const nav = html.match(/<nav\b[^>]*aria-label="Leaderboard sections"[^>]*>([\s\S]*?)<\/nav>/)?.[1];
   assert(nav, 'The long page offers a dedicated section navigation');
   assert.deepEqual([...nav.matchAll(/href="#([^"]+)"/g)].map(([, id]) => id), expected);

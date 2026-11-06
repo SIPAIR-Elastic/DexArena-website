@@ -3,6 +3,7 @@ import {readFile, readdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {test} from 'node:test';
 import {githubPagesConfig} from './pages-config.mjs';
+import {isRedirectRoute} from '../src/publication.mjs';
 
 const root = new URL('../', import.meta.url);
 const [navigation, readability, surfaces, behavior, verifier] = await Promise.all([
@@ -135,12 +136,12 @@ test('Every generated shell receives the same refined navigation asset before th
   let checked = 0;
   for (const path of await htmlFiles('dist')) {
     const html = await readFile(new URL(path, root), 'utf8');
-    if (html.includes('data-paper-redirect')) continue;
+    if (isRedirectRoute('/'+path.replace(/^dist\//,'').replace(/index\.html$/,''))) continue;
     const sheets = [...html.matchAll(/<link\b(?=[^>]*\brel="stylesheet")[^>]*\bhref="([^"]+)"[^>]*>/g)].map(([, href]) => href);
     assert.equal(sheets.filter(href => /\/assets\/navigation\.css(?:\?|$)/.test(href)).length, 1, `${path}: a single shared navigation layer`);
     assert.match(sheets.at(-2), /\/assets\/navigation\.css(?:\?|$)/, `${path}: component styling retains its position`);
     assert.match(sheets.at(-1), /\/assets\/readability\.css(?:\?|$)/, `${path}: the global readable text layer stays last`);
     checked++;
   }
-  assert(checked >= 34, 'The refinement reaches nested task pages and unpublished-document notices, not just the homepage');
+  assert.equal(checked, 32, 'The refinement reaches all public, nested task and unpublished-document shells, excluding only compatibility redirects');
 });

@@ -124,7 +124,7 @@ test('Legacy paper-page links lead directly to the public record or their curren
     ['/paper/#abstract','/#abstract'],
     ['/paper/#paper-overview','/#paper-overview'],
     ['/paper/#data-pipeline','/#data-pipeline'],
-    ['/paper/#paper-results','/#paper-results']
+    ['/paper/#paper-results','/leaderboard/#lb-results']
   ];
   for(const [before,after] of destinations){
     const output=published.publishContent(`<a class="inline-reference" href="${before}">Research reference</a>`);

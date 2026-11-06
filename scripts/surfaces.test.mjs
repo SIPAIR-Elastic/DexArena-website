@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {readFile, readdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {test} from 'node:test';
+import {isRedirectRoute} from '../src/publication.mjs';
 
 const root = new URL('../', import.meta.url);
 const [css, navigation, carousel, leaderboard, build] = await Promise.all([
@@ -111,7 +112,7 @@ test('The shared surface asset is deployed verbatim once in every generated shel
   let checked = 0;
   for (const file of files) {
     const html = await readFile(new URL(file, root), 'utf8');
-    if (html.includes('data-paper-redirect')) continue;
+    if (isRedirectRoute('/'+file.replace(/^dist\//,'').replace(/index\.html$/,''))) continue;
     const sheets = [...html.matchAll(/<link\b(?=[^>]*\brel="stylesheet")[^>]*\bhref="([^"]+)"[^>]*>/g)].map(([, href]) => href);
     assert.equal(sheets.filter(href => /\/assets\/surfaces\.css(?:\?|$)/.test(href)).length, 1, `${file}: one shared surface layer`);
     assert.match(sheets.at(-3), /\/assets\/surfaces\.css(?:\?|$)/, `${file}: surface treatment precedes the final component and readability layers`);
@@ -119,5 +120,5 @@ test('The shared surface asset is deployed verbatim once in every generated shel
     assert.match(sheets.at(-1), /\/assets\/readability\.css(?:\?|$)/, `${file}: readable text stays the final stylesheet`);
     checked++;
   }
-  assert(checked >= 34, 'The treatment reaches every styled shell, including nested task routes and hidden Docs notices');
+  assert.equal(checked, 32, 'The treatment reaches every styled shell, including nested task routes and hidden Docs notices; compatibility redirects remain unstyled');
 });

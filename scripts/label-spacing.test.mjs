@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {readFile, readdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {test} from 'node:test';
+import {isRedirectRoute} from '../src/publication.mjs';
 
 const root = new URL('../', import.meta.url);
 const [css, readability, release] = await Promise.all([
@@ -99,7 +100,7 @@ test('The spacing correction preserves semantic labels, official links and reada
   const home = await readFile(new URL('dist/index.html', root), 'utf8');
   assert.match(home, /<div class="paper-authors"[^>]*>\s*<h2>Authors<\/h2>\s*<ol\b/, 'Author names remain an ordered list with a real heading');
   assert.match(home, /<div class="paper-affiliations"[^>]*>\s*<h2>Affiliations<\/h2>\s*<ol\b/, 'Institution logos retain their heading and ordered-list semantics');
-  assert.match(home, /<dt>Leaderboard<\/dt>\s*<dd>\s*<a href="[^\"]*\/leaderboard\/(?:\?[^\"]*)?">View benchmark results/, 'The reported result link is still a functioning definition-list entry');
+  assert.match(home, /<dt>Leaderboard<\/dt>\s*<dd>\s*<a href="[^\"]*\/leaderboard\/(?:\?[^\"#]*)?(?:#lb-results)?">View benchmark results/, 'The reported result link is still a functioning definition-list entry pointing at the consolidated explorer');
   for (const university of ['https://www.sjtu.edu.cn/', 'https://www.tsinghua.edu.cn/']) assert(home.includes(`href="${university}"`), 'University logos still link to their official sites');
   const compact = rules(readability).find(rule => rule.selectors.some(selector => selector.startsWith('body :is(') && selector.includes('.paper-identity h2') && selector.includes('.paper-metadata dt')));
   assert.equal(compact?.['font-size'], 'var(--type-small)', 'The layout fix keeps readable labels rather than shrinking typography');
@@ -115,11 +116,11 @@ test('The corrected shared layout is deployed to every styled shell without chan
   let checked = 0;
   for (const file of await htmlFiles('dist')) {
     const html = await readFile(new URL(file, root), 'utf8');
-    if (html.includes('data-paper-redirect')) continue;
+    if (isRedirectRoute('/'+file.replace(/^dist\//,'').replace(/index\.html$/,''))) continue;
     const sheets = [...html.matchAll(/<link\b(?=[^>]*\brel="stylesheet")[^>]*\bhref="([^"]+)"[^>]*>/g)].map(([, href]) => href);
     assert.equal(sheets.filter(href => /\/assets\/refinement\.css(?:\?|$)/.test(href)).length, 1, `${file}: one shared layout layer`);
     assert.match(sheets.at(-1), /\/assets\/readability\.css(?:\?|$)/, `${file}: full-size text remains the final layer`);
     checked++;
   }
-  assert(checked >= 34, 'All styled public and unpublished-preview shells receive the corrected layout');
+  assert.equal(checked, 32, 'All styled public and unpublished-preview shells receive the corrected layout; compatibility redirects contain no research rows');
 });

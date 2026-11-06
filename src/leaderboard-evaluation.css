@@ -1,0 +1,99 @@
+/* Progressive disclosure keeps evaluation close to its results, without a wall of text. */
+.leaderboard-page .lb-evaluation { margin-block: 44px; }
+.leaderboard-page [id^="evaluation"] { scroll-margin-top: 130px; }
+.leaderboard-page .lb-evaluation-disclosures { display: grid; gap: 12px; }
+.leaderboard-page .lb-evaluation-detail {
+  min-width: 0;
+  border: 1px solid var(--lb-line);
+  border-radius: 24px;
+  background: #fff;
+}
+.leaderboard-page .lb-evaluation-detail > summary {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 18px;
+  min-height: 88px;
+  padding: 20px 26px;
+  border-radius: inherit;
+  color: var(--lb-ink);
+  list-style: none;
+  cursor: pointer;
+  transition: background-color .18s, color .18s;
+}
+.leaderboard-page .lb-evaluation-detail > summary::-webkit-details-marker { display: none; }
+.leaderboard-page .lb-evaluation-detail > summary:hover { color: var(--lb-blue); background: #f5f9ff; }
+.leaderboard-page .lb-evaluation-detail > summary:focus-visible { outline: 3px solid #1967d2; outline-offset: 4px; }
+.leaderboard-page .lb-evaluation-detail > summary > span:nth-child(2) { display: grid; gap: 5px; min-width: 0; }
+.leaderboard-page .lb-evaluation-detail > summary strong { font-size: 18px; font-weight: 600; line-height: 1.5; }
+.leaderboard-page .lb-evaluation-detail > summary small { color: var(--lb-muted); font-size: 16px; line-height: 1.6; }
+.leaderboard-page .lb-evaluation-index { color: #4c6d96; font: 14px/1.6 var(--mono); }
+.leaderboard-page .lb-evaluation-toggle { display: grid; place-items: center; width: 28px; height: 28px; color: var(--lb-blue); }
+.leaderboard-page .lb-evaluation-toggle::before { content: '+'; font-size: 25px; font-weight: 400; line-height: 1; }
+.leaderboard-page .lb-evaluation-detail[open] > summary { border-bottom: 1px solid var(--lb-line); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.leaderboard-page .lb-evaluation-detail[open] .lb-evaluation-toggle::before { content: '−'; }
+.leaderboard-page .lb-evaluation-body { min-width: 0; padding: 26px; color: var(--lb-muted); }
+.leaderboard-page .lb-evaluation-body :is(p, li, dd) { font-size: var(--type-body, 18px); line-height: 1.8; }
+.leaderboard-page .lb-evaluation-body p { max-width: 90ch; margin: 0 0 20px; }
+.leaderboard-page .lb-evaluation-body > :last-child { margin-bottom: 0; }
+.leaderboard-page .lb-evaluation-body :is(h3, h4) { color: var(--lb-ink); font-weight: 600; letter-spacing: -.02em; line-height: 1.4; }
+.leaderboard-page .lb-evaluation-body h3 { margin: 0 0 15px; font-size: 23px; }
+.leaderboard-page .lb-evaluation-body a { color: var(--lb-blue); text-underline-offset: 4px; }
+.leaderboard-page .lb-evaluation-body a:hover { text-decoration: underline; }
+.leaderboard-page .lb-evaluation-body a:focus-visible { outline: 3px solid #1967d2; outline-offset: 4px; border-radius: 4px; }
+.leaderboard-page .lb-evaluation-body code { overflow-wrap: anywhere; color: #274f84; font-size: .88em; }
+.leaderboard-page .lb-evaluation-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 25px; margin-block: 25px; }
+.leaderboard-page .lb-evaluation-grid > article { min-width: 0; padding: 0 24px 0 0; border-right: 1px solid var(--lb-line); }
+.leaderboard-page .lb-evaluation-grid > article:last-child { padding-right: 0; border: 0; }
+.leaderboard-page .lb-evaluation-grid article > span { display: block; margin-bottom: 10px; color: #4c6d96; font-size: 14px; line-height: 1.7; }
+.leaderboard-page .lb-evaluation-grid ul { margin: 0; padding-left: 20px; }
+.leaderboard-page .lb-evaluation-grid li { margin-block: 9px; padding-left: 3px; }
+.leaderboard-page .lb-evaluation-scenes { margin-top: 30px; padding-top: 28px; border-top: 1px solid var(--lb-line); }
+.leaderboard-page .lb-evaluation-scene-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-block: 24px; }
+.leaderboard-page .lb-evaluation-scene-grid figure { min-width: 0; margin: 0; border: 1px solid var(--lb-line); border-radius: 20px; background: #f9fbfe; }
+.leaderboard-page .lb-evaluation-scene-grid img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 19px 19px 0 0; }
+.leaderboard-page .lb-evaluation-scene-grid figcaption { display: grid; gap: 5px; padding: 16px; }
+.leaderboard-page .lb-evaluation-scene-grid figcaption strong { color: var(--lb-ink); font-size: 18px; line-height: 1.5; }
+.leaderboard-page .lb-evaluation-scene-grid figcaption span { font-size: 16px; line-height: 1.6; }
+.leaderboard-page .lb-evaluation-scene-grid figcaption code { font-size: 14px; line-height: 1.7; }
+.leaderboard-page .lb-evaluation-definitions { display: grid; margin: 22px 0 28px; border-top: 1px solid var(--lb-line); }
+.leaderboard-page .lb-evaluation-definitions > div { display: grid; grid-template-columns: minmax(180px, .65fr) minmax(0, 2fr); gap: 20px 32px; padding-block: 22px; border-bottom: 1px solid var(--lb-line); }
+.leaderboard-page .lb-evaluation-definitions dt { color: var(--lb-ink); font-size: 18px; font-weight: 600; line-height: 1.7; }
+.leaderboard-page .lb-evaluation-definitions dd { min-width: 0; margin: 0; }
+.leaderboard-page .lb-evaluation-checklist { display: grid; gap: 19px; padding-left: 24px; margin: 0 0 24px; }
+.leaderboard-page .lb-evaluation-checklist li { padding-left: 8px; }
+.leaderboard-page .lb-evaluation-checklist :is(strong, span) { display: block; }
+.leaderboard-page .lb-evaluation-checklist strong { margin-bottom: 4px; color: var(--lb-ink); font-size: 18px; }
+.leaderboard-page .lb-evaluation-links { display: flex; flex-wrap: wrap; gap: 8px 25px; }
+.leaderboard-page .lb-evaluation-links a { display: inline-flex; align-items: center; min-height: 44px; font-size: 16px; font-weight: 600; }
+.leaderboard-page .lb-evaluation-evidence .lb-evaluation-body > section + section { margin-top: 32px; padding-top: 28px; border-top: 1px solid var(--lb-line); }
+.leaderboard-page .lb-evaluation-evidence .evidence-gallery { margin-top: 24px; }
+.leaderboard-page .lb-evaluation-evidence .evidence-gallery :is(p, a) { font-size: 16px; line-height: 1.7; }
+.leaderboard-page .lb-evaluation-evidence .evidence-gallery h4 { margin: 0 0 8px; font-size: 20px; }
+.leaderboard-page .lb-evaluation-evidence .evidence-gallery a { display: inline-flex; align-items: center; min-height: 44px; }
+.leaderboard-page .lb-evaluation-body pre { max-width: 100%; margin: 20px 0; padding: 22px; border: 1px solid #dce5f1; border-radius: 20px; background: #f4f7fb; overflow: auto; color: #274f84; font-size: 16px; line-height: 1.8; }
+.leaderboard-page .lb-evaluation-body pre code { font-size: inherit; overflow-wrap: normal; }
+.leaderboard-page .lb-evaluation-body .lb-evaluation-note { font-size: 16px; line-height: 1.75; }
+.leaderboard-page .lb-evaluation-notice { padding: 22px; border-left: 3px solid #1967d2; border-radius: 0 18px 18px 0; background: #f5f9ff; }
+.leaderboard-page .lb-evaluation-notice strong { display: block; margin-bottom: 9px; color: var(--lb-ink); font-size: 18px; line-height: 1.6; }
+.leaderboard-page .lb-evaluation-notice p { margin: 0; }
+@media (max-width: 1000px) {
+  .leaderboard-page .lb-evaluation-grid { grid-template-columns: 1fr; gap: 22px; }
+  .leaderboard-page .lb-evaluation-grid > article { padding: 0 0 22px; border-right: 0; border-bottom: 1px solid var(--lb-line); }
+  .leaderboard-page .lb-evaluation-grid > article:last-child { padding-bottom: 0; }
+}
+@media (max-width: 760px) {
+  .leaderboard-page .lb-evaluation { margin-block: 34px; }
+  .leaderboard-page .lb-evaluation-detail { border-radius: 20px; }
+  .leaderboard-page .lb-evaluation-detail > summary { grid-template-columns: 22px minmax(0, 1fr) 24px; gap: 11px; padding: 18px 16px; }
+  .leaderboard-page .lb-evaluation-detail > summary strong { font-size: 17px; }
+  .leaderboard-page .lb-evaluation-body { padding: 21px 17px; }
+  .leaderboard-page .lb-evaluation-body h3 { font-size: 21px; }
+  .leaderboard-page .lb-evaluation-scene-grid { grid-template-columns: 1fr; }
+  .leaderboard-page .lb-evaluation-definitions > div { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .leaderboard-page .lb-evaluation-body pre { padding: 16px; font-size: 14px; }
+  .leaderboard-page .lb-evaluation-notice { padding: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaderboard-page .lb-evaluation-detail > summary { transition: none; }
+}
