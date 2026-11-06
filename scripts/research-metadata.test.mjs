@@ -119,12 +119,40 @@ test('The paper title has a scoped, centered and fluid measure without shrinking
   assert.match(declarations, /text-wrap\s*:\s*balance\s*;/, 'Browsers can balance title lines without hardcoded breaks');
   const scale = declarations.match(/font-size\s*:\s*clamp\(\s*([\d.]+)px\s*,\s*[\d.]+vw\s*,\s*([\d.]+)px\s*\)/);
   assert(scale, 'The heading scales fluidly between phone and desktop sizes');
-  assert(Number(scale[1]) >= 28, 'The phone title remains at least 28px for readability');
+  assert(Number(scale[1]) >= 24, 'The phone title remains at least 24px with a readable multi-line measure');
   assert(Number(scale[2]) > Number(scale[1]), 'The desktop title has a stronger visual hierarchy');
+  assert.equal(Number(scale[2]), 32, 'The paper masthead uses a restrained 32px desktop title instead of competing with the carousel');
+  assert.match(declarations, /font-family\s*:\s*["']Google Sans Flex["']\s*,/, 'The paper title uses the same locally hosted editorial face as the carousel');
+  assert.match(declarations, /font-weight\s*:\s*600\s*;/, 'The title has a clear semibold weight rather than a heavy display treatment');
+  const lineHeight = Number(declarations.match(/line-height\s*:\s*([\d.]+)\s*;/)?.[1]);
+  assert(lineHeight >= 1.2 && lineHeight <= 1.35, 'Wrapped paper-title lines retain comfortable separation');
+  const tracking = Number(declarations.match(/letter-spacing\s*:\s*(-?[\d.]+)em\s*;/)?.[1]);
+  assert(tracking >= -.025 && tracking <= 0, 'Paper-title tracking is restrained and does not crowd the letterforms');
+  const measure = Number(declarations.match(/max-width\s*:\s*([\d.]+)px\s*;/)?.[1]);
+  assert(measure >= 880 && measure <= 1040, 'The paper title keeps a centered editorial-width measure');
   const wrappers = [...css.matchAll(/\.home-research\s+#home-research-title\s*\{([^{}]*)\}/g)].map(([, rule]) => rule);
   assert(wrappers.some(rule => /width\s*:\s*100%/.test(rule) && /min-width\s*:\s*0/.test(rule)), 'The title row can use all available space and shrink within its parent');
-  assert(wrappers.every(rule => /padding\s*:\s*\d+px\s+0\s+(?:2[8-9]|[3-9]\d)px\s*;/.test(rule)), 'Desktop and phone title rows retain breathing room before the authors');
+  assert(wrappers.every(rule => /padding\s*:\s*(?:0|\d+px)\s+0\s+(?:2[8-9]|[3-9]\d)px\s*;/.test(rule)), 'Desktop and phone title rows retain breathing room before the authors');
   assert.match(css, /\.home-research\s+\.author-list\s*\{[^}]*flex-direction\s*:\s*row\b[^}]*flex-wrap\s*:\s*wrap\b/, 'The title-only refinement preserves the horizontal, wrapping author list');
+});
+
+test('The research and carousel headline face is self-hosted with its redistribution license', async () => {
+  const css = await read('src/carousel.css');
+  const fontFaces = [...css.matchAll(/@font-face\s*\{([^}]*)\}/g)].map(([, declarations]) => declarations);
+  const localFace = fontFaces.filter(declarations => /font-family\s*:\s*["']Google Sans Flex["']\s*;/.test(declarations));
+  assert.equal(localFace.length, 1, 'The shared headline face is declared once');
+  assert.match(localFace[0], /src\s*:\s*url\(["']?\/assets\/fonts\/google-sans-flex\.woff2["']?\)\s*format\(["']woff2["']\)/, 'Headlines do not depend on a third-party font request');
+  assert.match(localFace[0], /font-display\s*:\s*swap\s*(?:;|$)/, 'Headline text remains readable while the local font loads');
+  assert.match(localFace[0], /font-style\s*:\s*normal\s*;/);
+  const weights = localFace[0].match(/font-weight\s*:\s*(\d+)\s+(\d+)\s*;/);
+  assert(weights && Number(weights[1]) <= 100 && Number(weights[2]) >= 600, 'The variable-face declaration supports the semibold title weight');
+  const font = await readFile(new URL('dist/assets/fonts/google-sans-flex.woff2', root));
+  assert.equal(font.subarray(0, 4).toString('ascii'), 'wOF2', 'The hosted font asset is an actual WOFF2 file');
+  assert(font.length > 10000, 'The font asset is not an empty or placeholder file');
+  const license = await read('dist/assets/fonts/google-sans-flex-LICENSE.txt');
+  assert(license.length > 200, 'The checked-in font includes its full redistribution notice');
+  assert.match(license, /license|copyright/i);
+  assert.doesNotMatch(license, /<!doctype\s+html|<html/i, 'The license asset is text rather than an upstream error page');
 });
 
 test('All authors and full institutional identities retain their original visible order and working links', async () => {

@@ -215,6 +215,7 @@ function layout({title,description,active,body,pageClass=""}) {
     <link rel="preload" href="/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/oxanium.woff2" as="font" type="font/woff2" crossorigin>
+    ${pageClass==="home-page"?'<link rel="preload" href="/assets/fonts/google-sans-flex.woff2" as="font" type="font/woff2" crossorigin>':''}
     <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/layout.css">${["paper-page","home-page"].includes(pageClass)?'<link rel="stylesheet" href="/assets/paper.css">':""}<link rel="stylesheet" href="/assets/refinement.css">${pageClass==="report-page"?'<link rel="stylesheet" href="/assets/report.css">':""}${pageClass==="home-page"?'<link rel="stylesheet" href="/assets/carousel.css"><link rel="stylesheet" href="/assets/homepage.css">':""}<link rel="stylesheet" href="/assets/footer.css">${pageClass==="docs-page"?'<link rel="stylesheet" href="/assets/docs.css">':""}${pageClass==="leaderboard-body"?'<link rel="stylesheet" href="/assets/leaderboard.css"><link rel="stylesheet" href="/assets/leaderboard-evaluation.css">':""}<link rel="stylesheet" href="/assets/surfaces.css"><link rel="stylesheet" href="/assets/navigation.css"><script src="/assets/navigation.js" defer></script><script src="/assets/site.js" defer></script>${pageClass==="leaderboard-body"?'<script src="/assets/leaderboard.js" defer></script><script src="/assets/leaderboard-evaluation.js" defer></script>':""}${pageClass==="docs-page"?'<script src="/assets/docs.js" defer></script>':""}${pageClass==="home-page"?'<script src="/assets/homepage.js" defer></script>':""}
     <link rel="stylesheet" href="/assets/readability.css">
   </head><body class="${pageClass}">${header(active)}<main>${body}</main>${footer()}<div class="route-progress" aria-hidden="true"></div></body></html>`);
@@ -258,10 +259,9 @@ const homeBody = `
           </div>
         </div>
         <div class="cover-scrim"></div><div class="cover-copy">
-          <span class="cover-kicker">Long-horizon dexterous manipulation</span>
-          <h1>DexArena</h1><h2>Dexterity over long horizons.</h2>
-          <p>Execute precise skills, generalize across scenes, and compose behavior into complete bimanual tasks.</p>
-          ${arrowLink("#overview","Discover the research","on-dark")}
+          <span class="cover-kicker">DexArena benchmark</span>
+          <h1>DexArena</h1><h2 class="cover-subtitle">Dexterity over long horizons.</h2>
+          ${arrowLink("#overview","Explore benchmark","on-dark")}
         </div>
       </div>
     </article>
@@ -269,11 +269,10 @@ const homeBody = `
       <div class="cover-card cover-card--scene">
         <img src="/assets/media/cabinet-scene.png" alt="DexArena cabinet task rendered in a RoboCasa scene">
         <div class="cover-scrim"></div><div class="cover-copy">
-          <span class="cover-kicker">Cross-scene evaluation · 90 combinations</span>
-          <p class="cover-title">Same skill.<br>New scene.</p>
-          <h2>Change the scene. Keep the task.</h2>
-          <p>Evaluate all 30 canonical stages on three native scene surfaces with fixed policy cameras.</p>
-          ${arrowLink("/leaderboard/#evaluation-scenes","Explore generalization","on-dark")}
+          <span class="cover-kicker">Cross-scene generalization</span>
+          <h2 class="cover-title">Same skill.<br>New scene.</h2>
+          <p class="cover-subtitle">30 stages. Three scenes.</p>
+          ${arrowLink("/leaderboard/#evaluation-scenes","Explore scenes","on-dark")}
         </div>
       </div>
     </article>
@@ -281,10 +280,10 @@ const homeBody = `
       <div class="cover-card cover-card--task">
         <img src="/assets/media/package-scene.png" alt="Two dexterous hands opening a package and retrieving an apple in a native kitchen scene">
         <div class="cover-scrim"></div><div class="cover-copy">
-          <span class="cover-kicker">Featured task · Bimanual dexterity</span>
-          <p class="cover-title">Two hands.<br>One task.</p><h2>Open the package. Retrieve the apple.</h2>
-          <p>Coordinate both hands to open the flaps, then grasp and place the apple: two connected stages with physical success conditions.</p>
-          ${arrowLink("/tasks/package-opening/","Explore Package Opening","on-dark")}
+          <span class="cover-kicker">Bimanual manipulation</span>
+          <h2 class="cover-title">Two hands.<br>One task.</h2>
+          <p class="cover-subtitle">Open the box. Retrieve the apple.</p>
+          ${arrowLink("/tasks/package-opening/","Explore task","on-dark")}
         </div>
       </div>
     </article>
