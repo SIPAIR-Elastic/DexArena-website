@@ -74,11 +74,11 @@ const tasks = [
   {
     slug:"office-desk", title:"Office Desk", eyebrow:"Office · 3 stages", cover:13,
     longEnv:"DualSharpaOfficeDeskSequence-v1", horizon:1400, observation:382, action:58, embodiment:"Bimanual Sharpa",
-    summary:"Open a laptop, type PAIR followed by Enter, and complete the sequence with a left mouse click.",
+    summary:"Open a laptop, type the target word followed by Enter, and complete the sequence with a left mouse click.",
     skills:["Open / close","Sequential pressing","Precision click"],
     stages:[
       ["Open laptop","SharpaAngledOpenLaptop-v1","Right","29","600","Open the lid beyond 90°, then maintain at least 85° for four control steps."],
-      ["Type PAIR","SharpaAngledTypeKeyboardAllKeys-v1","Left","29","700","Press and release P, A, I, R and Enter in order using complete key cycles."],
+      ["Type target word","SharpaAngledTypeKeyboardAllKeys-v1","Left","29","700","Press and release P, A, I, R and Enter in order using complete key cycles."],
       ["Click mouse","SharpaAngledClickMouse-v1","Right","29","500","Depress the left button at least 60% while keeping the right button below 35% for three steps."]
     ]
   },

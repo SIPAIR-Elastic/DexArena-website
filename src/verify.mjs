@@ -251,12 +251,10 @@ assert(!report.includes('report-account')&&!report.includes('community-reports')
 assert(!/\bPAIR\b|Shanghai Institute for Physical Artificial Intelligence and Robotics|id="(?:coverage|conferences)"/i.test(report),'Report is limited to benchmark research, without institute publicity or retired sections');
 const paperHtml=await readFile(join(dist,'paper','index.html'),'utf8');
 const citationHtml=await readFile(join(dist,'docs/citation/index.html'),'utf8');
-assert.equal(paperAuthors.length,15);assert.equal(paperAffiliations.length,8);
-assert.deepEqual(paperAffiliations[7],['Shanghai Institute for Physical Artificial Intelligence and Robotics',null,'PAIR'],'PAIR is an additional institution without an invented public URL');
-assert(paperAuthors.every(([,index])=>index>=1&&index<=7),'Do not infer PAIR affiliations for individual authors');
-const pairAffiliation=home.match(/<li id="affiliation-8"[^>]*>([\s\S]*?)<\/li>/)?.[1]||'';
-assert(pairAffiliation.includes('<b>PAIR</b>')&&pairAffiliation.includes(paperAffiliations[7][0]),'Show PAIR acronym and complete supplied English name');
-assert(!/<a\b|<img\b/.test(pairAffiliation),'Render institute text, not an invented official logo or destination');
+assert.equal(paperAuthors.length,15);assert.equal(paperAffiliations.length,7);
+assert(paperAuthors.every(([,index])=>index>=1&&index<=7),'Every author maps to one of the seven universities');
+assert(!home.includes('id="affiliation-8"')&&!home.includes('affiliation--institute'),'The removed institute has no affiliation row');
+assert(!/Shanghai Institute for Physical Artificial Intelligence and Robotics|>PAIR</i.test(home),'No retired institute identity appears in the research record');
 assert.deepEqual(paperAffiliations.slice(0,2).map(([name])=>name),['Shanghai Jiao Tong University','Tsinghua University'],'SJTU and Tsinghua lead the affiliation list');
 const expectedAuthorUniversities=[
   ['Haonan Ping','University of Michigan – Ann Arbor'],
@@ -326,9 +324,9 @@ runInNewContext(js.slice(js.indexOf('const citationButton='),js.indexOf('const d
 });
 await copyButton.handlers.click();
 assert.equal(copiedText,paperBibtex);assert.equal(copyStatus.textContent,'BibTeX copied.');
-assert.equal(universityLogos.length,8);
-assert.equal(universityLogos.filter(Boolean).length,7,'Retain all seven supplied university marks; PAIR is typeset by name');
-assert.deepEqual(universityLogos,['sjtu.png','tsinghua.png','umich.ico','nus.png','penn.svg','ntu.png','stanford.png',null],'Institutional marks follow the affiliation list without inventing an institute logo');
+assert.equal(universityLogos.length,7);
+assert.equal(universityLogos.filter(Boolean).length,7,'Retain all seven supplied university marks');
+assert.deepEqual(universityLogos,['sjtu.png','tsinghua.png','umich.ico','nus.png','penn.svg','ntu.png','stanford.png'],'Institutional marks follow the university-only affiliation list');
 for(const html of [home]){
   assert.equal([...html.matchAll(/class="affiliation-logo /g)].length,7);
   for(const index of [0,1]){

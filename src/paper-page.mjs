@@ -3,7 +3,7 @@ import { docsPublished, paperPublished, paperUrl, paperPdfUrl, codeUrl } from ".
 export const paperTitle = "DexArena: A Unified Benchmark for Long-Horizon Dexterous Manipulation";
 // Preserve author order and actual affiliations; only institution numbering changes.
 export const paperAuthors = [["Haonan Ping",3],["Jianshu Hu",1],["Yimin Wang",3],["Yi Zhu",4],["Pai Liang",5],["Qiyan Jin",6],["Qirui Bao",1],["Ying Qian",7],["Xinyang Ding",1],["Hongfei Qiao",1],["Tianle Xue",1],["Yucheng Bai",1],["Soo Wei Jie",1],["Shuguang Li",2],["Yutong Ban",1]];
-export const paperAffiliations = [["Shanghai Jiao Tong University","https://www.sjtu.edu.cn/","SJTU"],["Tsinghua University","https://www.tsinghua.edu.cn/","Tsinghua"],["University of Michigan – Ann Arbor","https://umich.edu/","UM"],["National University of Singapore","https://www.nus.edu.sg/","NUS"],["University of Pennsylvania","https://www.upenn.edu/","Penn"],["Nanyang Technological University","https://www.ntu.edu.sg/","NTU"],["Stanford University","https://www.stanford.edu/","Stanford"],["Shanghai Institute for Physical Artificial Intelligence and Robotics",null,"PAIR"]];
+export const paperAffiliations = [["Shanghai Jiao Tong University","https://www.sjtu.edu.cn/","SJTU"],["Tsinghua University","https://www.tsinghua.edu.cn/","Tsinghua"],["University of Michigan – Ann Arbor","https://umich.edu/","UM"],["National University of Singapore","https://www.nus.edu.sg/","NUS"],["University of Pennsylvania","https://www.upenn.edu/","Penn"],["Nanyang Technological University","https://www.ntu.edu.sg/","NTU"],["Stanford University","https://www.stanford.edu/","Stanford"]];
 export const paperAbstract = "Long-horizon dexterous manipulation remains a fundamental challenge for robot learning, requiring the composition of multiple skills, precise bimanual coordination, generalizable visual understanding, and robust skill transitions. Yet existing manipulation benchmarks largely emphasize isolated skills or support only a limited range of end-effectors, making these capabilities difficult to evaluate systematically. We introduce DexArena, a benchmark designed to evaluate learning and generalization in long-horizon bimanual dexterous manipulation. DexArena features 10 long-horizon tasks and 30 stage-level tasks spanning diverse household and industrial scenarios. Each long-horizon task is composed of explicitly defined stages with physically grounded success conditions, enabling reliable evaluation of both intermediate progress and end-to-end task completion. A unified benchmark interface and verified human-teleoperated demonstrations enable testing different policy learning algorithms, with standardized simulation configurations, scene randomization, trajectory replay, and task-level evaluation. Through extensive baseline experiments, we identify substantial challenges in precise manipulation, generalization to scene variation, and skill composition. DexArena establishes a challenging and reproducible benchmark for developing robot learning methods that move toward generalizable long-horizon dexterous behavior.";
 export const paperBibtex = `@misc{ping2026dexarena,
   title = {${paperTitle}},
@@ -18,17 +18,15 @@ export const paperBibtex = `@misc{ping2026dexarena,
 `;
 // Display every supplied institutional mark, including SJTU and Tsinghua.
 // Keep identity artwork unmodified; accessible labels and page text stay English.
-export const universityLogos = ["sjtu.png","tsinghua.png","umich.ico","nus.png","penn.svg","ntu.png","stanford.png",null];
-const universitySizes = [[601,160],[557,160],[32,32],[349,160],[563,184],[3006,1079],[192,192],null];
+export const universityLogos = ["sjtu.png","tsinghua.png","umich.ico","nus.png","penn.svg","ntu.png","stanford.png"];
+const universitySizes = [[601,160],[557,160],[32,32],[349,160],[563,184],[3006,1079],[192,192]];
 const escapeHtml = text=>text.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
 
-function renderAffiliation([name,url,shortName],index){
+function renderAffiliation([name,url],index){
   const logo=universityLogos[index],size=universitySizes[index];
   const number=`<sup class="affiliation-number" aria-hidden="true">${index+1}</sup>`;
-  const artwork=logo?`<span class="affiliation-logo-frame ${logo==='penn.svg'?'affiliation-logo-frame--dark':''}"><img class="affiliation-logo ${['umich.ico','stanford.png'].includes(logo)?'affiliation-logo--icon':''}" src="/assets/universities/${logo}" alt="${name} logo" width="${size[0]}" height="${size[1]}" decoding="async"></span>`:`<span class="affiliation-institute-name"><b>${shortName}</b> <span>${name}</span></span>`;
-  // An institute name is supplied, not a verified logo, homepage or author mapping.
-  const entry=url?`<a href="${url}" title="${index+1}. ${name}" aria-label="${index+1}. ${name} official website" target="_blank" rel="noreferrer">${number}${artwork}</a>`:`<div class="affiliation-institute" role="group" aria-label="${index+1}. ${shortName}: ${name}">${number}${artwork}</div>`;
-  return `<li id="affiliation-${index+1}"${url?'':' class="affiliation--institute"'}>${entry}</li>`;
+  const artwork=`<span class="affiliation-logo-frame ${logo==='penn.svg'?'affiliation-logo-frame--dark':''}"><img class="affiliation-logo ${['umich.ico','stanford.png'].includes(logo)?'affiliation-logo--icon':''}" src="/assets/universities/${logo}" alt="${name} logo" width="${size[0]}" height="${size[1]}" decoding="async"></span>`;
+  return `<li id="affiliation-${index+1}"><a href="${url}" title="${index+1}. ${name}" aria-label="${index+1}. ${name} official website" target="_blank" rel="noreferrer">${number}${artwork}</a></li>`;
 }
 const paperUnavailableBody=`
 <section class="section code-preview paper-unavailable" data-paper-unavailable>
@@ -56,7 +54,7 @@ export function renderHomePaperBody() {
         <div><dt>Last revised</dt><dd><time datetime="2026-11-03">3 November 2026</time> · v2</dd></div>
         <div><dt>Status</dt><dd><strong>arXiv preprint</strong> · cs.RO</dd></div>
         <div><dt>Paper</dt><dd class="paper-inline-links"><a href="${paperPdfUrl}" target="_blank" rel="noreferrer">Read PDF ↗</a><a href="${paperUrl}" target="_blank" rel="noreferrer">arXiv:2611.02629 ↗</a><a href="#citation">Citation &amp; BibTeX →</a></dd></div>`:''}
-        <div><dt>Code</dt><dd><a href="${codeUrl}" target="_blank" rel="noreferrer">GitHub · SIPAIR-Elastic/DexArena ↗</a></dd></div>
+        <div><dt>Code</dt><dd><a href="${codeUrl}" target="_blank" rel="noreferrer">GitHub · Benchmark code ↗</a></dd></div>
         <div><dt>Leaderboard</dt><dd><a href="/leaderboard/#lb-results">View benchmark results →</a></dd></div>
         ${paperPublished?`<div><dt>License</dt><dd><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0 ↗</a></dd></div>
         <div><dt>Revisions</dt><dd><a href="${paperUrl}" target="_blank" rel="noreferrer">Version history on arXiv ↗</a></dd></div>
@@ -103,7 +101,7 @@ ${home?`<div class="home-paper-eyebrow"><span>The research behind DexArena</span
     <div><dt>Last revised</dt><dd><time datetime="2026-11-03">3 November 2026</time> · v2</dd></div>
     <div><dt>Status</dt><dd><strong>arXiv preprint</strong> · cs.RO</dd></div>
     <div><dt>Paper</dt><dd class="paper-inline-links"><a href="${paperPdfUrl}" target="_blank" rel="noreferrer">Read PDF ↗</a><a href="${paperUrl}" target="_blank" rel="noreferrer">arXiv:2611.02629 ↗</a><a href="${docsPublished?'/docs/citation/':'#citation'}">Citation &amp; BibTeX →</a></dd></div>
-    <div><dt>Code</dt><dd><a href="${codeUrl}" target="_blank" rel="noreferrer">GitHub · SIPAIR-Elastic/DexArena ↗</a></dd></div>
+    <div><dt>Code</dt><dd><a href="${codeUrl}" target="_blank" rel="noreferrer">GitHub · Benchmark code ↗</a></dd></div>
     <div><dt>Leaderboard</dt><dd><a href="/leaderboard/">View benchmark results →</a></dd></div>
     <div><dt>License</dt><dd><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0 ↗</a></dd></div>
     <div><dt>Revisions</dt><dd><a href="${paperUrl}" target="_blank" rel="noreferrer">Version history on arXiv ↗</a></dd></div>
@@ -111,7 +109,7 @@ ${home?`<div class="home-paper-eyebrow"><span>The research behind DexArena</span
   </dl>
   <div class="paper-release-note"><p><b>Paper and code.</b> Read the latest manuscript on arXiv and follow the public DexArena repository for project updates.</p><a href="${codeUrl}" target="_blank" rel="noreferrer">Explore the repository ↗</a></div>`:`<dl class="paper-metadata">
     <div><dt>Paper</dt><dd><a href="/paper/">Paper ↗</a><p class="paper-note">Not publicly available yet.</p></dd></div>
-    <div><dt>Code</dt><dd><a href="${codeUrl}" target="_blank" rel="noreferrer">GitHub · SIPAIR-Elastic/DexArena ↗</a></dd></div>
+    <div><dt>Code</dt><dd><a href="${codeUrl}" target="_blank" rel="noreferrer">GitHub · Benchmark code ↗</a></dd></div>
     <div><dt>Leaderboard</dt><dd><a href="/leaderboard/">View benchmark results →</a></dd></div>
   </dl>`}
 </section>
