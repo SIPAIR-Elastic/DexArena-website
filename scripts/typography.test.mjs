@@ -18,6 +18,21 @@ function rules(css,selector){
     .map(([, ,body])=>Object.fromEntries([...body.matchAll(/([\w-]+)\s*:\s*([^;]+)(?:;|$)/g)].map(([,property,value])=>[property,value.trim()])));
 }
 
+function mediaBlocks(css){
+  const source=css.replace(/\/\*[\s\S]*?\*\//g,'');
+  return [...source.matchAll(/@media\s*([^{}]+)\{/g)].map(match=>{
+    const start=match.index+match[0].length;
+    let end=start,depth=1;
+    while(end<source.length&&depth){
+      if(source[end]==='{')depth++;
+      else if(source[end]==='}')depth--;
+      end++;
+    }
+    assert.equal(depth,0,'Responsive typography media blocks remain balanced');
+    return {query:match[1].replace(/\s+/g,''),body:source.slice(start,end-1)};
+  });
+}
+
 function fontSizes(css,selector){
   const sizes=rules(css,selector).flatMap(rule=>{
     const value=rule['font-size']??rule.font;
@@ -51,8 +66,8 @@ test('The three carousel messages have one clear headline, a short support line 
   assert.equal(slides.length,3,'The carousel retains all three original slides');
   const expected=[
     ['DexArena benchmark','DexArena','Dexterity over long horizons.','Explore benchmark','#overview'],
-    ['Visual generalization','Measure transfer.','30 stages × 3 held-out scenes.','Explore evaluation','/leaderboard/#evaluation-scenes'],
-    ['Skill composition','Beyond single skills.','10 long-horizon tasks. Physically grounded success checks.','Explore tasks','/tasks/']
+    ['Visual generalization','Measure Transfer','30 stages × 3 held-out scenes.','Explore evaluation','/leaderboard/#evaluation-scenes'],
+    ['Skill composition','Beyond Single Skills','10 long-horizon tasks. Physically grounded success checks.','Explore tasks','/tasks/']
   ];
   slides.forEach((slide,index)=>{
     const copy=slide.match(/<div class="cover-copy">([\s\S]*?)<\/div>/)?.[1];
@@ -63,6 +78,10 @@ test('The three carousel messages have one clear headline, a short support line 
     assert.equal(headlines.length,1,`Slide ${index+1} has one primary heading rather than competing display titles`);
     assert.equal(headlines[0][1],index===0?'h1':'h2','Carousel titles retain meaningful document heading levels');
     assert.equal(plainText(headlines[0][3]),title);
+    if(index>0){
+      assert.doesNotMatch(headlines[0][3],/<br\b/i,'Secondary titles have no authored line break');
+      assert.doesNotMatch(plainText(headlines[0][3]),/[.!?]$/,'Secondary titles read as headings, not punctuated sentences');
+    }
     const supportlines=[...copy.matchAll(/<(h2|p)\b[^>]*\bclass="[^"]*\bcover-subtitle\b[^"]*"[^>]*>([\s\S]*?)<\/\1>/g)];
     assert.equal(supportlines.length,1,`Slide ${index+1} has only one supporting line`);
     assert.equal(plainText(supportlines[0][2]),support);
@@ -117,11 +136,46 @@ test('Carousel messages are vertically centered with a larger responsive display
   const secondaryScales=displayScale('.cover .cover-copy .cover-title');
   assert(brandScales.length&&secondaryScales.length,'All carousel titles have an explicit responsive display scale');
   assert(brandScales[0].minimum>=72&&brandScales[0].maximum>=140,'DexArena has the larger requested desktop title scale');
-  assert(secondaryScales.at(1)?.minimum>=64&&secondaryScales.at(1)?.maximum>=112,'Secondary slide titles use the larger desktop scale');
-  for(const scale of [...brandScales,...secondaryScales])assert(scale.minimum>=40,'Every mobile or short-screen title remains at least 40px');
+  assert.deepEqual(secondaryScales.at(1),{minimum:56,maximum:112},'Secondary titles use a deliberate single-line desktop scale');
+  assert(secondaryScales.some(scale=>scale.minimum===56&&scale.maximum===100),'Short laptop windows retain a readable single-line heading scale');
+  assert.deepEqual(secondaryScales.at(-1),{minimum:25,maximum:52},'Phone headings can fit a single line without reducing supporting text');
+  for(const scale of brandScales)assert(scale.minimum>=40,'The introduction title keeps its larger mobile and short-screen size');
+  for(const scale of secondaryScales)assert(scale.minimum>=25,'Every secondary title remains at least 25px on the narrowest supported phones');
   assert(rules(carousel,'.cover .cover-card--benchmark .cover-kicker').some(rule=>rule.margin==='18px 0 0'),'The middle benchmark label has deliberate spacing beneath DexArena, including on cloned slides');
   assert(!rules(readability,'body .cover .cover-kicker').some(rule=>rule['font-size']),'The generic readability layer cannot shrink component-authored carousel labels');
   assert(rules(carousel,'.cover .cover-mosaic__item:last-child span').some(rule=>rule.top==='auto'&&Number.parseFloat(rule.bottom)>=18),'The lower mobile video label stays below the centered message, not across its subtitle');
+});
+
+test('Secondary carousel titles stay on one line without clipping or text scrolling',()=>{
+  const titleRules=rules(carousel,'.cover .cover-copy .cover-title');
+  for(const property of ['white-space','text-wrap']){
+    assert.equal(titleRules.filter(rule=>rule[property]).at(-1)?.[property],'nowrap',`Secondary titles preserve the requested single-line ${property} treatment`);
+  }
+  for(const selector of ['.cover .cover-copy','.cover .cover-copy .cover-title']){
+    for(const rule of rules(carousel,selector)){
+      for(const property of ['overflow','overflow-x'])assert(!['hidden','clip','scroll','auto'].includes(rule[property]),`${selector}: text does not depend on clipping or horizontal scrolling`);
+      assert.notEqual(rule['text-overflow'],'ellipsis',`${selector}: the complete benchmark title is visible`);
+    }
+  }
+});
+
+test('The composition support line is single-line on desktop and remains naturally readable on phones',()=>{
+  const selector='.cover .cover-card--task .cover-subtitle';
+  const blocks=mediaBlocks(carousel);
+  const desktop=blocks.filter(block=>block.query==='(min-width:761px)').flatMap(block=>rules(block.body,selector));
+  assert.equal(desktop.length,1,'The composition caption has one desktop-only layout rule');
+  assert.equal(desktop[0]['max-width'],'100%','Desktop captions use the full available copy width');
+  assert.equal(desktop[0]['white-space'],'nowrap','The complete composition description stays on one desktop line');
+  assert.equal(desktop[0]['text-wrap'],'nowrap','Balanced text wrapping cannot split the desktop description');
+  assert.deepEqual(rules(carousel,selector),desktop,'The composition caption does not acquire a global nowrap override');
+  for(const block of blocks.filter(block=>/max-width:/.test(block.query))){
+    for(const candidate of [selector,'.cover .cover-copy .cover-subtitle']){
+      for(const rule of rules(block.body,candidate)){
+        assert.notEqual(rule['white-space'],'nowrap','Phone descriptions can wrap naturally at their authored readable size');
+        assert.notEqual(rule['text-wrap'],'nowrap','Phone descriptions are not forced into a tiny single line');
+      }
+    }
+  }
 });
 
 test('All carousel support lines share one legible scale without paragraph-layer overrides',()=>{

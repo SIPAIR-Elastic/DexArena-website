@@ -271,7 +271,7 @@ const homeBody = `
         <img src="/assets/media/cabinet-scene.png" alt="DexArena cabinet task rendered in a RoboCasa scene">
         <div class="cover-scrim"></div><div class="cover-copy">
           <span class="cover-kicker">Visual generalization</span>
-          <h2 class="cover-title">Measure<br>transfer.</h2>
+          <h2 class="cover-title">Measure Transfer</h2>
           <p class="cover-subtitle">30 stages × 3 held-out scenes.</p>
           ${arrowLink("/leaderboard/#evaluation-scenes","Explore evaluation","on-dark")}
         </div>
@@ -282,7 +282,7 @@ const homeBody = `
         <img src="/assets/media/package-scene.png" alt="Two dexterous hands opening a package and retrieving an apple in a native kitchen scene">
         <div class="cover-scrim"></div><div class="cover-copy">
           <span class="cover-kicker">Skill composition</span>
-          <h2 class="cover-title">Beyond<br>single skills.</h2>
+          <h2 class="cover-title">Beyond Single Skills</h2>
           <p class="cover-subtitle">10 long-horizon tasks. Physically grounded success checks.</p>
           ${arrowLink("/tasks/","Explore tasks","on-dark")}
         </div>
