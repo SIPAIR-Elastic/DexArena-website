@@ -1,18 +1,9 @@
 {
-  "checked_at": "2026-10-14",
-  "editorial_policy": "English editorial titles and concise summaries; source-language labels on all non-English external publications. Institute announcements, media coverage, benchmark technical notes and verified events are separate. No claim that media coverage independently evaluates DexArena.",
-  "institute_identity": {
-    "display": "Shanghai Institute for Physical Artificial Intelligence and Robotics (PAIR)",
-    "english_name_reference": "https://cn.linkedin.com/in/wei-jie-soo-291921234",
-    "note": "English institutional name in a researcher profile. Institute announcements and independently attributed media reports are cited through their publication websites."
-  },
-  "coverage_sources": [
-    {"id":"quantum-ai","primary":"https://www.mittrchina.com/news/detail/17087","coverage_date":"2026-10-13","date_evidence":"https://kandian.sina.cn/article_1738690784_67a250e001901nrjq.html","relationship":"Media coverage of a PAIR-hosted conference"},
-    {"id":"quantum-frontiers","primary":"https://www.mittrchina.com/news/detail/17084","coverage_date":"2026-10-12","date_evidence":"https://finance.sina.cn/stock/jdts/2026-10-12/detail-iniuytpc8365996.d.html","relationship":"Media coverage of a PAIR keynote"},
-    {"id":"science-infrastructure","primary":"https://www.mittrchina.com/news/detail/17065","coverage_date":"2026-10-08","date_evidence":"https://bydrug.pharmcube.com/news/detail/be880f36af9af4996bd4484e3aa1c7cb"},
-    {"id":"pair-announcement","primary":"https://www.jfdaily.com/sgh/detail?id=4045653","coverage_date":"2026-08-27","relationship":"Article explicitly attributed to PAIR as a republication"}
-  ],
-  "conference_sources": [
-    {"id":"pair-2026","event_dates":"2026-09-20/2026-09-21","announcement":"https://www.jfdaily.com/sgh/detail?id=4045653","held_evidence":"https://finance.sina.cn/stock/jdts/2026-09-22/detail-inissuif5647857.d.html"}
+  "checked_at": "2026-11-06",
+  "editorial_policy": "Report covers the public benchmark paper, project technical notes and reproducibility resources. Technical notes are not separate publications, and no independent evaluation is claimed without a published study.",
+  "research_sources": [
+    {"id":"dexarena-paper","record":"https://arxiv.org/abs/2611.02629","pdf":"https://arxiv.org/pdf/2611.02629"},
+    {"id":"benchmark-code","repository":"https://github.com/SIPAIR-Elastic/DexArena"},
+    {"id":"baseline-results","source":"src/paper-results.json","snapshot":"manuscript-baselines-v1","note":"The existing benchmark scores are unchanged."}
   ]
 }

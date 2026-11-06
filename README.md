@@ -50,7 +50,7 @@ composition.
 | 🧩 [Tasks](https://sipair-elastic.github.io/DexArena-website/tasks/) | Ten task sequences, stage definitions and physical success conditions |
 | 📊 [Leaderboard](https://sipair-elastic.github.io/DexArena-website/leaderboard/) | Charts, searchable heatmaps, exact tables, method profiles and downloads |
 | 🧪 [Evaluation](https://sipair-elastic.github.io/DexArena-website/evaluation/) | Evaluation tracks, metrics and reproducibility requirements |
-| 📰 [Report](https://sipair-elastic.github.io/DexArena-website/report/) | Research updates, sourced coverage and conference information |
+| 📰 [Report](https://sipair-elastic.github.io/DexArena-website/report/) | Benchmark research, technical notes and reproducibility resources |
 | 💻 [Code](https://sipair-elastic.github.io/DexArena-website/code/) | Official benchmark repository and issue tracker |
 
 ## Quick start
