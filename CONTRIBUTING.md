@@ -120,7 +120,8 @@ The build checks export structure, and tests verify that the downloadable JSON
 matches the score source. Neither regenerates the result JSON or CSV downloads.
 For an explicitly approved scientific-data update,
 [`src/extract-paper-results.mjs`](src/extract-paper-results.mjs) can import a
-compatible LaTeX manuscript and writes both the source and downloadable exports.
+compatible LaTeX manuscript passed as an explicit path and writes both the source
+and downloadable exports.
 Review the importer and input before running it, then update and review snapshot
 provenance together with the new results. Do not run it for ordinary website edits.
 
@@ -128,6 +129,12 @@ Preserve all reported values, ties and scene standard deviations. A website
 snapshot import date is not an experiment date; an interface update is not a new
 evaluation. Do not describe demonstrations as scored policy rollouts or claim
 checkpoint verification without corresponding evidence.
+
+Keep unpublished editorial records out of public pages, search entries and
+download metadata. A metadata-only privacy correction must preserve every score
+and protocol field, update both source and downloadable JSON, and rebuild the
+release checksum. Retain the original import identifier as plain provenance;
+public source links must point to the current sanitized artifact.
 
 ## Deployment and publication
 

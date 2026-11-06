@@ -1,8 +1,6 @@
 // Paper metadata supplied by the project owner; not taken from the LaTeX template.
 import { docsPublished, paperPublished, paperUrl, paperPdfUrl, codeUrl } from "./publication.mjs";
 export const paperTitle = "DexArena: A Unified Benchmark for Long-Horizon Dexterous Manipulation";
-// Retain the legacy export for existing source consumers; the public record is arXiv.
-export const openReview = paperUrl;
 // Preserve author order and actual affiliations; only institution numbering changes.
 export const paperAuthors = [["Haonan Ping",3],["Jianshu Hu",1],["Yimin Wang",3],["Yi Zhu",4],["Pai Liang",5],["Qiyan Jin",6],["Qirui Bao",1],["Ying Qian",7],["Xinyang Ding",1],["Hongfei Qiao",1],["Tianle Xue",1],["Yucheng Bai",1],["Soo Wei Jie",1],["Shuguang Li",2],["Yutong Ban",1]];
 export const paperAffiliations = [["Shanghai Jiao Tong University","https://www.sjtu.edu.cn/","SJTU"],["Tsinghua University","https://www.tsinghua.edu.cn/","Tsinghua"],["University of Michigan – Ann Arbor","https://umich.edu/","UM"],["National University of Singapore","https://www.nus.edu.sg/","NUS"],["University of Pennsylvania","https://www.upenn.edu/","Penn"],["Nanyang Technological University","https://www.ntu.edu.sg/","NTU"],["Stanford University","https://www.stanford.edu/","Stanford"],["Shanghai Institute for Physical Artificial Intelligence and Robotics",null,"PAIR"]];

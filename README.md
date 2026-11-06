@@ -50,7 +50,7 @@ composition.
 | 🧩 [Tasks](https://sipair-elastic.github.io/DexArena-website/tasks/) | Ten task sequences, stage definitions and physical success conditions |
 | 📊 [Leaderboard](https://sipair-elastic.github.io/DexArena-website/leaderboard/) | Charts, searchable heatmaps, exact tables, method profiles and downloads |
 | 🧪 [Evaluation](https://sipair-elastic.github.io/DexArena-website/evaluation/) | Evaluation tracks, metrics and reproducibility requirements |
-| 📰 [Report](https://sipair-elastic.github.io/DexArena-website/report/) | Research updates, sourced coverage and conference information |
+| 📰 [Report](https://sipair-elastic.github.io/DexArena-website/report/) | Benchmark research, technical notes and reproducibility resources |
 | 💻 [Code](https://sipair-elastic.github.io/DexArena-website/code/) | Official benchmark repository and issue tracker |
 
 ## Quick start
@@ -125,7 +125,7 @@ a Bash-compatible shell.
 
 ## Publication status
 
-- 📄 **Paper:** public [arXiv preprint](https://arxiv.org/abs/2611.02629), not presented as an accepted conference paper. Paper actions open arXiv; `/paper/` is a compatibility redirect.
+- 📄 **Paper:** public [arXiv preprint](https://arxiv.org/abs/2611.02629). Paper actions open arXiv; `/paper/` is a compatibility redirect.
 - 💻 **Code:** links to the [official benchmark repository](https://github.com/SIPAIR-Elastic/DexArena), separate from this website repository.
 - 📚 **Docs:** temporarily hidden from navigation, search and sitemap. Source articles remain available for maintenance; old URLs show a no-index preparation notice.
 - 📊 **Results:** fixed manuscript baselines, not a live community-submission ranking. Submission intake is not open.

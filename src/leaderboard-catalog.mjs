@@ -61,13 +61,14 @@ export const methodCatalog = [
 ];
 
 // This is the first recorded website data artifact, not an experiment timestamp.
-// The source file is byte-identical to the file in this original import commit.
+// Original scores are unchanged; descriptive metadata may receive privacy edits.
+// Link the current sanitized source, not the historical artifact's metadata.
 export const resultSnapshot = {
   id: 'manuscript-baselines-v1',
   sourceRecorded: '2026-10-15',
   sourceRecordedLabel: 'Website data snapshot recorded',
   sourceCommit: '411442196821048611c1172977163bc96f8eaf12',
-  sourceUrl: 'https://github.com/SIPAIR-Elastic/DexArena-website/blob/411442196821048611c1172977163bc96f8eaf12/src/paper-results.json',
+  sourceUrl: 'https://github.com/SIPAIR-Elastic/DexArena-website/blob/main/src/paper-results.json',
   sourcePath: 'src/paper-results.json',
   sourceTables: {
     stage: 'tab:stage-level-tasks-performance',

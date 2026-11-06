@@ -5,7 +5,6 @@ import assert from 'node:assert/strict';
 import {runInNewContext} from 'node:vm';
 import {paperAuthors,paperAffiliations,paperAbstract,paperBibtex,universityLogos} from './paper-page.mjs';
 import {algorithmReferences} from './references.mjs';
-import {reportCoverage,reportConferences} from './report.mjs';
 import {verifyCarousel} from './verify-carousel.mjs';
 import {verifyTaskMedia} from './verify-task-media.mjs';
 import {verifyPresentation} from './verify-presentation.mjs';
@@ -229,21 +228,10 @@ assert(home.includes('id="benchmark-overview"'));
 assert(home.includes('/assets/paper/dexarena-overview.png'));
 const report=await readFile(join(dist,'report','index.html'),'utf8');
 assert(report.includes('report-paper-card')&&!report.includes('data-diversity.png'));
-for(const id of ['research','coverage','conferences','independent-studies'])assert(report.includes(`id="${id}"`));
-assert(report.includes('Full author list')&&report.includes('Under review'));
-assert(report.includes('not an acceptance or a confirmed presentation'));
+for(const id of ['research','independent-studies'])assert(report.includes(`id="${id}"`));
+assert(report.includes('Full author list')&&report.includes('arXiv preprint'));
 assert(!report.includes('report-account')&&!report.includes('community-reports'),'No retired follow/contact panels in Report');
-assert.equal(reportCoverage.length,4);
-assert.equal(reportCoverage.filter(item=>item.type==='institute-reprint').length,1);
-for(const item of reportCoverage){
-  assert.equal(new URL(item.url).protocol,'https:');
-  assert(report.includes(item.url.replaceAll('&','&amp;')));
-  assert(report.includes(`<time datetime="${item.date}">`));
-  assert(!/\p{Script=Han}/u.test(item.title+item.summary+item.byline));
-}
-assert.equal(reportConferences.length,2);
-assert.equal(reportConferences.find(item=>item.id==='iclr-2027').status,'Under review');
-assert.equal(reportConferences.find(item=>item.id==='pair-2026').status,'Held');
+assert(!/\bPAIR\b|Shanghai Institute for Physical Artificial Intelligence and Robotics|id="(?:coverage|conferences)"/i.test(report),'Report is limited to benchmark research, without institute publicity or retired sections');
 const paperHtml=await readFile(join(dist,'paper','index.html'),'utf8');
 const citationHtml=await readFile(join(dist,'docs/citation/index.html'),'utf8');
 assert.equal(paperAuthors.length,15);assert.equal(paperAffiliations.length,8);
@@ -384,4 +372,4 @@ runInNewContext(js.slice(js.indexOf('const textCopyButtons='),js.indexOf('const 
 });
 await textButton.handlers.click();assert(selectedFallback);
 assert(textStatus.textContent.includes('Select and copy')&&!/\p{Script=Han}/u.test(textStatus.textContent));
-console.log(`Verified ${docsPublished?34:18} discoverable English-only pages, ${links} local links/anchors, removed Community route, 4 sourced reports, conference statuses, link-copy success/fallback, paper metadata, palette contrast, search and all 420 task/method scores.`);
+console.log(`Verified ${docsPublished?34:18} discoverable English-only pages, ${links} local links/anchors, removed Community route, research-focused Report, link-copy success/fallback, paper metadata, palette contrast, search and all 420 task/method scores.`);

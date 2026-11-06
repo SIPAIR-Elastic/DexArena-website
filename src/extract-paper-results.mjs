@@ -3,7 +3,8 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const source = process.argv[2] || join(root, '..', '_ICLR_2027__DexArena_Benchmark', 'main.tex');
+const source = process.argv[2];
+if (!source) throw new Error('Usage: node src/extract-paper-results.mjs /absolute/path/to/main.tex');
 const latex = (await readFile(source, 'utf8')).split('\n').map(line => line.replace(/(?<!\\)%.*$/, '')).join('\n').replace(/\\iffalse[\s\S]*?\\fi/g, '');
 const models = ['PPO', 'RLPD', 'ACT', 'Diffusion Policy', 'GR00T', 'π0.5'];
 const families = ['Demo-guided RL', 'Demo-guided RL', 'Imitation learning', 'Imitation learning', 'VLA', 'VLA'];
@@ -34,7 +35,7 @@ function extract(label, count, stage) {
   return { label, rows:data, reportedAverage:average.values, calculatedAverage:calculated };
 }
 const results = {
-  source:'main.tex', sourceDescription:'DexArena ICLR 2027 manuscript source supplied by the benchmark authors',
+  source:'main.tex', sourceDescription:'DexArena benchmark manuscript source supplied by the benchmark authors',
   models:models.map((name,i)=>({name,family:families[i]})),
   protocol:{episodes:50,scenes:3,stageTasks:30,longHorizonTasks:10},
   stage:extract('tab:stage-level-tasks-performance',30,true),

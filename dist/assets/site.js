@@ -343,7 +343,7 @@ if(searchTriggers.length){
     previousFocus=document.activeElement;dialog.showModal();document.body.classList.add("search-open");input.focus();render();
     if(entries)return;
     try{
-      loadPromise ||= fetch("/DexArena-website/assets/search-index.json?v=133d9b71aab1",{cache:"no-store"}).then(response=>{if(!response.ok)throw new Error("Search unavailable");return response.json()});
+      loadPromise ||= fetch("/DexArena-website/assets/search-index.json?v=49c02652696f",{cache:"no-store"}).then(response=>{if(!response.ok)throw new Error("Search unavailable");return response.json()});
       entries=await loadPromise;render();
     }catch{status.textContent="Search could not load. Please use the paper page or the task catalog.";loadPromise=null}
   }

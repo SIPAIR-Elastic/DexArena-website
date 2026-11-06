@@ -48,9 +48,11 @@ test('Result provenance records the original source import without inventing an 
   assert.equal(resultSnapshot.sourceRecorded, '2026-10-15');
   assert.equal(resultSnapshot.sourceRecordedLabel, 'Website data snapshot recorded');
   assert.equal(resultSnapshot.sourceCommit, '411442196821048611c1172977163bc96f8eaf12');
-  assert.equal(resultSnapshot.sourceUrl, `https://github.com/SIPAIR-Elastic/DexArena-website/blob/${resultSnapshot.sourceCommit}/${resultSnapshot.sourcePath}`);
+  assert.equal(resultSnapshot.sourceUrl, `https://github.com/SIPAIR-Elastic/DexArena-website/blob/main/${resultSnapshot.sourcePath}`);
   assert.equal(resultSnapshot.paperUrl, 'https://arxiv.org/abs/2611.02629');
-  assert.equal(createHash('sha256').update(raw).digest('hex'), 'f2b997f0650d70322e9dda65346bd1680de4f61a2262977194f556cdb9b26d60', 'Data remains byte-identical to the original source import');
+  const {sourceDescription, ...scoreData} = paper;
+  assert.equal(createHash('sha256').update(JSON.stringify(scoreData)).digest('hex'), 'cc33244522d78f0c13aa21742418e3bdee9a60b8324cc883164861494c52968b', 'Only descriptive metadata may change; every score, scene deviation, method, protocol and source-table identifier matches the original import');
+  assert.equal(sourceDescription, 'DexArena benchmark manuscript source supplied by the benchmark authors');
   assert.deepEqual(resultSnapshot.sourceTables, Object.fromEntries(['stage', 'generalization', 'longHorizon'].map(id => [id, paper[id].label])));
   assert.equal(resultSnapshot.scoreCount, ['stage', 'generalization', 'longHorizon'].reduce((sum, id) => sum + paper[id].rows.length * paper.models.length, 0));
   assert.match(resultSnapshot.description, /not when the experiments were run/);

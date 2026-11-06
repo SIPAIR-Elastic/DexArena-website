@@ -135,9 +135,13 @@ test('Legacy paper-page links lead directly to the public record or their curren
   }
 });
 
-test('Published historical conference records keep their destination without bypassing withholding',async()=>{
+test('Legacy historical-record markup cannot restore a retired submission link',async()=>{
   const historical='<a href="https://openreview.net/forum?id=9yr0F1saHs" target="_blank" data-historical-record>Submission record</a>';
-  assert.equal(publishContent(historical),historical,'A labeled conference record is not the latest manuscript action');
+  const expected=`<a href="${paperUrl}" target="_blank" data-historical-record>Submission record</a>`;
+  assert.equal(publishContent(historical),expected,'A legacy historical marker must not bypass the canonical public arXiv record');
+  const published=await publicationVariant({docs:true,paper:true});
+  assert.equal(published.publishContent(historical),expected,'Publishing Docs cannot restore an obsolete submission destination');
+  assert.equal(published.publishContent(expected),expected,'The normalized public destination is stable');
   const withheld=await publicationVariant();
   assert.equal(withheld.publishContent(historical),withheld.paperLink,'Historical-link markup cannot bypass an unpublished paper');
 });
