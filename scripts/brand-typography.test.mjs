@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {readFile, readdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {test} from 'node:test';
+import {isRedirectRoute} from '../src/publication.mjs';
 
 const root = new URL('../', import.meta.url);
 const [navigation, refinement, readability, footer, build, release] = await Promise.all([
@@ -103,7 +104,7 @@ test('Every generated shell preloads Oxanium once and retains selectable, access
   let checked = 0;
   for (const file of await htmlFiles('dist')) {
     const html = await readFile(new URL(file, root), 'utf8');
-    if (html.includes('data-paper-redirect')) continue;
+    if (isRedirectRoute('/'+file.replace(/^dist\//,'').replace(/index\.html$/,''))) continue;
     const links = [...html.matchAll(/<link\b[^>]*>/g)].map(([tag]) => attributes(tag));
     const preloads = links.filter(link => link.rel === 'preload' && /(?:^|\/)oxanium\.woff2(?:\?|$)/.test(link.href || ''));
     assert(!links.some(link => link.rel === 'preload' && /(?:^|\/)syne\.woff2(?:\?|$)/.test(link.href || '')), `${file}: the replaced wordmark font is no longer preloaded`);
@@ -118,7 +119,7 @@ test('Every generated shell preloads Oxanium once and retains selectable, access
     assert(!/fonts\.(?:googleapis|gstatic)\.com/i.test(html), `${file}: no runtime font-provider request`);
     checked++;
   }
-  assert(checked >= 34, 'Brand font loading is consistent on all public, nested task and hidden-document shells');
+  assert.equal(checked, 32, 'Brand font loading is consistent on every public, nested task and hidden-document shell; compatibility redirects need no branding');
 });
 
 test('Deployed font URLs follow the Pages project base and the stylesheet introduces no third-party font requests', async () => {

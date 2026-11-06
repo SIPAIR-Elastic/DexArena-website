@@ -3,7 +3,7 @@ import {test} from 'node:test';
 import {readFile,readdir} from 'node:fs/promises';
 import {releaseUrl} from './release-urls.mjs';
 import {githubPagesConfig} from './pages-config.mjs';
-import {docsPublished} from '../src/publication.mjs';
+import {docsPublished,isRedirectRoute} from '../src/publication.mjs';
 
 const config={siteUrl:'https://example.test/DexArena-website/',releaseId:'012345abcdef'};
 test('Same-site page versions preserve existing query and hash across navigation',()=>{
@@ -45,7 +45,7 @@ test('Every generated page, navigation and search entry uses one release while c
       if(url.origin===new URL(siteUrl).origin&&url.pathname.startsWith(basePath)&&/\.(?:css|js)$/.test(url.pathname))assert.equal(url.searchParams.get('v'),release.releaseId,`${file}: current styles and scripts`);
       if(match[0].includes('rel="canonical"'))assert.equal(url.search,'',`${file}: canonical URL has no release query`);
     }
-    if(file!=='paper/index.html')assert(html.includes(`src="${basePath}assets/publication-guard.js?v=${release.releaseId}" defer`),`${file}: history-restoration guard is present`);
+    if(!isRedirectRoute('/'+file.replace(/index\.html$/,'')))assert(html.includes(`src="${basePath}assets/publication-guard.js?v=${release.releaseId}" defer`),`${file}: history-restoration guard is present`);
   }
   const search=JSON.parse(await readFile(new URL('assets/search-index.json',dist),'utf8'));
   assert(search.every(entry=>new URL(entry.url,siteUrl).searchParams.get('v')===release.releaseId));

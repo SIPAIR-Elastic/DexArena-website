@@ -46,10 +46,10 @@ composition.
 
 | Page | What you can find |
 | --- | --- |
-| 🌐 [Project](https://sipair-elastic.github.io/DexArena-website/) | Research overview, authors, affiliations, figures and task previews |
+| 🌐 [Project](https://sipair-elastic.github.io/DexArena-website/) | Concise overview, task previews and research links; expand authors and citation when needed |
 | 🧩 [Tasks](https://sipair-elastic.github.io/DexArena-website/tasks/) | Ten task sequences, stage definitions and physical success conditions |
-| 📊 [Leaderboard](https://sipair-elastic.github.io/DexArena-website/leaderboard/) | Charts, searchable heatmaps, exact tables, method profiles and downloads |
-| 🧪 [Evaluation](https://sipair-elastic.github.io/DexArena-website/evaluation/) | Evaluation tracks, metrics and reproducibility requirements |
+| 📊 [Leaderboard](https://sipair-elastic.github.io/DexArena-website/leaderboard/) | All results, charts, heatmaps, tables, method profiles and downloads |
+| 🧪 [Evaluation guide](https://sipair-elastic.github.io/DexArena-website/leaderboard/#evaluation) | Integrated Leaderboard topics: tracks, metrics, scene settings, protocol and evidence |
 | 📰 [Report](https://sipair-elastic.github.io/DexArena-website/report/) | Benchmark research, technical notes and reproducibility resources |
 | 💻 [Code](https://sipair-elastic.github.io/DexArena-website/code/) | Official benchmark repository and issue tracker |
 
@@ -109,7 +109,9 @@ a Bash-compatible shell.
 | --- | --- |
 | [`src/build.mjs`](src/build.mjs) | Shared page shell, task catalog and page generation |
 | [`src/paper-page.mjs`](src/paper-page.mjs) | Homepage research overview, author information and citation |
+| [`src/homepage.css`](src/homepage.css), [`homepage.js`](src/homepage.js) | Compact homepage layout and native-disclosure deep links |
 | [`src/leaderboard.mjs`](src/leaderboard.mjs) | Result visualizations and tables; companion CSS/JS handle layout and interactions |
+| [`src/leaderboard-evaluation.mjs`](src/leaderboard-evaluation.mjs) | Integrated evaluation guide and evidence, with scoped styles and disclosure behavior |
 | [`src/report.mjs`](src/report.mjs) | Report content, backed by [`report-sources.json`](src/report-sources.json) |
 | [`src/readability.css`](src/readability.css) | Final shared typography layer: 18px body text, 17px on narrow screens, 16px controls and a 14px metadata floor |
 | [`src/publication.mjs`](src/publication.mjs) | Paper/code URLs, documentation visibility and retired-route rules |
@@ -129,6 +131,7 @@ a Bash-compatible shell.
 - 💻 **Code:** links to the [official benchmark repository](https://github.com/SIPAIR-Elastic/DexArena), separate from this website repository.
 - 📚 **Docs:** temporarily hidden from navigation, search and sitemap. Source articles remain available for maintenance; old URLs show a no-index preparation notice.
 - 📊 **Results:** fixed manuscript baselines, not a live community-submission ranking. Submission intake is not open.
+- 🧪 **Evaluation:** lives inside the Leaderboard. Old `/evaluation/` and `/evaluation/evidence/` bookmarks redirect to their matching sections; neither is a standalone navigation or search entry.
 
 The publication switches are in [`src/publication.mjs`](src/publication.mjs).
 Restore hidden content only through an explicitly reviewed release change.

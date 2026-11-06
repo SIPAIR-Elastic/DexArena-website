@@ -9,7 +9,7 @@ import {verifyCarousel} from './verify-carousel.mjs';
 import {verifyTaskMedia} from './verify-task-media.mjs';
 import {verifyPresentation} from './verify-presentation.mjs';
 import {verifyNavigation} from './verify-navigation.mjs';
-import {docsPublished,paperPublished,paperArtifactPaths,paperUrl,paperPdfUrl,codeUrl,isRetiredRoute} from './publication.mjs';
+import {docsPublished,paperPublished,paperArtifactPaths,paperUrl,paperPdfUrl,codeUrl,isRetiredRoute,isRedirectRoute} from './publication.mjs';
 import {brandAssets,brandMark,brandVersion} from './brand.mjs';
 import {createHash} from 'node:crypto';
 
@@ -27,7 +27,7 @@ for(const track of ['stage','generalization','longHorizon']){
 }
 const paths=[];
 async function walk(dir){for(const e of await readdir(dir,{withFileTypes:true})){const p=join(dir,e.name);if(e.isDirectory())await walk(p);else if(e.name.endsWith('.html'))paths.push(p)}}
-await walk(dist);assert.equal(paths.length,35,'34 research/documentation pages plus a legacy paper redirect');
+await walk(dist);assert.equal(paths.length,35,'32 research/documentation pages plus three compatibility redirects');
 await assert.rejects(stat(join(dist,'community/index.html')),error=>error.code==='ENOENT','The retired Community page must be absent from the public build');
 let links=0;
 const navigationCss=await readFile(join(dist,'assets/navigation.css'),'utf8');
@@ -38,6 +38,11 @@ for(const file of paths){
   if(file===join(dist,'paper/index.html')){
     assert(html.includes('data-paper-redirect')&&html.includes(`content="0;url=${paperUrl}"`));
     assert(html.includes('content="noindex, follow"')&&!html.includes('paper-masthead'),'Paper is a redirect, not a separate content page');
+    continue;
+  }
+  if(isRedirectRoute('/'+file.slice(dist.length+1).replace(/index\.html$/,''))){
+    assert(html.includes('data-evaluation-redirect')&&html.includes('content="noindex, follow"'),'Former evaluation pages are only compatibility redirects');
+    assert(html.includes('href="/leaderboard/#evaluation'),'Redirects link to the matching migrated Leaderboard section');
     continue;
   }
   verifyNavigation({html,css:navigationCss,js:navigationJs});
@@ -138,10 +143,11 @@ viewButtons[2].handlers.click();assert(views.filter(v=>!v.hidden).every(v=>v.dat
 assert.equal([...leaderboard.matchAll(/data-result-view=/g)].length,9);
 assert.equal([...leaderboard.matchAll(/class="chart-track"/g)].length,18);
 const searchIndex=JSON.parse(await readFile(join(dist,'assets','search-index.json'),'utf8'));
-assert.equal(searchIndex.length,docsPublished?34:18);
-assert.equal(new Set(searchIndex.map(entry=>entry.url)).size,docsPublished?34:18);
+assert.equal(searchIndex.length,docsPublished?32:16);
+assert.equal(new Set(searchIndex.map(entry=>entry.url)).size,docsPublished?32:16);
 assert(!searchIndex.some(entry=>entry.url==='/paper/'),'A compatibility redirect is not a search result');
 assert(searchIndex.every(entry=>!isRetiredRoute(entry.url)),'The deleted Community page is excluded from search');
+assert(searchIndex.every(entry=>!isRedirectRoute(entry.url)),'Compatibility redirects are excluded from search');
 assert(!/wechat|weixin\.qq\.com|gh_[a-z\d]{10,}/i.test(JSON.stringify(searchIndex)),'Search contains no removed social-account content');
 assert(searchIndex.some(entry=>entry.url==='/code/'&&entry.text.includes('public repository')),'The public Code page is searchable');
 if(!paperPublished){
@@ -163,11 +169,10 @@ const carouselStyle=await readFile(join(dist,'assets/carousel.css'),'utf8');
 assert(carouselStyle.includes('.cover .cover-mosaic{inset:0;')&&/\.cover \.cover-copy\{[^}]*background:none[^}]*backdrop-filter:none/.test(carouselStyle),'Keep full-frame imagery and text without a caption box');
 assert(/\.cover \.cover-dots button\.active\{width:20px;background:#202124\}/.test(carouselStyle),'Reference-style active capsule');
 assert.equal([...home.matchAll(/data-dot="\d"[^>]*><\/button>/g)].length,3,'Pagination is dots, not numbered buttons');
-verifyPresentation({home,evaluation:await readFile(join(dist,'evaluation/index.html'),'utf8'),paper:data,js:await readFile(join(root,'src/experience.js'),'utf8')});
+verifyPresentation({home,leaderboard,paper:data,js:await readFile(join(root,'src/experience.js'),'utf8')});
 assert(home.includes('class="carousel-arrow carousel-arrow--prev"')&&home.includes('class="carousel-arrow carousel-arrow--next"'));
 const carouselMarkup=home.slice(home.indexOf('<section class="cover"'),home.indexOf('<div class="home-paper"'));
 assert.equal([...carouselMarkup.matchAll(/<svg viewBox="0 0 24 24" aria-hidden="true">/g)].length,2);
-assert(home.includes('/assets/media/manus-metagloves-pro.png')&&home.includes('Official product image'));
 assert((await stat(join(dist,'assets/media/manus-metagloves-pro.png'))).size>0);
 const docsOverview=await readFile(join(dist,'docs/index.html'),'utf8');
 const training=await readFile(join(dist,'docs/training/index.html'),'utf8');
@@ -211,8 +216,8 @@ assert.equal(replayRender.scene_background,'robocasa_l3_s1');
 assert.equal(replayRender.recorded_final_success,true);
 assert(replayRender.restore_errors.every(v=>v.max_abs<1e-6));
 assert(replayRender.native_scene_checks.every(v=>Math.abs(v.height_error_m)<=.001&&v.robot_clearance_m>=.005));
-assert(home.includes('poster="/assets/media/hero-scene-replay.jpg"'));
-assert(home.includes('src="/assets/media/hero-scene-replay.mp4"'));
+assert((await stat(join(dist,'assets/media/hero-scene-replay.jpg'))).size>0);
+assert((await stat(join(dist,'assets/media/hero-scene-replay.mp4'))).size>0);
 assert.equal(replayRender.rendered_frames,replayRender.frame_count+20);
 assert.equal(sceneRenders.length,3);
 for(const render of sceneRenders){
@@ -281,7 +286,7 @@ for(const html of [home,citationHtml]){
 }
 if(paperPublished){
   for(const id of ['abstract','citation'])assert(home.includes(`id="${id}"`));
-  assert(home.includes(paperAbstract),'Retain the public research overview on the homepage');
+  assert(!home.includes(paperAbstract)&&!home.includes('class="section paper-abstract"'),'The homepage uses a concise project overview, not a duplicate abstract');
   if(docsPublished)assert(citationHtml.includes('id="paper-bibtex"')&&citationHtml.includes('data-copy-citation'),'Citation tools live in Docs');
   else{
     assert(citationHtml.includes('data-docs-unavailable')&&!citationHtml.includes('id="paper-bibtex"'),'The old citation URL must not expose withheld Docs');
@@ -372,4 +377,4 @@ runInNewContext(js.slice(js.indexOf('const textCopyButtons='),js.indexOf('const 
 });
 await textButton.handlers.click();assert(selectedFallback);
 assert(textStatus.textContent.includes('Select and copy')&&!/\p{Script=Han}/u.test(textStatus.textContent));
-console.log(`Verified ${docsPublished?34:18} discoverable English-only pages, ${links} local links/anchors, removed Community route, research-focused Report, link-copy success/fallback, paper metadata, palette contrast, search and all 420 task/method scores.`);
+console.log(`Verified ${docsPublished?32:16} discoverable English-only pages, ${links} local links/anchors, consolidated evaluation/results, research-focused Report, link-copy success/fallback, paper metadata, palette contrast, search and all 420 task/method scores.`);

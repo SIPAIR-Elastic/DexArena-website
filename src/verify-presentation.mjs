@@ -61,25 +61,10 @@ function verifyScope(home){
   for(const [name,value] of [['sequences','10'],['stages','30'],['episodes','3,000'],['combinations','90']]){
     assert(home.includes(`data-scope-value="${name}">${value}</dd>`),`Scale value ${name} must be server-rendered and correct`);
   }
-  const groups=home.match(/<div class="scope-stage-groups">([\s\S]*?)<\/div><p>/)?.[1];
-  assert(groups,'Include the sequence-to-stage map');
-  const taskLinks=[...groups.matchAll(/<a\b[^>]*href="(\/tasks\/[^/]+\/)"[^>]*>[\s\S]*?<\/a>/g)];
-  assert.equal(taskLinks.length,10,'Link every complete task from the architecture map');
-  assert.equal(new Set(taskLinks.map(match=>match[1])).size,10,'Architecture map links must identify ten distinct tasks');
-  assert.equal([...groups.matchAll(/<b><\/b>/g)].length,30,'Represent each canonical stage exactly once');
-  for(const [index,task] of taskLinks.entries()){
-    const segments=[...task[0].matchAll(/<b><\/b>/g)].length;
-    assert(segments>=2&&segments<=5,'Each sequence contains two to five stages');
-    assert(task[0].includes(`>${String(index+1).padStart(2,'0')}</span>`),'Task map numbers remain ordered');
-    assert(task[0].includes(`: ${segments} stages"`),'Accessible task labels match stage segments');
-  }
-  const matrix=home.match(/<figure class="scope-scene-matrix"[^>]*>([\s\S]*?)<\/figure>/)?.[1];
-  assert(matrix,'Include the scene-stage coverage matrix');
-  assert.equal([...matrix.matchAll(/<b><\/b>/g)].length,90,'Show the complete 30 × 3 coverage matrix');
-  assert.equal([...matrix.matchAll(/class="scope-scene-row /g)].length,3,'Show three native kitchen rows');
-  for(const name of ['Blue stone','Light wood','Warm wood'])assert(matrix.includes(name));
-  if(docsPublished)assert(home.includes('href="/docs/data/"')&&home.includes('href="/docs/randomization/"'),'Expose data and scene protocols');
-  else assert(!/href="\/docs\//.test(home),'Do not expose unpublished documentation');
+  assert(home.includes('class="home-scale-facts"'),'Keep the benchmark scale as a concise four-fact strip');
+  assert(!home.includes('class="scope-stage-map"')&&!home.includes('class="scope-scene-matrix"'),'Detailed architecture diagrams no longer crowd the homepage');
+  for(const target of ['/tasks/','#data-pipeline','/leaderboard/#evaluation-scenes'])assert(home.includes(`href="${target}"`),'Each scope fact leads to the relevant detail');
+  if(!docsPublished)assert(!/href="\/docs\//.test(home),'Do not expose unpublished documentation');
 }
 
 function verifyEnhancement(js){
@@ -140,10 +125,12 @@ function verifyEnhancement(js){
   assert.doesNotThrow(()=>runInNewContext(js,{document:{querySelectorAll:()=>[]}}),'The script is safe on pages without findings');
 }
 
-export function verifyPresentation({home,evaluation,paper,js}){
-  verifyDocument(home,'Home');verifyDocument(evaluation,'Evaluation');
+export function verifyPresentation({home,leaderboard,paper,js}){
+  verifyDocument(home,'Home');verifyDocument(leaderboard,'Leaderboard');
   verifyScope(home);
-  verifyDigest(home,paper,'Home');verifyDigest(evaluation,paper,'Evaluation');
+  assert(!/data-findings|data-finding-panel|data-result-panel/.test(home),'Quantitative comparisons belong on Leaderboard only');
+  for(const id of tracks)assert(leaderboard.includes(`id="results-${id}"`),'All original result tracks remain available on Leaderboard');
+  for(const id of ['evaluation','evaluation-metrics','evaluation-record','evaluation-evidence'])assert(leaderboard.includes(`id="${id}"`),'Evaluation and evidence are integrated with the results');
   verifyEnhancement(js);
   // Verify that the presentation consumes result data rather than frozen HTML scores.
   const altered=structuredClone(paper);

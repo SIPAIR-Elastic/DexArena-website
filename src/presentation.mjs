@@ -3,18 +3,13 @@ const html=value=>String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').r
 export function benchmarkScope(tasks,protocol){
   const stages=tasks.reduce((sum,task)=>sum+task.stages.length,0);
   const scenes=protocol.scenes,episodes=stages*100;
-  return `<section class="benchmark-scope section" id="benchmark-scale" aria-labelledby="scope-title">
-    <div class="scope-heading"><div><span class="editorial-label">Benchmark architecture</span><h2 id="scope-title">Every stage has a place<br>in a larger task.</h2></div><p>Matched environments connect isolated skills to complete sequences. The same definitions carry through data collection and cross-scene evaluation.</p></div>
-    <div class="scope-layout">
-      <div class="scope-structure">
-        <div class="scope-primary"><div><dl><dt>Long-horizon tasks</dt><dd data-scope-value="sequences">${tasks.length}</dd></dl><p>Complete, dependent sequences</p></div><div><dl><dt>Canonical stage tasks</dt><dd data-scope-value="stages">${stages}</dd></dl><p>Physically grounded success conditions</p></div></div>
-        <figure class="scope-stage-map"><figcaption><span>Sequence → stage structure</span><span>2–5 stages per task</span></figcaption><div class="scope-stage-groups">${tasks.map((task,i)=>`<a href="/tasks/${task.slug}/" aria-label="${html(task.title)}: ${task.stages.length} stages" title="${html(task.title)} · ${task.stages.length} stages"><span>${String(i+1).padStart(2,'0')}</span><i aria-hidden="true">${task.stages.map(()=>'<b></b>').join('')}</i></a>`).join('')}</div><p>Each column is one task. Each segment is one measurable stage.</p></figure>
-        <a class="editorial-link" href="/tasks/">Explore the task definitions <span aria-hidden="true">↗</span></a>
-      </div>
-      <div class="scope-evidence">
-        <div class="scope-data"><div class="scope-data-heading"><dl><dt>Replay-validated episodes</dt><dd data-scope-value="episodes">${episodes.toLocaleString('en-US')}</dd></dl><span class="scope-equation"><b>100</b> per stage<br>× ${stages} stages</span></div><p>Human demonstrations selected after successful action replay, with simulator states retained for restoration.</p><div class="scope-data-footer"><span>9.1 h of demonstrations</span><span>20 Hz recording</span><a href="/docs/data/">Data protocol ↗</a></div></div>
-        <div class="scope-scenes"><div><dl><dt>Stage–scene combinations</dt><dd data-scope-value="combinations">${stages*scenes}</dd></dl><p>${stages} stages. ${scenes} native kitchens.<br>Fixed tasks, different surroundings.</p><a class="editorial-link" href="/docs/randomization/">Scene protocol <span aria-hidden="true">↗</span></a></div><figure class="scope-scene-matrix" aria-label="30 stages evaluated in each of three native kitchens, giving 90 stage–scene combinations">${['Blue stone','Light wood','Warm wood'].map((name,i)=>`<div><span>${name}</span><i class="scope-scene-row scope-scene-row--${i}" aria-hidden="true">${Array.from({length:stages},()=>'<b></b>').join('')}</i></div>`).join('')}<figcaption>Each mark = one stage–scene pair</figcaption></figure></div>
-      </div>
+  return `<section class="home-scale section" id="benchmark-scale" aria-labelledby="scope-title">
+    <div class="home-scale-heading"><span>Benchmark at a glance</span><h2 id="scope-title">Built for connected manipulation.</h2></div>
+    <div class="home-scale-facts">
+      <div><dl><dt>Long-horizon tasks</dt><dd data-scope-value="sequences">${tasks.length}</dd></dl><p>Dependent sequences with two to five stages.</p><a href="/tasks/">Browse the tasks ↗</a></div>
+      <div><dl><dt>Canonical stage tasks</dt><dd data-scope-value="stages">${stages}</dd></dl><p>Physically grounded success conditions.</p><a href="/tasks/">Explore stage definitions ↗</a></div>
+      <div><dl><dt>Replay-validated episodes</dt><dd data-scope-value="episodes">${episodes.toLocaleString('en-US')}</dd></dl><p>100 per stage · 9.1 hours · 20 Hz.</p><a href="#data-pipeline">View the data pipeline ↗</a></div>
+      <div><dl><dt>Stage–scene combinations</dt><dd data-scope-value="combinations">${stages*scenes}</dd></dl><p>${stages} stages across ${scenes} native kitchens.</p><a href="/leaderboard/#evaluation-scenes">Explore scene settings ↗</a></div>
     </div>
   </section>`;
 }

@@ -148,6 +148,9 @@ maintainer. Documentation-only PRs still require review before merging.
 - `docsPublished=false` keeps Docs out of navigation, search and sitemap. Retained article source is not a public-release signal.
 - `paperPublished=true` keeps the public arXiv paper and citation available independently of Docs.
 - `/paper/` redirects to arXiv; it is not a separate project page.
+- Results and evaluation topics belong to the Leaderboard. Homepage and task pages link to the matching track instead of duplicating score tables.
+- `/evaluation/` and `/evaluation/evidence/` are non-indexed compatibility redirects into the Leaderboard. Preserve query strings and known record/metric fragments when maintaining those redirects.
+- Homepage authors, affiliations and citation are native disclosures, closed by default. Their deep links must open the requested content without hiding unrelated material.
 - The retired Community route must remain unavailable.
 
 Publication changes require explicit approval. Keep shared URLs and switches in

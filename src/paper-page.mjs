@@ -39,7 +39,63 @@ const paperUnavailableBody=`
   <p>This page will be updated when the DexArena paper is released. You can explore the benchmark overview, task demonstrations and evaluation results in the meantime.</p>
   <div class="code-preview-links"><a class="arrow-link" href="/#paper-overview"><span>Explore the benchmark</span><b aria-hidden="true">↗</b></a><a class="arrow-link" href="/leaderboard/"><span>View results</span><b aria-hidden="true">↗</b></a></div>
 </section>`;
+
+// Home is a gateway to the benchmark, not a second copy of the manuscript.
+// Keep the complete author and reference record available on demand.
+export function renderHomePaperBody() {
+  return `
+<section class="section paper-masthead home-research" aria-labelledby="home-research-title">
+  <div class="home-paper-eyebrow"><span>The research behind DexArena</span><a href="#paper-overview">Benchmark overview ↓</a></div>
+  <div id="home-research-title"><h2 class="paper-title">${paperTitle}</h2></div>
+  <p class="home-research-lead">One benchmark for precise skills, visual generalization and complete bimanual behavior. Explore the tasks, inspect the evaluation protocol, or build on the open-source release.</p>
+  <nav class="home-research-actions" aria-label="Benchmark resources">
+    ${paperPublished?`<a class="home-research-primary" href="${paperUrl}" target="_blank" rel="noreferrer">Paper <span aria-hidden="true">↗</span></a>`:''}
+    <a href="${codeUrl}" target="_blank" rel="noreferrer">Code <span aria-hidden="true">↗</span></a>
+    <a href="/leaderboard/#lb-results">Leaderboard <span aria-hidden="true">→</span></a>
+    ${paperPublished?'<a href="#citation">Citation <span aria-hidden="true">↓</span></a>':''}
+  </nav>
+  <details class="home-research-disclosure" id="research-details">
+    <summary><span>Authors, affiliations &amp; publication details</span><span class="home-disclosure-meta">${paperAuthors.length} authors · ${paperAffiliations.length} institutions</span></summary>
+    <div class="home-disclosure-content">
+      <div class="paper-identity">
+        <div class="paper-authors"><h2>Authors</h2><ol class="author-list" aria-label="Authors in manuscript order">${paperAuthors.map(([name,index])=>'<li><a href="#affiliation-'+index+'" data-affiliation="'+index+'" title="'+paperAffiliations[index-1][0]+'">'+name+'<sup>'+index+'</sup></a></li>').join('')}</ol></div>
+        <div class="paper-affiliations" id="affiliations"><h2>Affiliations</h2><ol>${paperAffiliations.map(renderAffiliation).join('')}</ol></div>
+      </div>
+      <dl class="paper-metadata">
+        ${paperPublished?`<div><dt>arXiv release</dt><dd><time datetime="2026-11-02">2 November 2026</time></dd></div>
+        <div><dt>Last revised</dt><dd><time datetime="2026-11-03">3 November 2026</time> · v2</dd></div>
+        <div><dt>Paper</dt><dd class="paper-inline-links"><a href="${paperPdfUrl}" target="_blank" rel="noreferrer">Read PDF ↗</a><a href="${paperUrl}" target="_blank" rel="noreferrer">arXiv:2611.02629 ↗</a><a href="#citation">Citation &amp; BibTeX ↓</a></dd></div>`:''}
+        <div><dt>Code</dt><dd><a href="${codeUrl}" target="_blank" rel="noreferrer">GitHub · SIPAIR-Elastic/DexArena ↗</a></dd></div>
+        <div><dt>Leaderboard</dt><dd><a href="/leaderboard/#lb-results">View benchmark results →</a></dd></div>
+        ${paperPublished?'<div><dt>License</dt><dd><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0 ↗</a></dd></div>':''}
+      </dl>
+      <p class="home-research-note">Author order and affiliations follow the public project record. Institutional marks identify affiliations and do not imply sponsorship or endorsement.</p>
+    </div>
+  </details>
+  <div class="home-research-overview" id="paper-overview">
+    <span class="anchor-alias" id="benchmark-overview" aria-hidden="true"></span>
+    ${paperPublished?'<span class="anchor-alias" id="abstract" aria-hidden="true"></span>':''}
+    <div class="home-overview-heading"><h3>Skills and sequences. One physical setting.</h3><p>Ten complete tasks and thirty matched stage environments connect household, laboratory and industrial interactions, with physically grounded success conditions.</p></div>
+    <figure class="overview-figure"><a href="/assets/paper/dexarena-overview.png" target="_blank" rel="noreferrer" aria-label="Open Figure 1 at full resolution"><img src="/assets/paper/dexarena-overview.png" width="1800" height="1040" alt="Figure 1: DexArena overview of tasks, objects, embodiments, skills and scenarios" loading="lazy"></a><figcaption><span><b>DexArena at a glance.</b> Tasks, skills, embodiments and scenarios in a unified benchmark.</span><a href="/assets/paper/dexarena-overview.png" target="_blank" rel="noreferrer">Full resolution ↗</a></figcaption></figure>
+    <nav class="home-overview-links" aria-label="Explore benchmark details">
+      <a href="/tasks/">Explore all tasks <span aria-hidden="true">→</span></a>
+      <a id="data-pipeline" href="/assets/paper/data-collection-pipeline.png" target="_blank" rel="noreferrer">Data collection pipeline <span aria-hidden="true">↗</span></a>
+      <a id="paper-results" href="/leaderboard/#lb-results">All experimental results <span aria-hidden="true">→</span></a>
+    </nav>
+  </div>
+  ${paperPublished?`<details class="home-research-disclosure home-citation" id="citation">
+    <summary><span>Cite DexArena</span><span class="home-disclosure-meta">arXiv:2611.02629 · BibTeX</span></summary>
+    <div class="home-disclosure-content">
+      <p>Use the public arXiv record when referencing the benchmark.</p>
+      <div class="citation-toolbar"><a href="/assets/docs/dexarena-citation.bib" download>Download BibTeX ↓</a><button type="button" data-copy-citation>Copy BibTeX</button></div>
+      <pre tabindex="0" aria-label="DexArena BibTeX citation"><code id="paper-bibtex">${escapeHtml(paperBibtex)}</code></pre>
+      <p class="citation-feedback" role="status" aria-live="polite" data-citation-status></p>
+    </div>
+  </details>`:''}
+</section>`;
+}
 export function renderPaperBody({home=false}={}) {
+  if(home)return renderHomePaperBody();
   if(!paperPublished&&!home)return paperUnavailableBody;
   const titleTag=home?"h2":"h1";
   return `

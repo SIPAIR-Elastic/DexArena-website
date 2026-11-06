@@ -28,7 +28,7 @@ const classes=node=>(node.attributes.class||'').split(/\s+/);
 const plainText=html=>html.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
 const route=href=>new URL(href,'https://dexarena.invalid').pathname.replace(/\/$/,'')||'/';
 const asset=(value,name)=>new RegExp(`/assets/${name.replaceAll('.','\\.')}(?:[?#].*)?$`).test(value||'');
-const expectedLinks=[['/','Project'],['/tasks/','Tasks'],['/leaderboard/','Leaderboard'],['/evaluation/','Evaluation'],['/report/','Report'],['/docs/','Docs'],['/code/','Code']]
+const expectedLinks=[['/','Project'],['/tasks/','Tasks'],['/leaderboard/','Leaderboard'],['/report/','Report'],['/docs/','Docs'],['/code/','Code']]
   .filter(([href])=>docsPublished||route(href)!=='/docs');
 
 export function verifyNavigation({html,css,js}){
@@ -95,6 +95,7 @@ export function verifyNavigation({html,css,js}){
     assert(!/^\/community(?:\/|$)/.test(route(link.attributes.href||'')),'Community has no header or footer destination');
     assert(!/\bCommunity\b/i.test(plainText(link.content)),'Header and footer do not retain a Community link label');
     assert(!/^\/paper(?:\/|$)/.test(route(link.attributes.href||'')),'Header and footer do not expose the legacy manuscript redirect');
+    assert(!/^\/evaluation(?:\/|$)/.test(route(link.attributes.href||'')),'Evaluation links lead into Leaderboard, not a separate page');
   }
   assert.equal(tagged(siteFooters[0].content,a=>has(a,'data-code-status')).length,0,'Site footer does not repeat a pending-code badge');
   assert(!/code\s+coming\s+soon/i.test(plainText(siteFooters[0].content)),'The shared footer does not retain an obsolete code-release notice');

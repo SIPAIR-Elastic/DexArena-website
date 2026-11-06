@@ -4,7 +4,7 @@ import {fileURLToPath} from 'node:url';
 import {dirname,join,relative,resolve} from 'node:path';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {docsPublished,paperPublished,paperUrl,isRetiredRoute} from '../src/publication.mjs';
+import {docsPublished,paperPublished,paperUrl,isRetiredRoute,isRedirectRoute} from '../src/publication.mjs';
 import {githubPagesConfig} from './pages-config.mjs';
 import {releaseUrl} from './release-urls.mjs';
 
@@ -36,12 +36,15 @@ for(const file of files){
     let html=await readFile(file,'utf8');
     html=html.replace(/\b(href|src|poster|data-image|data-copy-text|data-task-preview)="(\/(?!\/)[^"]*)"/g,(_,attribute,url)=>`${attribute}="${withBase(url)}"`);
     html=html.replaceAll(oldOrigin,site.origin+base.slice(0,-1));
+    html=html.replace(/(<meta\b[^>]*http-equiv="refresh"[^>]*content="\d+;url=)(\/(?!\/)[^"]+)/i,(_,prefix,url)=>prefix+withBase(url));
     html=html.replace(/<a\b[^>]*>/gi,tag=>/\sdownload(?:\s|=|>)/i.test(tag)?tag:tag.replace(/\bhref="([^"]+)"/g,(_,url)=>`href="${releaseUrl(url,releaseConfig)}"`));
     html=html.replace(/<(?:link|script)\b[^>]*>/gi,tag=>tag.replace(/\b(href|src)="([^"]+)"/g,(_,attribute,url)=>`${attribute}="${releaseUrl(url,{...releaseConfig,asset:true})}"`));
-    const guard=relative(dist,file).replaceAll('\\','/')==='paper/index.html'?'':`<script src="${base}assets/publication-guard.js?v=${releaseId}" defer></script>`;
+    const route='/'+relative(dist,file).replaceAll('\\','/').replace(/index\.html$/,'');
+    const guard=isRedirectRoute(route)?'':`<script src="${base}assets/publication-guard.js?v=${releaseId}" defer></script>`;
     html=html.replace('<head>',`<head><meta name="dexarena-release" content="${releaseId}"><meta name="dexarena-docs-published" content="${docsPublished}"><meta name="dexarena-base-path" content="${base}">${guard}`);
     const url=new URL(relative(dist,file).replaceAll('\\','/').replace(/index\.html$/,''),site).href;
-    if(relative(dist,file).replaceAll('\\','/')!=='paper/index.html')html=html.replace('</head>',`<link rel="canonical" href="${url}"><meta property="og:url" content="${url}"></head>`);
+    if(!isRedirectRoute(route))html=html.replace('</head>',`<link rel="canonical" href="${url}"><meta property="og:url" content="${url}"></head>`);
+    else if(route.startsWith('/evaluation/'))html=html.replace(/<link rel="canonical" href="[^"]+">/,`<link rel="canonical" href="${new URL('leaderboard/',site).href}">`);
     await writeFile(file,html);
   }else if(file.endsWith('.css')){
     const css=(await readFile(file,'utf8')).replace(/url\((['"]?)\/(?!\/)/g,(_,quote)=>`url(${quote}${base}`);
@@ -57,7 +60,7 @@ const search=JSON.parse(await readFile(searchPath,'utf8'));
 for(const entry of search){entry.url=releaseUrl(withBase(entry.url),releaseConfig);entry.text=entry.text.replaceAll(oldOrigin,site.origin+base.slice(0,-1))}
 await writeFile(searchPath,JSON.stringify(search));
 await writeFile(join(dist,'.nojekyll'),'');
-const urls=htmlFiles.filter(file=>relative(dist,file).replaceAll('\\','/')!=='paper/index.html'&&(docsPublished||!relative(dist,file).replaceAll('\\','/').startsWith('docs/'))).map(file=>new URL(relative(dist,file).replaceAll('\\','/').replace(/index\.html$/,''),site).href);
+const urls=htmlFiles.filter(file=>!isRedirectRoute('/'+relative(dist,file).replaceAll('\\','/').replace(/index\.html$/,''))&&(docsPublished||!relative(dist,file).replaceAll('\\','/').startsWith('docs/'))).map(file=>new URL(relative(dist,file).replaceAll('\\','/').replace(/index\.html$/,''),site).href);
 await writeFile(join(dist,'sitemap.xml'),`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map(url=>`<url><loc>${url}</loc></url>`).join('')}</urlset>\n`);
 
 // Validate the actual project-path build, including poster images and dynamic stage images.
@@ -88,6 +91,8 @@ for(const file of files.filter(file=>file.endsWith('.css'))){
 for(const entry of search)await checkTarget(entry.url,join(dist,'index.html'));
 assert(search.every(entry=>!isRetiredRoute(new URL(entry.url,site).pathname.slice(base.length-1))),'Retired pages must not be searchable');
 assert(!urls.some(url=>isRetiredRoute(new URL(url).pathname.slice(base.length-1))),'Retired pages must not appear in the sitemap');
+assert(search.every(entry=>!isRedirectRoute(new URL(entry.url,site).pathname.slice(base.length-1))),'Compatibility redirects must not be searchable');
+assert(!urls.some(url=>isRedirectRoute(new URL(url).pathname.slice(base.length-1))),'Compatibility redirects must not appear in the sitemap');
 assert(runtime.includes(`fetch("${base}assets/search-index.json?v=${releaseId}",{cache:"no-store"})`),'Search fetch must use the current project release without stale browser cache');
 const paperHtml=await readFile(join(dist,'paper','index.html'),'utf8');
 assert(paperHtml.includes('data-paper-redirect')&&paperHtml.includes(`content="0;url=${paperUrl}"`),'Old paper bookmarks redirect to arXiv instead of retaining a separate page');

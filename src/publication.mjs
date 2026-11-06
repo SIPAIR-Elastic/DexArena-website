@@ -20,6 +20,31 @@ export function isRetiredRoute(path){
   return /^\/community(?:\/|$)/.test(path.replace(/\/{2,}/g,'/').toLowerCase());
 }
 
+// Compatibility documents remain available for old bookmarks, but not in search
+// or navigation. Evaluation now belongs to the Leaderboard, not a separate page.
+export function isRedirectRoute(path){
+  return /^\/(?:paper|evaluation)(?:\/|$)/i.test(path.replace(/\/{2,}/g,'/'));
+}
+
+export function evaluationDestination(href){
+  try{
+    const url=new URL(href.replaceAll('&amp;','&'),'https://dexarena.local');
+    if(url.origin!=='https://dexarena.local')return null;
+    const path=decodeURIComponent(url.pathname).replace(/\/{2,}/g,'/');
+    if(!/^\/evaluation(?:\/(?:evidence\/?)?(?:index\.html)?)?\/?$/i.test(path))return null;
+    const fragments={
+      tracks:'evaluation-tracks',dimensions:'evaluation-tracks',
+      metrics:'evaluation-metrics',protocol:'evaluation-protocol',
+      reproducibility:'evaluation-reproducibility',
+      record:'evaluation-record','policy-rollouts':'evaluation-policy-rollouts'
+    };
+    const fragment=decodeURIComponent(url.hash.slice(1));
+    const known=['evaluation','evaluation-tracks','evaluation-scenes','evaluation-metrics','evaluation-protocol','evaluation-reproducibility','evaluation-evidence','evaluation-record','evaluation-policy-rollouts','evaluation-collection'];
+    const target=known.includes(fragment)?fragment:fragments[fragment]||(/\/evidence(?:\/|$)/i.test(path)?'evaluation-evidence':'evaluation');
+    return '/leaderboard/'+url.search+'#'+target;
+  }catch{return null}
+}
+
 function isManuscriptLink(href){
   try{
     const url=new URL(href.replaceAll('&amp;','&'),'https://dexarena.local');
@@ -37,7 +62,8 @@ function publishedManuscriptUrl(href){
     const url=new URL(href.replaceAll('&amp;','&'),'https://dexarena.local');
     if(url.origin==='https://dexarena.local'&&/^\/paper\/?$/i.test(url.pathname)){
       if(['#citation','#paper-bibtex'].includes(url.hash))return docsPublished?'/docs/citation/':paperUrl;
-      if(['#abstract','#paper-overview','#data-pipeline','#paper-results'].includes(url.hash))return '/'+url.hash;
+      if(url.hash==='#paper-results')return '/leaderboard/#lb-results';
+      if(['#abstract','#paper-overview','#data-pipeline'].includes(url.hash))return '/'+url.hash;
       return paperUrl;
     }
     if(decodeURIComponent(url.pathname).replace(/\/{2,}/g,'/').toLowerCase()==='/assets/docs/dexarena-paper.pdf')return paperPdfUrl;
@@ -52,6 +78,8 @@ export function publishContent(html){
   return html.replace(/<a\b([^>]*)>([\s\S]*?)<\/a>/gi,(anchor,attributes,content)=>{
     const href=attributes.match(/\bhref\s*=\s*(["'])(.*?)\1/i)?.[2];
     if(!href)return anchor;
+    const evaluationHref=evaluationDestination(href);
+    if(evaluationHref)return `<a${attributes.replace(/\bhref\s*=\s*(["'])(.*?)\1/i,`href="${evaluationHref.replaceAll('&','&amp;')}"`)}>${content}</a>`;
     if(isManuscriptLink(href))return paperLink;
     if(paperPublished){
       const publicHref=publishedManuscriptUrl(href);
