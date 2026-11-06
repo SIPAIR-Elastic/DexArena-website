@@ -5,6 +5,21 @@ body .home-paper > .home-research {
   padding-bottom: 48px;
 }
 .home-research .home-paper-eyebrow { margin-bottom: 22px; }
+/* Give the publication title its own centered measure, independent of data rows. */
+.home-research #home-research-title { width: 100%; min-width: 0; padding: 8px 0 38px; }
+body .home-research .paper-title {
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  color: #202b3a;
+  font-family: var(--display);
+  font-size: clamp(28px, 3.1vw, 42px);
+  font-weight: 650;
+  line-height: 1.24;
+  letter-spacing: -.03em;
+  text-align: center;
+  text-wrap: balance;
+}
 .home-research-record { min-width: 0; }
 .home-research :is(a, button, summary, pre):focus-visible,
 .home-scale a:focus-visible,
@@ -88,6 +103,7 @@ body .home-resource-links > nav p { margin: 0; color: #68778b; font-size: 16px; 
   body .home-paper > .home-research { padding-top: 32px !important; padding-bottom: 32px; }
   .home-research .home-paper-eyebrow { margin-bottom: 16px; }
   .home-research .home-paper-eyebrow > span { max-width: none; }
+  .home-research #home-research-title { padding: 6px 0 28px; }
   .home-research-disclosure > summary { padding: 17px 46px 17px 18px; }
   .home-disclosure-content { padding: 16px 18px 20px; }
   .home-research-overview { margin-top: 28px; }
