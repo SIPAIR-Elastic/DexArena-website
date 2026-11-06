@@ -7,7 +7,7 @@ const source = await readFile(new URL('../src/publication-guard.js', import.meta
 const current = 'a12345678901';
 const next = 'b12345678902';
 const basePath = '/DexArena-website/';
-const release = (releaseId = current, docsPublished = false) => ({releaseId, docsPublished, basePath});
+const release = (releaseId = current, docsPublished = false, reportPublished = true) => ({releaseId, docsPublished, reportPublished, basePath});
 
 function anchor(href, {navigation = false, cta = false, download = false, text = 'Reference', children = [text]} = {}) {
   return {
@@ -23,12 +23,12 @@ function anchor(href, {navigation = false, cta = false, download = false, text =
   };
 }
 
-function browser({links = [], published = false, status = release(), storage, failFetch = false, href = `https://dexarena.test${basePath}tasks/?mode=all#stages`, metadata = {}} = {}) {
+function browser({links = [], published = false, reportPublished = true, status = release(), storage, failFetch = false, href = `https://dexarena.test${basePath}tasks/?mode=all#stages`, metadata = {}} = {}) {
   const listeners = new Map();
   const requests = [];
   const replacements = [];
   const store = storage || new Map();
-  const metas = {'dexarena-release': current, 'dexarena-docs-published': String(published), 'dexarena-base-path': basePath, ...metadata};
+  const metas = {'dexarena-release': current, 'dexarena-docs-published': String(published), 'dexarena-report-published': String(reportPublished), 'dexarena-base-path': basePath, ...metadata};
   const url = new URL(href);
   const location = {href: url.href, origin: url.origin, pathname: url.pathname, replace: value => replacements.push(value)};
   const context = {
@@ -159,7 +159,7 @@ test('A published Docs release keeps its links and a later publication can refre
 });
 
 test('Malformed or unrelated release manifests cannot change navigation or redirect the visitor', async () => {
-  for (const status of [null, {}, release('not-a-release'), {...release(next), docsPublished: 'false'}, {...release(next), basePath: '/other/'}]) {
+  for (const status of [null, {}, release('not-a-release'), {...release(next), docsPublished: 'false'}, {...release(next), reportPublished: 'false'}, {...release(next), basePath: '/other/'}]) {
     const link = anchor(`${basePath}docs/`, {navigation: true});
     const page = browser({links: [link], published: true, status});
     await page.show();
@@ -169,4 +169,49 @@ test('Malformed or unrelated release manifests cannot change navigation or redir
   const missing = browser({metadata: {'dexarena-base-path': '/../'}});
   await missing.show();
   assert.equal(missing.requests.length, 0);
+});
+
+test('Hidden Report links are removed across local navigation and CTAs without hiding unrelated resources', async () => {
+  const links = [
+    anchor(`${basePath}report/`, {navigation: true}),
+    anchor(`${basePath}report/?v=old#research`, {cta: true}),
+    anchor(`${basePath}%72eport/index.html`, {text: 'Research notes'}),
+    anchor('https://external.test/report/'),
+    anchor('/other-project/report/'),
+    anchor(`${basePath}assets/report.css`),
+    anchor(`${basePath}docs/`, {navigation: true})
+  ];
+  const page = browser({links, published: true, reportPublished: false, status: release(current, true, false)});
+  assert(links[0].removed && links[1].removed);
+  assert.deepEqual(links[2].unwrapped, ['Research notes']);
+  for (const link of links.slice(3)) assert(!link.removed && !link.unwrapped);
+  await page.show(true);
+  links.push(anchor(`${basePath}report/`, {navigation: true}));
+  await page.show(true);
+  assert(links.at(-1).removed, 'History restoration cannot restore a hidden Report entry');
+  assert.equal(page.replacements.length, 0);
+});
+
+test('A newer manifest hides Report in older cached shells before one bounded refresh', async () => {
+  const link = anchor(`${basePath}report/`, {navigation: true});
+  const page = browser({links: [link], metadata: {'dexarena-report-published': undefined}, status: release(next, false, false)});
+  assert(!link.removed, 'A legacy shell has no initial Report publication metadata');
+  await page.show(true);
+  assert(link.removed, 'The fresh publication boundary applies before navigation');
+  assert.equal(page.replacements.length, 1);
+  await page.show(true);
+  assert.equal(page.replacements.length, 1, 'Repeated restoration cannot loop refreshes');
+});
+
+test('Legacy manifests cannot unhide Report or break the existing Docs guard', async () => {
+  const status = release();
+  delete status.reportPublished;
+  const links = [anchor(`${basePath}report/`, {navigation: true}), anchor(`${basePath}docs/`, {navigation: true})];
+  const page = browser({links, reportPublished: false, status});
+  await page.show(true);
+  assert(links.every(link => link.removed));
+  links.push(anchor(`${basePath}report/`, {navigation: true}));
+  await page.show(true);
+  assert(links.at(-1).removed, 'Missing legacy policy never overrides an explicit hidden Report switch');
+  assert.equal(page.replacements.length, 0);
 });

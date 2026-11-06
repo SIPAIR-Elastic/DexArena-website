@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {docsPublished} from './publication.mjs';
+import {docsPublished,reportPublished,isHiddenRoute} from './publication.mjs';
 
 // Static contracts complement browser checks for keyboard, focus and breakpoints.
 // Attribute parsing deliberately accepts reordered attributes and either quote style.
@@ -29,7 +29,7 @@ const plainText=html=>html.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
 const route=href=>new URL(href,'https://dexarena.invalid').pathname.replace(/\/$/,'')||'/';
 const asset=(value,name)=>new RegExp(`/assets/${name.replaceAll('.','\\.')}(?:[?#].*)?$`).test(value||'');
 const expectedLinks=[['/','Project'],['/tasks/','Tasks'],['/leaderboard/','Leaderboard'],['/report/','Report'],['/docs/','Docs'],['/code/','Code']]
-  .filter(([href])=>docsPublished||route(href)!=='/docs');
+  .filter(([href])=>!isHiddenRoute(href));
 
 export function verifyNavigation({html,css,js}){
   for(const [name,value] of Object.entries({html,css,js}))assert.equal(typeof value,'string',`Navigation ${name} must be provided`);
@@ -92,6 +92,7 @@ export function verifyNavigation({html,css,js}){
   const siteFooters=elements(html,'footer');
   assert.equal(siteFooters.length,1,'One shared site footer');
   for(const link of [...elements(header.content,'a'),...elements(siteFooters[0].content,'a')]){
+    assert(!isHiddenRoute(route(link.attributes.href||'')),'Hidden sections have no header or footer destination');
     assert(!/^\/community(?:\/|$)/.test(route(link.attributes.href||'')),'Community has no header or footer destination');
     assert(!/\bCommunity\b/i.test(plainText(link.content)),'Header and footer do not retain a Community link label');
     assert(!/^\/paper(?:\/|$)/.test(route(link.attributes.href||'')),'Header and footer do not expose the legacy manuscript redirect');
@@ -105,7 +106,8 @@ export function verifyNavigation({html,css,js}){
   const currentDesktop=current(desktopLinks);
   const currentMobile=current(allDrawerLinks);
   const main=elements(html,'main')[0]?.content||'';
-  const unavailable=!docsPublished&&tagged(main,a=>has(a,'data-docs-unavailable')).length>0;
+  const unavailable=(!docsPublished&&tagged(main,a=>has(a,'data-docs-unavailable')).length>0)||
+    (!reportPublished&&tagged(main,a=>has(a,'data-report-unavailable')).length>0);
   const body=elements(html,'body')[0];
   const noHeaderRoute=unavailable;
   const currentCount=noHeaderRoute?0:1;

@@ -50,8 +50,11 @@ composition.
 | 🧩 [Tasks](https://sipair-elastic.github.io/DexArena-website/tasks/) | Ten task sequences, stage definitions and physical success conditions |
 | 📊 [Leaderboard](https://sipair-elastic.github.io/DexArena-website/leaderboard/) | All results, charts, heatmaps, tables, method profiles and downloads |
 | 🧪 [Evaluation guide](https://sipair-elastic.github.io/DexArena-website/leaderboard/#evaluation) | Integrated Leaderboard topics: tracks, metrics, scene settings, protocol and evidence |
-| 📰 [Report](https://sipair-elastic.github.io/DexArena-website/report/) | Benchmark research, technical notes and reproducibility resources |
 | 💻 [Code](https://sipair-elastic.github.io/DexArena-website/code/) | Official benchmark repository and issue tracker |
+
+> [!NOTE]
+> Report and Docs are temporarily hidden from the public website. Their source is
+> retained for future restoration; old URLs show non-indexed availability notices.
 
 ## Quick start
 
@@ -114,7 +117,7 @@ a Bash-compatible shell.
 | [`src/leaderboard-evaluation.mjs`](src/leaderboard-evaluation.mjs) | Integrated evaluation guide and evidence, with scoped styles and disclosure behavior |
 | [`src/report.mjs`](src/report.mjs) | Report content, backed by [`report-sources.json`](src/report-sources.json) |
 | [`src/readability.css`](src/readability.css) | Final shared typography layer: 18px body text, 17px on narrow screens, 16px controls and a 14px metadata floor |
-| [`src/publication.mjs`](src/publication.mjs) | Paper/code URLs, documentation visibility and retired-route rules |
+| [`src/publication.mjs`](src/publication.mjs) | Paper/code URLs, section visibility and retired-route rules |
 | [`dist/`](dist/) | Published pages **and retained media, fonts and result downloads** |
 | [`scripts/`](scripts/) | Build, preview, tests and specialist research-asset utilities |
 | [`.github/workflows/pages.yml`](.github/workflows/pages.yml) | Production build, verification and GitHub Pages deployment |
@@ -130,6 +133,7 @@ a Bash-compatible shell.
 - 📄 **Paper:** public [arXiv preprint](https://arxiv.org/abs/2611.02629). Paper actions open arXiv; `/paper/` is a compatibility redirect.
 - 💻 **Code:** links to the [official benchmark repository](https://github.com/SIPAIR-Elastic/DexArena), separate from this website repository.
 - 📚 **Docs:** temporarily hidden from navigation, search and sitemap. Source articles remain available for maintenance; old URLs show a no-index preparation notice.
+- 📰 **Report:** temporarily hidden from navigation, footer, search and sitemap. Research content and evidence remain in source; old URLs show a no-index availability notice.
 - 📊 **Results:** fixed manuscript baselines, not a live community-submission ranking. Submission intake is not open.
 - 🧪 **Evaluation:** lives inside the Leaderboard. Old `/evaluation/` and `/evaluation/evidence/` bookmarks redirect to their matching sections; neither is a standalone navigation or search entry.
 

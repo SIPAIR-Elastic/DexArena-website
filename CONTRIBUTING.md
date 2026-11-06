@@ -146,6 +146,7 @@ maintainer. Documentation-only PRs still require review before merging.
 ### Visibility and routing
 
 - `docsPublished=false` keeps Docs out of navigation, search and sitemap. Retained article source is not a public-release signal.
+- `reportPublished=false` also hides Report across desktop/mobile navigation, footer, search and sitemap. Keep its source and evidence files for restoration; the old `/report/` URL shows only a non-indexed availability notice.
 - `paperPublished=true` keeps the public arXiv paper and citation available independently of Docs.
 - `/paper/` redirects to arXiv; it is not a separate project page.
 - Results and evaluation topics belong to the Leaderboard. Homepage and task pages link to the matching track instead of duplicating score tables.

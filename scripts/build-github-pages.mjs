@@ -4,7 +4,7 @@ import {fileURLToPath} from 'node:url';
 import {dirname,join,relative,resolve} from 'node:path';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {docsPublished,paperPublished,paperUrl,isRetiredRoute,isRedirectRoute} from '../src/publication.mjs';
+import {docsPublished,reportPublished,paperPublished,paperUrl,isRetiredRoute,isRedirectRoute,isHiddenRoute} from '../src/publication.mjs';
 import {githubPagesConfig} from './pages-config.mjs';
 import {releaseUrl} from './release-urls.mjs';
 
@@ -30,7 +30,7 @@ for(const file of files.filter(file=>/\.(?:html|css|js)$/.test(file)).sort()){
 }
 const releaseId=fingerprint.digest('hex').slice(0,12);
 const releaseConfig={siteUrl,releaseId};
-await writeFile(join(dist,'assets','site-release.json'),JSON.stringify({releaseId,docsPublished,basePath:base}));
+await writeFile(join(dist,'assets','site-release.json'),JSON.stringify({releaseId,docsPublished,reportPublished,basePath:base}));
 for(const file of files){
   if(file.endsWith('.html')){
     let html=await readFile(file,'utf8');
@@ -41,7 +41,7 @@ for(const file of files){
     html=html.replace(/<(?:link|script)\b[^>]*>/gi,tag=>tag.replace(/\b(href|src)="([^"]+)"/g,(_,attribute,url)=>`${attribute}="${releaseUrl(url,{...releaseConfig,asset:true})}"`));
     const route='/'+relative(dist,file).replaceAll('\\','/').replace(/index\.html$/,'');
     const guard=isRedirectRoute(route)?'':`<script src="${base}assets/publication-guard.js?v=${releaseId}" defer></script>`;
-    html=html.replace('<head>',`<head><meta name="dexarena-release" content="${releaseId}"><meta name="dexarena-docs-published" content="${docsPublished}"><meta name="dexarena-base-path" content="${base}">${guard}`);
+    html=html.replace('<head>',`<head><meta name="dexarena-release" content="${releaseId}"><meta name="dexarena-docs-published" content="${docsPublished}"><meta name="dexarena-report-published" content="${reportPublished}"><meta name="dexarena-base-path" content="${base}">${guard}`);
     const url=new URL(relative(dist,file).replaceAll('\\','/').replace(/index\.html$/,''),site).href;
     if(!isRedirectRoute(route))html=html.replace('</head>',`<link rel="canonical" href="${url}"><meta property="og:url" content="${url}"></head>`);
     else if(route.startsWith('/evaluation/'))html=html.replace(/<link rel="canonical" href="[^"]+">/,`<link rel="canonical" href="${new URL('leaderboard/',site).href}">`);
@@ -60,7 +60,10 @@ const search=JSON.parse(await readFile(searchPath,'utf8'));
 for(const entry of search){entry.url=releaseUrl(withBase(entry.url),releaseConfig);entry.text=entry.text.replaceAll(oldOrigin,site.origin+base.slice(0,-1))}
 await writeFile(searchPath,JSON.stringify(search));
 await writeFile(join(dist,'.nojekyll'),'');
-const urls=htmlFiles.filter(file=>!isRedirectRoute('/'+relative(dist,file).replaceAll('\\','/').replace(/index\.html$/,''))&&(docsPublished||!relative(dist,file).replaceAll('\\','/').startsWith('docs/'))).map(file=>new URL(relative(dist,file).replaceAll('\\','/').replace(/index\.html$/,''),site).href);
+const urls=htmlFiles.filter(file=>{
+  const path='/'+relative(dist,file).replaceAll('\\','/').replace(/index\.html$/,'');
+  return !isRedirectRoute(path)&&!isHiddenRoute(path);
+}).map(file=>new URL(relative(dist,file).replaceAll('\\','/').replace(/index\.html$/,''),site).href);
 await writeFile(join(dist,'sitemap.xml'),`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map(url=>`<url><loc>${url}</loc></url>`).join('')}</urlset>\n`);
 
 // Validate the actual project-path build, including poster images and dynamic stage images.
@@ -93,6 +96,8 @@ assert(search.every(entry=>!isRetiredRoute(new URL(entry.url,site).pathname.slic
 assert(!urls.some(url=>isRetiredRoute(new URL(url).pathname.slice(base.length-1))),'Retired pages must not appear in the sitemap');
 assert(search.every(entry=>!isRedirectRoute(new URL(entry.url,site).pathname.slice(base.length-1))),'Compatibility redirects must not be searchable');
 assert(!urls.some(url=>isRedirectRoute(new URL(url).pathname.slice(base.length-1))),'Compatibility redirects must not appear in the sitemap');
+assert(search.every(entry=>!isHiddenRoute(new URL(entry.url,site).pathname.slice(base.length-1))),'Hidden sections must not be searchable');
+assert(!urls.some(url=>isHiddenRoute(new URL(url).pathname.slice(base.length-1))),'Hidden sections must not appear in the sitemap');
 assert(runtime.includes(`fetch("${base}assets/search-index.json?v=${releaseId}",{cache:"no-store"})`),'Search fetch must use the current project release without stale browser cache');
 const paperHtml=await readFile(join(dist,'paper','index.html'),'utf8');
 assert(paperHtml.includes('data-paper-redirect')&&paperHtml.includes(`content="0;url=${paperUrl}"`),'Old paper bookmarks redirect to arXiv instead of retaining a separate page');

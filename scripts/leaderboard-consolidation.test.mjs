@@ -3,7 +3,7 @@ import {readFile, readdir} from 'node:fs/promises';
 import {test} from 'node:test';
 import vm from 'node:vm';
 import {githubPagesConfig} from './pages-config.mjs';
-import {isRedirectRoute, publishContent} from '../src/publication.mjs';
+import {docsPublished, reportPublished, isRedirectRoute, publishContent} from '../src/publication.mjs';
 import {evaluationRecordExample} from '../src/leaderboard-evaluation.mjs';
 
 const root = new URL('../', import.meta.url);
@@ -130,7 +130,7 @@ test('Navigation, footer, search and sitemap never promote legacy evaluation rou
     }
   }
   const search = JSON.parse(await read('dist/assets/search-index.json'));
-  assert.equal(search.length, 16, 'Only canonical public content is discoverable while Docs is hidden');
+  assert.equal(search.length, 15 + (docsPublished ? 16 : 0) + (reportPublished ? 1 : 0), 'Only canonical published content is discoverable while retained sections are hidden');
   assert(search.every(entry => !new URL(entry.url, siteUrl).pathname.startsWith(`${basePath}evaluation/`)), 'Search does not expose compatibility pages');
   const leaderboard = search.find(entry => new URL(entry.url, siteUrl).pathname === `${basePath}leaderboard/`);
   assert(leaderboard && leaderboard.text.includes('Stage Success Rate') && leaderboard.text.includes('checkpoint_hash'), 'Protocol and evidence are searchable under the consolidated page');

@@ -3,7 +3,7 @@ import {test} from 'node:test';
 import {readFile,readdir} from 'node:fs/promises';
 import {releaseUrl} from './release-urls.mjs';
 import {githubPagesConfig} from './pages-config.mjs';
-import {docsPublished,isRedirectRoute} from '../src/publication.mjs';
+import {docsPublished,reportPublished,isRedirectRoute} from '../src/publication.mjs';
 
 const config={siteUrl:'https://example.test/DexArena-website/',releaseId:'012345abcdef'};
 test('Same-site page versions preserve existing query and hash across navigation',()=>{
@@ -30,11 +30,13 @@ test('Every generated page, navigation and search entry uses one release while c
   const release=JSON.parse(await readFile(new URL('assets/site-release.json',dist),'utf8'));
   assert(/^[a-f0-9]{12}$/.test(release.releaseId));
   assert.equal(release.docsPublished,docsPublished);
+  assert.equal(release.reportPublished,reportPublished);
   assert.equal(release.basePath,basePath);
   for(const file of (await readdir(dist,{recursive:true})).filter(file=>file.endsWith('.html'))){
     const html=await readFile(new URL(file,dist),'utf8');
     assert(html.includes(`<meta name="dexarena-release" content="${release.releaseId}">`),`${file}: release metadata`);
     assert(html.includes(`<meta name="dexarena-docs-published" content="${docsPublished}">`),`${file}: publication metadata`);
+    assert(html.includes(`<meta name="dexarena-report-published" content="${reportPublished}">`),`${file}: Report publication metadata`);
     for(const match of html.matchAll(/<a\b[^>]*\bhref="([^"]+)"[^>]*>/gi)){
       const href=match[1],url=new URL(href.replaceAll('&amp;','&'),siteUrl);
       if(href.startsWith('#')||/\sdownload(?:\s|=|>)/i.test(match[0])||url.origin!==new URL(siteUrl).origin||!url.pathname.startsWith(basePath)||url.pathname.startsWith(basePath+'assets/'))continue;
