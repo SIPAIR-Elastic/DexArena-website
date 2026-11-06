@@ -150,7 +150,7 @@ maintainer. Documentation-only PRs still require review before merging.
 - `/paper/` redirects to arXiv; it is not a separate project page.
 - Results and evaluation topics belong to the Leaderboard. Homepage and task pages link to the matching track instead of duplicating score tables.
 - `/evaluation/` and `/evaluation/evidence/` are non-indexed compatibility redirects into the Leaderboard. Preserve query strings and known record/metric fragments when maintaining those redirects.
-- Homepage authors, affiliations and citation are native disclosures, closed by default. Their deep links must open the requested content without hiding unrelated material.
+- Homepage authors, affiliations and publication metadata are always visible in the shared aligned research layout. Do not place them in a disclosure or add a click-to-reveal dependency. The separate BibTeX reference remains a native disclosure whose deep link opens the requested content.
 - The retired Community route must remain unavailable.
 
 Publication changes require explicit approval. Keep shared URLs and switches in

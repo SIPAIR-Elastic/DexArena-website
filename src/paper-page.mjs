@@ -40,38 +40,30 @@ const paperUnavailableBody=`
   <div class="code-preview-links"><a class="arrow-link" href="/#paper-overview"><span>Explore the benchmark</span><b aria-hidden="true">↗</b></a><a class="arrow-link" href="/leaderboard/"><span>View results</span><b aria-hidden="true">↗</b></a></div>
 </section>`;
 
-// Home is a gateway to the benchmark, not a second copy of the manuscript.
-// Keep the complete author and reference record available on demand.
+// The publication identity is directly visible; detailed results stay on Leaderboard.
 export function renderHomePaperBody() {
   return `
 <section class="section paper-masthead home-research" aria-labelledby="home-research-title">
-  <div class="home-paper-eyebrow"><span>The research behind DexArena</span><a href="#paper-overview">Benchmark overview ↓</a></div>
+  <div class="home-paper-eyebrow"><span>The research behind DexArena</span>${paperPublished?`<a href="${paperUrl}" target="_blank" rel="noreferrer">Paper ↗</a>`:'<a href="#paper-overview">Benchmark overview ↓</a>'}</div>
   <div id="home-research-title"><h2 class="paper-title">${paperTitle}</h2></div>
-  <p class="home-research-lead">One benchmark for precise skills, visual generalization and complete bimanual behavior. Explore the tasks, inspect the evaluation protocol, or build on the open-source release.</p>
-  <nav class="home-research-actions" aria-label="Benchmark resources">
-    ${paperPublished?`<a class="home-research-primary" href="${paperUrl}" target="_blank" rel="noreferrer">Paper <span aria-hidden="true">↗</span></a>`:''}
-    <a href="${codeUrl}" target="_blank" rel="noreferrer">Code <span aria-hidden="true">↗</span></a>
-    <a href="/leaderboard/#lb-results">Leaderboard <span aria-hidden="true">→</span></a>
-    ${paperPublished?'<a href="#citation">Citation <span aria-hidden="true">↓</span></a>':''}
-  </nav>
-  <details class="home-research-disclosure" id="research-details">
-    <summary><span>Authors, affiliations &amp; publication details</span><span class="home-disclosure-meta">${paperAuthors.length} authors · ${paperAffiliations.length} institutions</span></summary>
-    <div class="home-disclosure-content">
+  <div class="home-research-record" id="research-details">
       <div class="paper-identity">
         <div class="paper-authors"><h2>Authors</h2><ol class="author-list" aria-label="Authors in manuscript order">${paperAuthors.map(([name,index])=>'<li><a href="#affiliation-'+index+'" data-affiliation="'+index+'" title="'+paperAffiliations[index-1][0]+'">'+name+'<sup>'+index+'</sup></a></li>').join('')}</ol></div>
         <div class="paper-affiliations" id="affiliations"><h2>Affiliations</h2><ol>${paperAffiliations.map(renderAffiliation).join('')}</ol></div>
       </div>
       <dl class="paper-metadata">
-        ${paperPublished?`<div><dt>arXiv release</dt><dd><time datetime="2026-11-02">2 November 2026</time></dd></div>
+        ${paperPublished?`<div><dt>Submitted</dt><dd><time datetime="2026-11-02">2 November 2026</time></dd></div>
         <div><dt>Last revised</dt><dd><time datetime="2026-11-03">3 November 2026</time> · v2</dd></div>
-        <div><dt>Paper</dt><dd class="paper-inline-links"><a href="${paperPdfUrl}" target="_blank" rel="noreferrer">Read PDF ↗</a><a href="${paperUrl}" target="_blank" rel="noreferrer">arXiv:2611.02629 ↗</a><a href="#citation">Citation &amp; BibTeX ↓</a></dd></div>`:''}
+        <div><dt>Status</dt><dd><strong>arXiv preprint</strong> · cs.RO</dd></div>
+        <div><dt>Paper</dt><dd class="paper-inline-links"><a href="${paperPdfUrl}" target="_blank" rel="noreferrer">Read PDF ↗</a><a href="${paperUrl}" target="_blank" rel="noreferrer">arXiv:2611.02629 ↗</a><a href="#citation">Citation &amp; BibTeX →</a></dd></div>`:''}
         <div><dt>Code</dt><dd><a href="${codeUrl}" target="_blank" rel="noreferrer">GitHub · SIPAIR-Elastic/DexArena ↗</a></dd></div>
         <div><dt>Leaderboard</dt><dd><a href="/leaderboard/#lb-results">View benchmark results →</a></dd></div>
-        ${paperPublished?'<div><dt>License</dt><dd><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0 ↗</a></dd></div>':''}
+        ${paperPublished?`<div><dt>License</dt><dd><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0 ↗</a></dd></div>
+        <div><dt>Revisions</dt><dd><a href="${paperUrl}" target="_blank" rel="noreferrer">Version history on arXiv ↗</a></dd></div>
+        <div><dt>Share</dt><dd><button class="text-copy-button" type="button" data-copy-text="${paperUrl}">Copy paper link</button><span class="copy-status" role="status" aria-live="polite"></span></dd></div>`:''}
       </dl>
-      <p class="home-research-note">Author order and affiliations follow the public project record. Institutional marks identify affiliations and do not imply sponsorship or endorsement.</p>
-    </div>
-  </details>
+      ${paperPublished?`<div class="paper-release-note"><p><b>Paper and code.</b> Read the latest manuscript on arXiv and follow the public DexArena repository for project updates.</p><a href="${codeUrl}" target="_blank" rel="noreferrer">Explore the repository ↗</a></div>`:''}
+  </div>
   <div class="home-research-overview" id="paper-overview">
     <span class="anchor-alias" id="benchmark-overview" aria-hidden="true"></span>
     ${paperPublished?'<span class="anchor-alias" id="abstract" aria-hidden="true"></span>':''}

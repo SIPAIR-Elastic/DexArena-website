@@ -46,7 +46,7 @@ composition.
 
 | Page | What you can find |
 | --- | --- |
-| 🌐 [Project](https://sipair-elastic.github.io/DexArena-website/) | Concise overview, task previews and research links; expand authors and citation when needed |
+| 🌐 [Project](https://sipair-elastic.github.io/DexArena-website/) | Visible authors, affiliations and publication details, plus the overview, task previews and research links |
 | 🧩 [Tasks](https://sipair-elastic.github.io/DexArena-website/tasks/) | Ten task sequences, stage definitions and physical success conditions |
 | 📊 [Leaderboard](https://sipair-elastic.github.io/DexArena-website/leaderboard/) | All results, charts, heatmaps, tables, method profiles and downloads |
 | 🧪 [Evaluation guide](https://sipair-elastic.github.io/DexArena-website/leaderboard/#evaluation) | Integrated Leaderboard topics: tracks, metrics, scene settings, protocol and evidence |
@@ -109,7 +109,7 @@ a Bash-compatible shell.
 | --- | --- |
 | [`src/build.mjs`](src/build.mjs) | Shared page shell, task catalog and page generation |
 | [`src/paper-page.mjs`](src/paper-page.mjs) | Homepage research overview, author information and citation |
-| [`src/homepage.css`](src/homepage.css), [`homepage.js`](src/homepage.js) | Compact homepage layout and native-disclosure deep links |
+| [`src/homepage.css`](src/homepage.css), [`homepage.js`](src/homepage.js) | Homepage layout, research anchors and native BibTeX-disclosure deep links |
 | [`src/leaderboard.mjs`](src/leaderboard.mjs) | Result visualizations and tables; companion CSS/JS handle layout and interactions |
 | [`src/leaderboard-evaluation.mjs`](src/leaderboard-evaluation.mjs) | Integrated evaluation guide and evidence, with scoped styles and disclosure behavior |
 | [`src/report.mjs`](src/report.mjs) | Report content, backed by [`report-sources.json`](src/report-sources.json) |
