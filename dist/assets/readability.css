@@ -151,7 +151,7 @@ body .site-footer .footer-built { flex-wrap: wrap; }
 
 /* Image-led introduction: preserve the display titles and full-canvas text. */
 body .cover .cover-kicker { font-size: var(--type-small); line-height: 1.6; }
-body .cover .cover-copy p:not(.cover-title) { font-size: var(--type-body); line-height: 1.7; }
+body .cover .cover-copy p:not(.cover-title):not(.cover-subtitle) { font-size: var(--type-body); line-height: 1.7; }
 body .cover .cover-copy .arrow-link { font-size: var(--type-small); }
 body .cover .cover-mosaic__item span { font-size: var(--type-meta); line-height: 1.5; }
 
@@ -205,7 +205,7 @@ body .leaderboard-page .lb-method-body .lb-method-note {
   body .task-gallery__rail { grid-template-columns: repeat(2,minmax(0,1fr)); }
   body .task-gallery__rail button b { white-space: normal; overflow: visible; text-overflow: clip; }
   body .cover .cover-mosaic__item span { padding: 5px 7px; right: 8px; }
-  body .cover .cover-copy p:not(.cover-title) { line-height: 1.65; }
+  body .cover .cover-copy p:not(.cover-title):not(.cover-subtitle) { line-height: 1.65; }
   body .scope-stage-groups { gap: 4px; }
   body .leaderboard-page .view-switch button { padding-inline: 12px; }
 }
