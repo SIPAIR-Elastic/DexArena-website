@@ -259,8 +259,9 @@ const homeBody = `
           </div>
         </div>
         <div class="cover-scrim"></div><div class="cover-copy">
+          <h1>DexArena</h1>
           <span class="cover-kicker">DexArena benchmark</span>
-          <h1>DexArena</h1><h2 class="cover-subtitle">Dexterity over long horizons.</h2>
+          <h2 class="cover-subtitle">Dexterity over long horizons.</h2>
           ${arrowLink("#overview","Explore benchmark","on-dark")}
         </div>
       </div>
@@ -269,10 +270,10 @@ const homeBody = `
       <div class="cover-card cover-card--scene">
         <img src="/assets/media/cabinet-scene.png" alt="DexArena cabinet task rendered in a RoboCasa scene">
         <div class="cover-scrim"></div><div class="cover-copy">
-          <span class="cover-kicker">Cross-scene generalization</span>
-          <h2 class="cover-title">Same skill.<br>New scene.</h2>
-          <p class="cover-subtitle">30 stages. Three scenes.</p>
-          ${arrowLink("/leaderboard/#evaluation-scenes","Explore scenes","on-dark")}
+          <span class="cover-kicker">Visual generalization</span>
+          <h2 class="cover-title">Measure<br>transfer.</h2>
+          <p class="cover-subtitle">30 stages × 3 held-out scenes.</p>
+          ${arrowLink("/leaderboard/#evaluation-scenes","Explore evaluation","on-dark")}
         </div>
       </div>
     </article>
@@ -280,10 +281,10 @@ const homeBody = `
       <div class="cover-card cover-card--task">
         <img src="/assets/media/package-scene.png" alt="Two dexterous hands opening a package and retrieving an apple in a native kitchen scene">
         <div class="cover-scrim"></div><div class="cover-copy">
-          <span class="cover-kicker">Bimanual manipulation</span>
-          <h2 class="cover-title">Two hands.<br>One task.</h2>
-          <p class="cover-subtitle">Open the box. Retrieve the apple.</p>
-          ${arrowLink("/tasks/package-opening/","Explore task","on-dark")}
+          <span class="cover-kicker">Skill composition</span>
+          <h2 class="cover-title">Beyond<br>single skills.</h2>
+          <p class="cover-subtitle">10 long-horizon tasks. Physically grounded success checks.</p>
+          ${arrowLink("/tasks/","Explore tasks","on-dark")}
         </div>
       </div>
     </article>
@@ -291,7 +292,7 @@ const homeBody = `
   <div class="cover-controls">
     <div class="cover-pagination">
     <button class="carousel-arrow carousel-arrow--prev" type="button" data-prev aria-label="Previous slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
-    <div class="cover-dots">${["Benchmark","Generalization","Bimanual tasks"].map((label,i)=>`<button type="button" data-dot="${i}" aria-label="Go to slide ${i+1}: ${label}" class="${i===0?"active":""}"></button>`).join("")}</div>
+    <div class="cover-dots">${["Benchmark","Visual generalization","Skill composition"].map((label,i)=>`<button type="button" data-dot="${i}" aria-label="Go to slide ${i+1}: ${label}" class="${i===0?"active":""}"></button>`).join("")}</div>
     <button class="carousel-arrow carousel-arrow--next" type="button" data-next aria-label="Next slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
     </div>
   </div>
