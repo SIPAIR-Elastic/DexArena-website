@@ -85,6 +85,48 @@ test('Homepage research identity and publication record are directly visible imm
   assert.equal(byClass(tree, 'home-research-actions', tree.masthead).length, 0, 'The former action-pill row does not replace the requested publication layout');
 });
 
+test('The restyled paper title preserves its visible heading, section label and existing destinations', async () => {
+  const tree = await homepage();
+  const title = byClass(tree, 'paper-title', tree.masthead)[0];
+  const wrapper = title.parent;
+  assert.equal(title.tag, 'h2', 'The paper title remains a real level-two heading below the homepage hero');
+  assert.equal(text(tree.fragment(title)), 'DexArena: A Unified Benchmark for Long-Horizon Dexterous Manipulation');
+  assert.equal(title.children.length, 0, 'The complete title remains plain text, without forced line breaks or ornamental fragments');
+  assert.equal(wrapper.attrs.id, 'home-research-title', 'Existing title bookmarks retain their destination');
+  assert.equal(tree.masthead.attrs['aria-labelledby'], wrapper.attrs.id, 'The research section retains its accessible title');
+  assert.equal(wrapper.parent, tree.masthead, 'The title occupies its own section-width row rather than an author-label column');
+  assert(!contains(tree.record, title), 'Title layout is independent of the author and publication-data grids');
+  assert(wrapper.end <= tree.record.start, 'Authors and metadata continue below the paper title');
+  visibleWithoutDisclosure(title);
+  assert.equal(tree.nodes.filter(node => node.attrs.id === 'home-research-title').length, 1);
+  assert.equal(tree.nodes.filter(node => node.attrs.id === 'research-details').length, 1);
+});
+
+test('The paper title has a scoped, centered and fluid measure without shrinking or breaking the identity layout', async () => {
+  const css = await read('src/homepage.css');
+  const titleRules = [...css.matchAll(/([^{}]*\.paper-title)\s*\{([^{}]*)\}/g)];
+  assert(titleRules.length, 'The homepage title has an explicit styling rule');
+  for (const [, selector, declarations] of titleRules) {
+    assert.match(selector, /\.home-research\s+\.paper-title\s*$/, 'The title refinement is scoped to the homepage research section');
+    assert.doesNotMatch(declarations, /white-space\s*:\s*nowrap|display\s*:\s*none|visibility\s*:\s*hidden/, 'The title remains visible and wraps naturally');
+    assert.doesNotMatch(declarations, /(?:^|;)\s*width\s*:\s*\d+(?:px|ch|em|rem)\s*;/, 'A fixed title width cannot overflow small screens');
+  }
+  const declarations = titleRules.map(([, , rule]) => rule).join('\n');
+  assert.match(declarations, /(?:^|;)\s*width\s*:\s*100%\s*;/);
+  assert.match(declarations, /text-align\s*:\s*center\s*;/, 'The title is centered instead of crowded into the left edge');
+  assert.match(declarations, /margin\s*:\s*0\s+auto\s*;/, 'The bounded title measure is centered within the section');
+  assert.match(declarations, /max-width\s*:\s*\d+px\s*;/, 'Large screens retain a readable bounded line length');
+  assert.match(declarations, /text-wrap\s*:\s*balance\s*;/, 'Browsers can balance title lines without hardcoded breaks');
+  const scale = declarations.match(/font-size\s*:\s*clamp\(\s*([\d.]+)px\s*,\s*[\d.]+vw\s*,\s*([\d.]+)px\s*\)/);
+  assert(scale, 'The heading scales fluidly between phone and desktop sizes');
+  assert(Number(scale[1]) >= 28, 'The phone title remains at least 28px for readability');
+  assert(Number(scale[2]) > Number(scale[1]), 'The desktop title has a stronger visual hierarchy');
+  const wrappers = [...css.matchAll(/\.home-research\s+#home-research-title\s*\{([^{}]*)\}/g)].map(([, rule]) => rule);
+  assert(wrappers.some(rule => /width\s*:\s*100%/.test(rule) && /min-width\s*:\s*0/.test(rule)), 'The title row can use all available space and shrink within its parent');
+  assert(wrappers.every(rule => /padding\s*:\s*\d+px\s+0\s+(?:2[8-9]|[3-9]\d)px\s*;/.test(rule)), 'Desktop and phone title rows retain breathing room before the authors');
+  assert.match(css, /\.home-research\s+\.author-list\s*\{[^}]*flex-direction\s*:\s*row\b[^}]*flex-wrap\s*:\s*wrap\b/, 'The title-only refinement preserves the horizontal, wrapping author list');
+});
+
 test('All authors and full institutional identities retain their original visible order and working links', async () => {
   const tree = await homepage();
   const expectedAuthors = [
