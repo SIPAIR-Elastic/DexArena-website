@@ -1,6 +1,6 @@
 {
   "checked_at": "2026-10-14",
-  "editorial_policy": "English editorial titles and concise summaries; source-language labels on all non-English external publications. Institute announcements, media coverage, benchmark technical notes and conference submission status are separate. No claim that media coverage independently evaluates DexArena.",
+  "editorial_policy": "English editorial titles and concise summaries; source-language labels on all non-English external publications. Institute announcements, media coverage, benchmark technical notes and verified events are separate. No claim that media coverage independently evaluates DexArena.",
   "institute_identity": {
     "display": "Shanghai Institute for Physical Artificial Intelligence and Robotics (PAIR)",
     "english_name_reference": "https://cn.linkedin.com/in/wei-jie-soo-291921234",
@@ -13,7 +13,6 @@
     {"id":"pair-announcement","primary":"https://www.jfdaily.com/sgh/detail?id=4045653","coverage_date":"2026-08-27","relationship":"Article explicitly attributed to PAIR as a republication"}
   ],
   "conference_sources": [
-    {"id":"pair-2026","event_dates":"2026-09-20/2026-09-21","announcement":"https://www.jfdaily.com/sgh/detail?id=4045653","held_evidence":"https://finance.sina.cn/stock/jdts/2026-09-22/detail-inissuif5647857.d.html"},
-    {"id":"iclr-2027","status":"Under-review submission only, according to project-owner-supplied paper record","record":"https://openreview.net/forum?id=9yr0F1saHs","conference":"https://iclr.cc/Conferences/2027"}
+    {"id":"pair-2026","event_dates":"2026-09-20/2026-09-21","announcement":"https://www.jfdaily.com/sgh/detail?id=4045653","held_evidence":"https://finance.sina.cn/stock/jdts/2026-09-22/detail-inissuif5647857.d.html"}
   ]
 }

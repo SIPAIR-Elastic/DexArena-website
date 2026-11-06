@@ -3,7 +3,7 @@
   "sourceRecorded": "2026-10-15",
   "sourceRecordedLabel": "Website data snapshot recorded",
   "sourceCommit": "411442196821048611c1172977163bc96f8eaf12",
-  "sourceUrl": "https://github.com/SIPAIR-Elastic/DexArena-website/blob/411442196821048611c1172977163bc96f8eaf12/src/paper-results.json",
+  "sourceUrl": "https://github.com/SIPAIR-Elastic/DexArena-website/blob/main/src/paper-results.json",
   "sourcePath": "src/paper-results.json",
   "sourceTables": {
     "stage": "tab:stage-level-tasks-performance",
@@ -13,5 +13,5 @@
   "paperUrl": "https://arxiv.org/abs/2611.02629",
   "description": "A fixed manuscript-derived score snapshot covering six methods and three evaluation tracks. The recorded date identifies the website source import, not when the experiments were run. Interface updates do not change these scores.",
   "scoreCount": 420,
-  "sha256": "f2b997f0650d70322e9dda65346bd1680de4f61a2262977194f556cdb9b26d60"
+  "sha256": "d4ca8f74cf7b934a2cb56c6fe6da80bbf9c7b633a7fbe41af9171a9577fe0193"
 }

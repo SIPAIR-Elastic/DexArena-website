@@ -1,6 +1,6 @@
 {
   "source": "main.tex",
-  "sourceDescription": "DexArena ICLR 2027 manuscript source supplied by the benchmark authors",
+  "sourceDescription": "DexArena benchmark manuscript source supplied by the benchmark authors",
   "models": [
     {
       "name": "PPO",

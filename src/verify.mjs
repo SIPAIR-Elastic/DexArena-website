@@ -230,8 +230,7 @@ assert(home.includes('/assets/paper/dexarena-overview.png'));
 const report=await readFile(join(dist,'report','index.html'),'utf8');
 assert(report.includes('report-paper-card')&&!report.includes('data-diversity.png'));
 for(const id of ['research','coverage','conferences','independent-studies'])assert(report.includes(`id="${id}"`));
-assert(report.includes('Full author list')&&report.includes('Under review'));
-assert(report.includes('not an acceptance or a confirmed presentation'));
+assert(report.includes('Full author list')&&report.includes('arXiv preprint'));
 assert(!report.includes('report-account')&&!report.includes('community-reports'),'No retired follow/contact panels in Report');
 assert.equal(reportCoverage.length,4);
 assert.equal(reportCoverage.filter(item=>item.type==='institute-reprint').length,1);
@@ -241,8 +240,7 @@ for(const item of reportCoverage){
   assert(report.includes(`<time datetime="${item.date}">`));
   assert(!/\p{Script=Han}/u.test(item.title+item.summary+item.byline));
 }
-assert.equal(reportConferences.length,2);
-assert.equal(reportConferences.find(item=>item.id==='iclr-2027').status,'Under review');
+assert.equal(reportConferences.length,1);
 assert.equal(reportConferences.find(item=>item.id==='pair-2026').status,'Held');
 const paperHtml=await readFile(join(dist,'paper','index.html'),'utf8');
 const citationHtml=await readFile(join(dist,'docs/citation/index.html'),'utf8');

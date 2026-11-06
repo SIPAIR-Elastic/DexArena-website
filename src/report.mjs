@@ -53,16 +53,10 @@ export const reportConferences = [
     summary: "The inaugural annual conference brought academic and industry researchers together around four Physical AI tracks. The program combined academic discussions with invitation-only industry sessions.",
     url: "https://www.jfdaily.com/sgh/detail?id=4045653",
     recap: "https://finance.sina.cn/stock/jdts/2026-09-22/detail-inissuif5647857.d.html"
-  },
-  {
-    id: "iclr-2027", title: "ICLR 2027", status: "Under review", kind: "DexArena conference submission",
-    date: "Submitted 11 September 2026", datetime: "2026-09-11", place: "Submission #13718 · OpenReview",
-    summary: "DexArena is an ICLR 2027 conference submission. The public record was modified on 6 October 2026. This is a submission status, not an acceptance or a confirmed presentation.",
-    url: "https://openreview.net/forum?id=9yr0F1saHs", conferenceUrl: "https://iclr.cc/Conferences/2027"
   }
 ];
 
-const external = (url, label, {historical=false}={}) => `<a href="${url.replaceAll('&','&amp;')}" target="_blank" rel="noreferrer"${historical?' data-historical-record':''}>${label} <span aria-hidden="true">↗</span></a>`;
+const external = (url, label) => `<a href="${url.replaceAll('&','&amp;')}" target="_blank" rel="noreferrer">${label} <span aria-hidden="true">↗</span></a>`;
 const coverageRow = item => `<article class="coverage-row" id="${item.id}">
   <div class="coverage-date"><time datetime="${item.date}">${item.dateLabel}</time><span>${item.category}</span></div>
   <div class="coverage-copy"><span class="report-eyebrow">${item.topic}</span><h3>${external(item.url,item.title)}</h3><p class="report-byline">${item.byline}</p><p>${item.summary}</p><div class="publication-links">${external(item.url,item.label)}<span class="source-language">Source in Chinese</span></div></div>
@@ -96,8 +90,8 @@ export const reportBody = `
   <div class="coverage-list">${reportCoverage.map(coverageRow).join('')}</div>
 </section>
 <section class="section report-section" id="conferences">
-  <div class="report-section-heading"><div><span class="report-eyebrow">03 · Conferences</span><h2>Meetings and academic milestones.</h2></div><p>Conference coverage and the benchmark's publication status, kept clearly separate.</p></div>
-  <div class="conference-grid">${reportConferences.map(item=>`<article class="conference-card"><div class="conference-top"><span class="report-eyebrow">${item.kind}</span><span class="conference-status">${item.status}</span></div><h3>${item.title}</h3><time datetime="${item.datetime}">${item.date}</time><p class="conference-place">${item.place}</p><p>${item.summary}</p><div class="publication-links">${external(item.url,item.recap?"Institute announcement":"Submission record",{historical:item.id==='iclr-2027'})}${item.recap?external(item.recap,"Conference recap"):external(item.conferenceUrl,"Conference website")}</div></article>`).join('')}</div>
+  <div class="report-section-heading"><div><span class="report-eyebrow">03 · Conferences</span><h2>Research conversations and events.</h2></div><p>Verified event coverage from the wider research ecosystem.</p></div>
+  <div class="conference-grid">${reportConferences.map(item=>`<article class="conference-card"><div class="conference-top"><span class="report-eyebrow">${item.kind}</span><span class="conference-status">${item.status}</span></div><h3>${item.title}</h3><time datetime="${item.datetime}">${item.date}</time><p class="conference-place">${item.place}</p><p>${item.summary}</p><div class="publication-links">${external(item.url,"Institute announcement")}${external(item.recap,"Conference recap")}</div></article>`).join('')}</div>
 </section>
 <section class="section report-section" id="independent-studies"><div class="research-outlook-panel"><div><span class="report-eyebrow">04 · Independent studies</span><h2>Reproducible research. Shared standards.</h2><p>Independent evaluations should identify the policy, task scope, benchmark revision and protocol, with per-episode evidence and reproducible aggregate results.</p></div><div class="research-outlook-actions"><a href="/leaderboard/protocol/">Evaluation protocol →</a><a href="/leaderboard/">Explore baseline results →</a></div></div><p class="report-note">No independent studies are listed yet. Public leaderboard submission intake is not open.</p></section>
 `;
