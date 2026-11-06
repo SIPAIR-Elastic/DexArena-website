@@ -150,7 +150,7 @@ body .site-footer :is(.footer-top > *, .footer-nav-group) { min-width: 0; }
 body .site-footer .footer-built { flex-wrap: wrap; }
 
 /* Image-led introduction: preserve the display titles and full-canvas text. */
-body .cover .cover-kicker { font-size: var(--type-small); line-height: 1.6; }
+body .cover .cover-kicker { line-height: 1.6; }
 body .cover .cover-copy p:not(.cover-title):not(.cover-subtitle) { font-size: var(--type-body); line-height: 1.7; }
 body .cover .cover-copy .arrow-link { font-size: var(--type-small); }
 body .cover .cover-mosaic__item span { font-size: var(--type-meta); line-height: 1.5; }

@@ -99,6 +99,7 @@ Markdown-only edits should not change the website release or generated pages.
 - Keep research labels and values on the shared grid with a clear gutter; stack them on narrow screens instead of shrinking text or allowing columns to overlap.
 - Keep body text at 18px, or 17px on narrow screens; content controls at least 16px and compact metadata at least 14px. The header deliberately uses 15px desktop links, 16px mobile links and a 14px Search label, with interaction targets of at least 44px.
 - Homepage paper and carousel headlines use the self-hosted Google Sans Flex face and its bundled license. Keep the centered paper title at a fluid 24–32px scale. Carousel messages should contain one headline, one short support line and one relevant action, without restoring the former explanatory paragraphs; preserve the shared subtitle scale across heading and paragraph elements.
+- Center carousel messages vertically as well as horizontally, with larger responsive type. The first slide orders the project name before its benchmark label and subtitle; the other slides distinguish held-out-scene generalization from complete-task composition, using factual scope and accurate evaluation/catalog links.
 - Preserve keyboard operation, visible focus, touch targets and reduced-motion behavior.
 - Test carousel controls, search, task filters and any affected result view.
 - Check the image fallback and pause controls when changing video presentation.

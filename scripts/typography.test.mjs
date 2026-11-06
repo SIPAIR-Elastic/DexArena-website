@@ -37,11 +37,11 @@ function readable(css,selector,{desktop,minimum}){
 }
 
 test('Every carousel eyebrow and its action remain readable on desktop and narrow phones',()=>{
-  readable(carousel,'.cover .cover-kicker',{desktop:15,minimum:13});
+  readable(carousel,'.cover .cover-kicker',{desktop:20,minimum:17});
   readable(carousel,'.cover .cover-copy .arrow-link',{desktop:14,minimum:13});
   const labels=[...build.matchAll(/<span class="cover-kicker">([^<]+)<\/span>/g)].map(match=>match[1]);
   assert.equal(labels.length,3,'All three authored carousel slides use the same readable label treatment');
-  assert.deepEqual(labels,['DexArena benchmark','Cross-scene generalization','Bimanual manipulation'],'Each slide has a concise, distinct subject label');
+  assert.deepEqual(labels,['DexArena benchmark','Visual generalization','Skill composition'],'Each slide has a concise, distinct benchmark subject label');
   assert(!rules(carousel,'.cover .cover-kicker').some(rule=>rule['white-space']==='nowrap'),'Long carousel labels can wrap instead of overflowing a narrow slide');
 });
 
@@ -51,8 +51,8 @@ test('The three carousel messages have one clear headline, a short support line 
   assert.equal(slides.length,3,'The carousel retains all three original slides');
   const expected=[
     ['DexArena benchmark','DexArena','Dexterity over long horizons.','Explore benchmark','#overview'],
-    ['Cross-scene generalization','Same skill. New scene.','30 stages. Three scenes.','Explore scenes','/leaderboard/#evaluation-scenes'],
-    ['Bimanual manipulation','Two hands. One task.','Open the box. Retrieve the apple.','Explore task','/tasks/package-opening/']
+    ['Visual generalization','Measure transfer.','30 stages × 3 held-out scenes.','Explore evaluation','/leaderboard/#evaluation-scenes'],
+    ['Skill composition','Beyond single skills.','10 long-horizon tasks. Physically grounded success checks.','Explore tasks','/tasks/']
   ];
   slides.forEach((slide,index)=>{
     const copy=slide.match(/<div class="cover-copy">([\s\S]*?)<\/div>/)?.[1];
@@ -77,6 +77,15 @@ test('The three carousel messages have one clear headline, a short support line 
     assert.equal(actual.hash,expectedUrl.hash,`${label}: the relevant section anchor is preserved`);
     const words=plainText(copy).replace(/[↗→]/g,'').trim().split(/\s+/);
     assert(words.length<=25,`Slide ${index+1} remains concise (${words.length} words, maximum 25)`);
+    assert.doesNotMatch(plainText(copy),/same skill\.?\s*new scene|two hands\.?\s*one task|open the box\.?\s*retrieve the apple/i,'Foreground messaging communicates benchmark scope instead of the retired task slogans');
+    if(index===0){
+      const titleStart=copy.indexOf('<h1>');
+      const kickerStart=copy.indexOf('<span class="cover-kicker">');
+      const subtitleStart=copy.indexOf('<h2 class="cover-subtitle">');
+      const actionStart=copy.indexOf('<a ');
+      assert.equal(copy.trimStart().indexOf('<h1>'),0,'DexArena is the first foreground item on the introduction slide');
+      assert(titleStart<kickerStart&&kickerStart<subtitleStart&&subtitleStart<actionStart,'The introduction reads DexArena, benchmark label, unchanged subtitle, then its action');
+    }
   });
   assert.equal((slides[0].match(/<video\b/g)||[]).length,3,'The benchmark mosaic still includes its three original videos');
   const videoNames=[...slides[0].matchAll(/<source\b[^>]*\bsrc="[^"]*\/([^/]+\.mp4)"/g)].map(match=>match[1]);
@@ -87,6 +96,32 @@ test('The three carousel messages have one clear headline, a short support line 
   }
   for(const control of ['data-prev','data-next','data-carousel-pause'])assert.match(html,new RegExp(`<button\\b[^>]*\\b${control}\\b[^>]*aria-(?:label|pressed)="`),`${control}: the accessible carousel control is retained`);
   assert.equal((html.match(/\bdata-dot="\d"/g)||[]).length,3,'Each slide retains a direct pagination target');
+});
+
+test('Carousel messages are vertically centered with a larger responsive display scale',()=>{
+  const copyRules=rules(carousel,'.cover .cover-copy');
+  assert(copyRules.length,'Carousel foreground has an authored layout');
+  assert.equal(copyRules[0]['justify-content'],'center','The message sits in the vertical middle instead of hugging the bottom');
+  assert.equal(copyRules[0]['align-items'],'center','Headlines and their actions share one horizontal center');
+  assert.equal(copyRules[0]['text-align'],'center','Multiline copy remains centered');
+  for(const rule of copyRules){
+    if(rule['justify-content'])assert.equal(rule['justify-content'],'center','Responsive overrides cannot move the foreground back to the bottom');
+  }
+  const displayScale=selector=>rules(carousel,selector).flatMap(rule=>{
+    if(!rule['font-size'])return [];
+    const scale=/^clamp\(\s*([\d.]+)px\s*,\s*[\d.]+vw\s*,\s*([\d.]+)px\s*\)$/.exec(rule['font-size']);
+    assert(scale,`${selector}: preserve a fluid scale instead of shrinking headlines at a breakpoint`);
+    return [{minimum:Number(scale[1]),maximum:Number(scale[2])}];
+  });
+  const brandScales=displayScale('.cover .cover-copy h1');
+  const secondaryScales=displayScale('.cover .cover-copy .cover-title');
+  assert(brandScales.length&&secondaryScales.length,'All carousel titles have an explicit responsive display scale');
+  assert(brandScales[0].minimum>=72&&brandScales[0].maximum>=140,'DexArena has the larger requested desktop title scale');
+  assert(secondaryScales.at(1)?.minimum>=64&&secondaryScales.at(1)?.maximum>=112,'Secondary slide titles use the larger desktop scale');
+  for(const scale of [...brandScales,...secondaryScales])assert(scale.minimum>=40,'Every mobile or short-screen title remains at least 40px');
+  assert(rules(carousel,'.cover .cover-card--benchmark .cover-kicker').some(rule=>rule.margin==='18px 0 0'),'The middle benchmark label has deliberate spacing beneath DexArena, including on cloned slides');
+  assert(!rules(readability,'body .cover .cover-kicker').some(rule=>rule['font-size']),'The generic readability layer cannot shrink component-authored carousel labels');
+  assert(rules(carousel,'.cover .cover-mosaic__item:last-child span').some(rule=>rule.top==='auto'&&Number.parseFloat(rule.bottom)>=18),'The lower mobile video label stays below the centered message, not across its subtitle');
 });
 
 test('All carousel support lines share one legible scale without paragraph-layer overrides',()=>{
