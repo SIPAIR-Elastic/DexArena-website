@@ -9,7 +9,7 @@ import {verifyCarousel} from './verify-carousel.mjs';
 import {verifyTaskMedia} from './verify-task-media.mjs';
 import {verifyPresentation} from './verify-presentation.mjs';
 import {verifyNavigation} from './verify-navigation.mjs';
-import {docsPublished,paperPublished,paperArtifactPaths,paperUrl,paperPdfUrl,codeUrl,isRetiredRoute,isRedirectRoute} from './publication.mjs';
+import {docsPublished,reportPublished,paperPublished,paperArtifactPaths,paperUrl,paperPdfUrl,codeUrl,isRetiredRoute,isRedirectRoute,isHiddenRoute} from './publication.mjs';
 import {brandAssets,brandMark,brandVersion} from './brand.mjs';
 import {createHash} from 'node:crypto';
 
@@ -65,6 +65,14 @@ for(const file of paths){
       assert(html.includes('data-docs-unavailable')&&html.includes('<h1>Documentation coming soon</h1>'));
       assert(html.includes('content="noindex, nofollow"'));
       assert(!html.includes('class="docs-layout"')&&!html.includes('class="docs-article"'),'Old URLs must not expose documentation content');
+    }
+  }
+  if(!reportPublished){
+    assert(!/href="\/report(?:\/|[?#"])/.test(html),'No public Report entry points');
+    if(file===join(dist,'report/index.html')){
+      assert(html.includes('data-report-unavailable')&&html.includes('<h1>Report coming soon</h1>'));
+      assert(html.includes('content="noindex, nofollow"'));
+      assert(!/report-paper-card|report-section-nav|id="(?:research|independent-studies)"/.test(html),'Old Report URLs must not expose retained research content');
     }
   }
   assert(!html.includes('undefined'),`Missing content in ${file}`);
@@ -143,11 +151,13 @@ viewButtons[2].handlers.click();assert(views.filter(v=>!v.hidden).every(v=>v.dat
 assert.equal([...leaderboard.matchAll(/data-result-view=/g)].length,9);
 assert.equal([...leaderboard.matchAll(/class="chart-track"/g)].length,18);
 const searchIndex=JSON.parse(await readFile(join(dist,'assets','search-index.json'),'utf8'));
-assert.equal(searchIndex.length,docsPublished?32:16);
-assert.equal(new Set(searchIndex.map(entry=>entry.url)).size,docsPublished?32:16);
+const discoverableCount=32-(docsPublished?0:16)-(reportPublished?0:1);
+assert.equal(searchIndex.length,discoverableCount);
+assert.equal(new Set(searchIndex.map(entry=>entry.url)).size,discoverableCount);
 assert(!searchIndex.some(entry=>entry.url==='/paper/'),'A compatibility redirect is not a search result');
 assert(searchIndex.every(entry=>!isRetiredRoute(entry.url)),'The deleted Community page is excluded from search');
 assert(searchIndex.every(entry=>!isRedirectRoute(entry.url)),'Compatibility redirects are excluded from search');
+assert(searchIndex.every(entry=>!isHiddenRoute(entry.url)),'Hidden sections are excluded from search');
 assert(!/wechat|weixin\.qq\.com|gh_[a-z\d]{10,}/i.test(JSON.stringify(searchIndex)),'Search contains no removed social-account content');
 assert(searchIndex.some(entry=>entry.url==='/code/'&&entry.text.includes('public repository')),'The public Code page is searchable');
 if(!paperPublished){
@@ -232,9 +242,11 @@ for(const render of sceneRenders){
 assert(home.includes('id="benchmark-overview"'));
 assert(home.includes('/assets/paper/dexarena-overview.png'));
 const report=await readFile(join(dist,'report','index.html'),'utf8');
-assert(report.includes('report-paper-card')&&!report.includes('data-diversity.png'));
-for(const id of ['research','independent-studies'])assert(report.includes(`id="${id}"`));
-assert(report.includes('Full author list')&&report.includes('arXiv preprint'));
+if(reportPublished){
+  assert(report.includes('report-paper-card')&&!report.includes('data-diversity.png'));
+  for(const id of ['research','independent-studies'])assert(report.includes(`id="${id}"`));
+  assert(report.includes('Full author list')&&report.includes('arXiv preprint'));
+}
 assert(!report.includes('report-account')&&!report.includes('community-reports'),'No retired follow/contact panels in Report');
 assert(!/\bPAIR\b|Shanghai Institute for Physical Artificial Intelligence and Robotics|id="(?:coverage|conferences)"/i.test(report),'Report is limited to benchmark research, without institute publicity or retired sections');
 const paperHtml=await readFile(join(dist,'paper','index.html'),'utf8');
@@ -304,7 +316,7 @@ if(paperPublished){
 }else{
   assert(!paperHtml.includes('paper-masthead')&&!paperHtml.includes('paper-abstract'));
   assert(home.includes('/assets/paper/data-collection-pipeline.png'),'Keep the data pipeline image on the homepage');
-  assert(report.includes('href="/#paper-overview"'),'Report images lead to the retained visual overview');
+  if(reportPublished)assert(report.includes('href="/#paper-overview"'),'Report images lead to the retained visual overview');
   assert(!leaderboard.includes('/paper/#paper-results'),'Baseline sources must not point to a nonexistent notice-page anchor');
 }
 const copyButton=node(),copyStatus={textContent:''};let copiedText='';
@@ -377,4 +389,4 @@ runInNewContext(js.slice(js.indexOf('const textCopyButtons='),js.indexOf('const 
 });
 await textButton.handlers.click();assert(selectedFallback);
 assert(textStatus.textContent.includes('Select and copy')&&!/\p{Script=Han}/u.test(textStatus.textContent));
-console.log(`Verified ${docsPublished?32:16} discoverable English-only pages, ${links} local links/anchors, consolidated evaluation/results, research-focused Report, link-copy success/fallback, paper metadata, palette contrast, search and all 420 task/method scores.`);
+console.log(`Verified ${discoverableCount} discoverable English-only pages, ${links} local links/anchors, consolidated evaluation/results, publication visibility, link-copy success/fallback, paper metadata, palette contrast, search and all 420 task/method scores.`);

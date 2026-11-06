@@ -9,11 +9,15 @@
   };
   const releaseId = meta('dexarena-release');
   const published = meta('dexarena-docs-published');
+  const report = meta('dexarena-report-published');
   const basePath = meta('dexarena-base-path');
 
-  if (validRelease(releaseId) && /^(?:true|false)$/.test(published || '') && validBase(basePath)) {
+  if (validRelease(releaseId) && /^(?:true|false)$/.test(published || '') &&
+      (report == null || /^(?:true|false)$/.test(report)) && validBase(basePath)) {
     let activeRelease = releaseId;
     let docsPublished = published === 'true';
+    // Older cached shells predate the Report switch; a fresh manifest can hide it.
+    let reportPublished = report !== 'false';
     let requestSequence = 0;
     const origin = window.location.origin;
     const baseUrl = new URL(basePath, origin);
@@ -24,10 +28,11 @@
         return url.origin === origin && isLocalPath(url.pathname) ? url : null;
       } catch { return null; }
     };
-    const isDocsPath = path => {
+    const isHiddenPath = path => {
       try {
         const relative = decodeURIComponent(path).replace(/\/{2,}/g, '/').slice(basePath.length);
-        return /^docs(?:\/|$)/i.test(relative);
+        return (!docsPublished && /^docs(?:\/|$)/i.test(relative)) ||
+          (!reportPublished && /^report(?:\/|$)/i.test(relative));
       } catch { return false; }
     };
     const isHtmlPath = path => {
@@ -42,7 +47,7 @@
         if (!href || href.startsWith('#')) continue;
         const url = parsedLink(link);
         if (!url) continue;
-        if (!docsPublished && isDocsPath(url.pathname)) {
+        if (isHiddenPath(url.pathname)) {
           const navigation = link.closest('nav, header, footer, [data-drawer], .site-footer');
           const callToAction = link.matches('.arrow-link, .editorial-link, .button, .btn, [role="button"], [data-doc-link]') || /[→↗]\s*$/.test(link.textContent || '');
           if (navigation || callToAction) link.remove();
@@ -78,9 +83,12 @@
         if (!response.ok) return;
         const latest = await response.json();
         if (sequence !== requestSequence || !latest || !validRelease(latest.releaseId) ||
-            typeof latest.docsPublished !== 'boolean' || latest.basePath !== basePath) return;
+            typeof latest.docsPublished !== 'boolean' ||
+            (latest.reportPublished !== undefined && typeof latest.reportPublished !== 'boolean') ||
+            latest.basePath !== basePath) return;
         activeRelease = latest.releaseId;
         docsPublished = latest.docsPublished;
+        if (typeof latest.reportPublished === 'boolean') reportPublished = latest.reportPublished;
         applyPublication();
         if (latest.releaseId !== releaseId) refreshOnce(latest.releaseId);
       } catch { /* Offline visits and temporary manifest failures keep static links usable. */ }

@@ -1,5 +1,7 @@
 // Temporarily hide the documentation center; retain its source for restoration.
 export const docsPublished=false;
+// Temporarily hide Report without removing its authored research content.
+export const reportPublished=false;
 // The project owner has released the paper and public repository.
 export const paperPublished=true;
 export const paperUrl='https://arxiv.org/abs/2611.02629';
@@ -24,6 +26,15 @@ export function isRetiredRoute(path){
 // or navigation. Evaluation now belongs to the Leaderboard, not a separate page.
 export function isRedirectRoute(path){
   return /^\/(?:paper|evaluation)(?:\/|$)/i.test(path.replace(/\/{2,}/g,'/'));
+}
+
+// Hidden sections keep non-indexed notice pages for old bookmarks only.
+export function isHiddenRoute(path){
+  try{
+    const normalized=decodeURIComponent(path).split(/[?#]/)[0].replace(/\/{2,}/g,'/');
+    return (!docsPublished&&/^\/docs(?:\/|$)/i.test(normalized))||
+      (!reportPublished&&/^\/report(?:\/|$)/i.test(normalized));
+  }catch{return false}
 }
 
 export function evaluationDestination(href){
@@ -85,7 +96,7 @@ export function publishContent(html){
       const publicHref=publishedManuscriptUrl(href);
       if(publicHref)return `<a${attributes.replace(/\bhref\s*=\s*(["'])(.*?)\1/i,`href="${publicHref}"`).replace(/\s+download(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?/gi,'')}>${content}</a>`;
     }
-    if(docsPublished||!/^\/docs(?:\/|[?#]|$)/.test(href))return anchor;
+    if(!href.startsWith('/')||href.startsWith('//')||!isHiddenRoute(href))return anchor;
     const path=href.split(/[?#]/)[0];
     if(/^\/docs\/resources\/?$/.test(path))return codeLink;
     const classes=attributes.match(/\bclass\s*=\s*(["'])(.*?)\1/i)?.[2].split(/\s+/)||[];

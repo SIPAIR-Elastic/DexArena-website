@@ -234,17 +234,35 @@ test('Mixed publication filtering is deterministic and safe to run twice',async(
   assert.equal(publishContent('Research text without links.'),'Research text without links.');
 });
 
-async function publicationVariant({docs=false,paper=false}={}){
+async function publicationVariant({docs=false,paper=false,report=false}={}){
   const source=await readFile(new URL('../src/publication.mjs',import.meta.url),'utf8');
   assert(/\bexport\s+const\s+docsPublished\s*=\s*(?:true|false)\b/.test(source));
   assert(/\bexport\s+const\s+paperPublished\s*=\s*(?:true|false)\b/.test(source));
   const enabled=source
+    .replace(/\bexport\s+const\s+reportPublished\s*=\s*(?:true|false)\b/,`export const reportPublished=${report}`)
     .replace(/\bexport\s+const\s+docsPublished\s*=\s*(?:true|false)\b/,`export const docsPublished=${docs}`)
     .replace(/\bexport\s+const\s+paperPublished\s*=\s*(?:true|false)\b/,`export const paperPublished=${paper}`)
     .replace(/(\bfrom\s*|\bimport\s*)(["'])(\.{1,2}\/[^"']+)\2/g,(_,prefix,quote,specifier)=>`${prefix}${quote}${new URL(specifier,new URL('../src/publication.mjs',import.meta.url)).href}${quote}`);
   // Evaluate release combinations without editing files or relaxing production flags.
   return import(`data:text/javascript;base64,${Buffer.from(enabled).toString('base64')}`);
 }
+
+test('Report visibility can be restored independently without republishing Docs or private manuscript assets',async()=>{
+  const hidden=await publicationVariant();
+  for(const path of ['/report','/report/','/report/index.html','/report/?v=old#research','/%72eport/'])assert(hidden.isHiddenRoute(path),path);
+  for(const path of ['/reports/','/assets/report.css','/tasks/report/'])assert(!hidden.isHiddenRoute(path),path);
+  assert.equal(hidden.publishContent('<a class="editorial-link" href="/report/">Report →</a>'),'');
+  assert.equal(hidden.publishContent('<a href="/report/#research">Research notes</a>'),'<span>Research notes</span>');
+  assert.equal(hidden.publishContent('<a href="https://external.test/report/">External report</a>'),'<a href="https://external.test/report/">External report</a>');
+  const restored=await publicationVariant({report:true});
+  assert.equal(restored.reportPublished,true);
+  assert(!restored.isHiddenRoute('/report/'));
+  assert(restored.isHiddenRoute('/docs/'));
+  const html='<a class="editorial-link" href="/report/#research">Research →</a>';
+  assert.equal(restored.publishContent(html),html,'The switch restores authored Report links without rewriting its source');
+  assert.equal(restored.paperPublished,false);
+  assert(restored.isWithheldPaperAsset('/assets/docs/dexarena-paper.pdf'));
+});
 
 test('Enabling Docs independently does not publish the withheld manuscript',async()=>{
   const restored=await publicationVariant({docs:true});

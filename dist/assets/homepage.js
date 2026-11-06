@@ -1,5 +1,5 @@
-// Compact sections stay native and usable without JavaScript. Fragment links
-// reveal the complete author/citation record when a visitor explicitly asks.
+// Author and publication metadata are always visible. The separate BibTeX
+// disclosure works natively; enhance its fragment navigation when available.
 (() => {
   const root = document.querySelector('.home-research');
   if (!root) return;

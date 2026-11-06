@@ -9,7 +9,7 @@ import { documentationPages } from "./docs-content.mjs";
 import { reportBody } from "./report.mjs";
 import { algorithmLink, algorithmDirectory, algorithmReferenceSection } from "./references.mjs";
 import { benchmarkScope } from "./presentation.mjs";
-import { docsPublished, paperPublished, paperArtifactPaths, paperUrl, codeUrl, publishContent, isRedirectRoute } from "./publication.mjs";
+import { docsPublished, reportPublished, paperPublished, paperArtifactPaths, paperUrl, codeUrl, publishContent, isRedirectRoute, isHiddenRoute } from "./publication.mjs";
 import { brandAssets, brandMark, brandVersion } from "./brand.mjs";
 import { codeBody } from "./code-page.mjs";
 import { renderLeaderboard } from "./leaderboard.mjs";
@@ -149,7 +149,7 @@ const nav = [
 
 const esc = (value) => String(value).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
 const taskImage = (index) => `/assets/tasks/task-${String(index).padStart(2,"0")}.jpg`;
-const publicNav=nav.filter(([, ,id])=>docsPublished||id!=="docs");
+const publicNav=nav.filter(([href])=>!isHiddenRoute(href));
 const headerNav=publicNav;
 
 const tracks = [
@@ -192,12 +192,20 @@ function footer() {
 }
 
 function layout({title,description,active,body,pageClass=""}) {
-  const withheld=pageClass==="docs-page"&&!docsPublished;
-  if(withheld){
+  const docsWithheld=pageClass==="docs-page"&&!docsPublished;
+  const reportWithheld=pageClass==="report-page"&&!reportPublished;
+  const withheld=docsWithheld||reportWithheld;
+  if(docsWithheld){
     title="Documentation coming soon — DexArena";
     description="Website documentation is being prepared. Visit the official DexArena repository for the current project files.";
     active="";pageClass="release-preview-page";
     body=`<section class="section release-preview" data-docs-unavailable><span class="release-eyebrow">DexArena · Documentation</span><h1>Documentation coming soon</h1><p>The website documentation is being prepared. Visit the official repository for current project files and updates, or explore the paper and benchmark tasks.</p><div class="overview-links">${arrowLink(codeUrl,'Official repository')}${arrowLink('/paper/','Read the paper')}${arrowLink('/tasks/','Explore tasks')}</div></section>`;
+  }
+  if(reportWithheld){
+    title="Report coming soon — DexArena";
+    description="The Report section is temporarily unavailable. Explore the DexArena project, tasks and benchmark results.";
+    active="";pageClass="release-preview-page";
+    body=`<section class="section release-preview" data-report-unavailable><span class="release-eyebrow">DexArena</span><h1>Report coming soon</h1><p>This section is temporarily unavailable. Explore the project, benchmark tasks and results in the meantime.</p><div class="overview-links">${arrowLink('/','Project overview')}${arrowLink('/tasks/','Explore tasks')}${arrowLink('/leaderboard/','Benchmark results')}</div></section>`;
   }
   return publishContent(`<!doctype html><html lang="en"><head>
     <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -529,7 +537,10 @@ await copyFile(join(root,"src","docs.js"),join(dist,"assets","docs.js"));
 await copyFile(join(root,"src","experience.js"),join(dist,"assets","experience.js"));
 await Promise.all([copyFile(join(root,"src","site.css"),join(dist,"assets","site.css")),copyFile(join(root,"src","layout.css"),join(dist,"assets","layout.css")),copyFile(join(root,"src","site.js"),join(dist,"assets","site.js"))]);
 
-const searchEntries=pages.filter(([file])=>!isRedirectRoute('/'+file.replace(/index\.html$/,''))&&(docsPublished||!file.startsWith('docs/'))).map(([file,html])=>{
+const searchEntries=pages.filter(([file])=>{
+  const path='/'+file.replace(/index\.html$/,'');
+  return !isRedirectRoute(path)&&!isHiddenRoute(path);
+}).map(([file,html])=>{
   const content=html.match(/<article\b[^>]*class="docs-article"[^>]*>([\s\S]*?)<\/article>/)?.[1]||html.match(/<main>([\s\S]*?)<\/main>/)?.[1]||html;
   return {url:file==='index.html'?'/':'/'+file.replace(/index\.html$/,''),title:html.match(/<title>(.*?)<\/title>/)?.[1]||'DexArena',text:content.replace(/<script[\s\S]*?<\/script>/g,'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').slice(0,40000)};
 });
