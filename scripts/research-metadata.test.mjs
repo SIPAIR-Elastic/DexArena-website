@@ -117,7 +117,7 @@ test('All authors and full institutional identities retain their original visibl
   ];
   const affiliations = byClass(tree, 'paper-affiliations', tree.record)[0];
   const list = affiliations.children.find(node => node.tag === 'ol');
-  assert.equal(list.children.length, 8, 'Seven universities and the supplied institute remain present');
+  assert.equal(list.children.length, expectedInstitutions.length, 'Only the seven universities remain in the affiliation list');
   expectedInstitutions.forEach(([name, href, logo], index) => {
     const row = list.children[index];
     visibleWithoutDisclosure(row);
@@ -130,10 +130,8 @@ test('All authors and full institutional identities retain their original visibl
     assert.equal(images[0].attrs.alt, `${name} logo`);
     assert.equal(new URL(images[0].attrs.src, siteUrl).pathname, `${basePath}assets/universities/${logo}`);
   });
-  const institute = list.children[7];
-  assert.equal(institute.attrs.id, 'affiliation-8');
-  assert.match(text(tree.fragment(institute)), /PAIR Shanghai Institute for Physical Artificial Intelligence and Robotics/);
-  assert.equal(descendants(tree, institute, node => node.tag === 'img' || node.tag === 'a').length, 0, 'No unverified institute logo or website is invented');
+  assert.equal(tree.nodes.filter(node => node.attrs.id === 'affiliation-8').length, 0, 'The removed institute leaves no obsolete affiliation anchor');
+  assert.doesNotMatch(text(tree.fragment(affiliations)), /\bPAIR\b|Shanghai Institute for Physical Artificial Intelligence and Robotics/i, 'The removed institute is not displayed');
 });
 
 test('The expanded publication record exposes all nine metadata fields and accurate release actions', async () => {
@@ -159,7 +157,7 @@ test('The expanded publication record exposes all nine metadata fields and accur
   assert.deepEqual(paperLinks.slice(0, 2).map(link => link.attrs.href), ['https://arxiv.org/pdf/2611.02629', paperUrl]);
   assert.equal(new URL(paperLinks[2].attrs.href, siteUrl).hash, '#citation');
   for (const [field, label, href] of [
-    ['Code', 'GitHub · SIPAIR-Elastic/DexArena ↗', codeUrl],
+    ['Code', 'GitHub · Benchmark code ↗', codeUrl],
     ['License', 'CC BY 4.0 ↗', 'https://creativecommons.org/licenses/by/4.0/'],
     ['Revisions', 'Version history on arXiv ↗', paperUrl]
   ]) {
@@ -197,5 +195,12 @@ test('Restoring visible metadata preserves the separate citation disclosure and 
     assert.doesNotMatch(declarations, /\b(?:background|border(?:-width)?|border-radius)\s*:\s*(?!0(?:\s|;)|none(?:\s|;)|transparent(?:\s|;))[^;]+;/, 'The restored record does not acquire the old disclosure box');
     assert.doesNotMatch(declarations, /display\s*:\s*none|visibility\s*:\s*hidden/, 'Responsive styles cannot hide the record');
   }
-  assert.match(css, /\.home-research\s+\.author-list\s*\{[^}]*flex-direction\s*:\s*column/, 'The author list remains vertical in the restored layout');
+  const authorDeclarations = [...css.matchAll(/\.home-research\s+\.author-list\s*\{([^}]*)\}/g)].map(([, declarations]) => declarations);
+  assert(authorDeclarations.length, 'The research author layout has an explicit scoped rule');
+  assert(authorDeclarations.some(declarations => /flex-direction\s*:\s*row\b/.test(declarations)), 'Authors flow horizontally in manuscript order');
+  assert(authorDeclarations.some(declarations => /flex-wrap\s*:\s*wrap\b/.test(declarations)), 'Author names wrap naturally on smaller screens');
+  assert(authorDeclarations.some(declarations => /align-items\s*:\s*baseline\b/.test(declarations)), 'Names and affiliation superscripts share a readable baseline');
+  for (const declarations of authorDeclarations) {
+    assert.doesNotMatch(declarations, /flex-direction\s*:\s*column\b/, 'No responsive rule restores the former vertical list');
+  }
 });

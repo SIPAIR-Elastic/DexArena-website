@@ -25,6 +25,17 @@ function readable(source) {
     .replace(/&amp;/gi, '&');
 }
 
+// Check prose that can actually appear in the document, without treating
+// canonical task keys or authentic repository URLs as institutional publicity.
+function visibleText(html) {
+  return readable(html
+    .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, ' ')
+    .replace(/<!--[\s\S]*?-->/g, ' ')
+    .replace(/<[^>]*>/g, ' '))
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function assertBenchmarkScope(source, path) {
   for (const [label, pattern] of retiredReportMarkers) {
     assert.doesNotMatch(readable(source), pattern, `${path}: no retired ${label}`);
@@ -61,7 +72,7 @@ test('Retained Report source keeps its two sequentially numbered sections ready 
   assert.doesNotMatch(html, /class="(?:coverage-list|conference-grid|conference-card|coverage-row)"/, 'Removed editorial sections leave no empty cards or grids');
 });
 
-test('Report publication controls search visibility without removing intentional references elsewhere', async () => {
+test('Report publication controls search visibility and retired institute references stay absent from searchable prose', async () => {
   const search = JSON.parse(await read('dist/assets/search-index.json'));
   const reportEntries = search.filter(entry => /\/report\/$/.test(new URL(entry.url, 'https://example.test').pathname));
   assert.equal(reportEntries.length, reportPublished ? 1 : 0, 'Only published Report content can enter search');
@@ -71,8 +82,10 @@ test('Report publication controls search visibility without removing intentional
     assert.match(reportEntries[0].text, /02\s*·\s*Independent studies/);
   }
   assert.equal(search.length, 15 + (docsPublished ? 16 : 0) + (reportPublished ? 1 : 0), 'Discoverability follows both independent publication switches');
-  assert(search.some(entry => /Shanghai Institute for Physical Artificial Intelligence and Robotics/.test(entry.text)), 'The homepage institution remains searchable');
-  assert(search.some(entry => /Type PAIR/.test(entry.text)), 'The Office Desk stage remains searchable');
+  for (const entry of search) {
+    assert.doesNotMatch(`${entry.title} ${entry.text}`, /\bPAIR\b|Shanghai Institute for Physical Artificial Intelligence and Robotics/, `${entry.url}: searchable prose does not advertise the removed institute`);
+  }
+  assert(search.some(entry => /Type target word/.test(entry.text)), 'The Office Desk stage remains searchable with its neutral label');
 });
 
 test('Retained Report source preserves its figure, public publication, code and result destinations', () => {
@@ -117,13 +130,17 @@ test('Unpublished Report is a non-indexed notice with no navigation, footer or d
   assert(!sitemap.includes(`${siteUrl}report/`), 'Sitemap does not advertise the hidden Report notice');
 });
 
-test('The Report-only change preserves homepage affiliation and the Office Desk task contract', async () => {
+test('The removed institute has no generated prose while real code destinations and the Office Desk task contract are preserved', async () => {
   const home = await read('dist/index.html');
   const office = await read('dist/tasks/office-desk/index.html');
-  assert.match(home, /Shanghai Institute for Physical Artificial Intelligence and Robotics/);
-  assert.match(home, /\bPAIR\b/);
-  assert.match(office, /Type PAIR/);
+  assert.doesNotMatch(home, /Shanghai Institute for Physical Artificial Intelligence and Robotics|id="affiliation-8"/, 'The homepage no longer includes the institute identity');
+  assert.match(office, /Type target word/);
   assert.match(office, /Press and release P, A, I, R and Enter in order/);
+  assert(hrefs(home).includes('https://github.com/SIPAIR-Elastic/DexArena'), 'The public benchmark link retains its correct official destination');
+  const paths = (await readdir(new URL('dist/', root), {recursive: true})).filter(path => path.endsWith('.html'));
+  for (const path of paths) {
+    assert.doesNotMatch(visibleText(await read(`dist/${path}`)), /\bPAIR\b|Shanghai Institute for Physical Artificial Intelligence and Robotics/, `${path}: no retired institute name or acronym is displayed`);
+  }
   assertBenchmarkScope('https://github.com/SIPAIR-Elastic/DexArena', 'Allowed official benchmark namespace');
   assertBenchmarkScope('Compare pairwise policy results using paired seeds.', 'Allowed incidental word substrings');
 });
