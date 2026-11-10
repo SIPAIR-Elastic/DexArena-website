@@ -11,6 +11,7 @@ import {verifyPresentation} from './verify-presentation.mjs';
 import {verifyNavigation} from './verify-navigation.mjs';
 import {docsPublished,reportPublished,paperPublished,paperArtifactPaths,paperUrl,paperPdfUrl,codeUrl,isRetiredRoute,isRedirectRoute,isHiddenRoute} from './publication.mjs';
 import {brandAssets,brandMark,brandVersion} from './brand.mjs';
+import {documentationPages} from './docs-content.mjs';
 import {createHash} from 'node:crypto';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
@@ -27,7 +28,7 @@ for(const track of ['stage','generalization','longHorizon']){
 }
 const paths=[];
 async function walk(dir){for(const e of await readdir(dir,{withFileTypes:true})){const p=join(dir,e.name);if(e.isDirectory())await walk(p);else if(e.name.endsWith('.html'))paths.push(p)}}
-await walk(dist);assert.equal(paths.length,35,'32 research/documentation pages plus three compatibility redirects');
+await walk(dist);assert.equal(paths.length,19+documentationPages.length,'Research routes, all authored documentation pages and three compatibility redirects');
 await assert.rejects(stat(join(dist,'community/index.html')),error=>error.code==='ENOENT','The retired Community page must be absent from the public build');
 let links=0;
 const navigationCss=await readFile(join(dist,'assets/navigation.css'),'utf8');
@@ -151,7 +152,7 @@ viewButtons[2].handlers.click();assert(views.filter(v=>!v.hidden).every(v=>v.dat
 assert.equal([...leaderboard.matchAll(/data-result-view=/g)].length,9);
 assert.equal([...leaderboard.matchAll(/class="chart-track"/g)].length,18);
 const searchIndex=JSON.parse(await readFile(join(dist,'assets','search-index.json'),'utf8'));
-const discoverableCount=32-(docsPublished?0:16)-(reportPublished?0:1);
+const discoverableCount=15+(docsPublished?documentationPages.length:0)+(reportPublished?1:0);
 assert.equal(searchIndex.length,discoverableCount);
 assert.equal(new Set(searchIndex.map(entry=>entry.url)).size,discoverableCount);
 assert(!searchIndex.some(entry=>entry.url==='/paper/'),'A compatibility redirect is not a search result');

@@ -305,6 +305,15 @@ const docLinks=[...document.querySelectorAll("[data-doc-link]")];
 docSearch?.addEventListener("input",()=>{
   const q=docSearch.value.trim().toLowerCase();
   docLinks.forEach(link=>link.hidden=q&&!link.textContent.toLowerCase().includes(q));
+  document.querySelectorAll('.docs-nav-group').forEach(group=>{
+    group.hidden=Boolean(q)&&![...group.querySelectorAll('[data-doc-link]')].some(link=>!link.hidden);
+  });
+  const status=document.querySelector('[data-doc-filter-status]');
+  if(status){
+    const count=docLinks.filter(link=>!link.hidden).length;
+    status.hidden=!q;
+    status.textContent=count?`${count} matching ${count===1?'page':'pages'}`:'No pages found. Try another keyword.';
+  }
 });
 
 
@@ -343,7 +352,7 @@ if(searchTriggers.length){
     previousFocus=document.activeElement;dialog.showModal();document.body.classList.add("search-open");input.focus();render();
     if(entries)return;
     try{
-      loadPromise ||= fetch("/DexArena-website/assets/search-index.json?v=d1b73b17d041",{cache:"no-store"}).then(response=>{if(!response.ok)throw new Error("Search unavailable");return response.json()});
+      loadPromise ||= fetch("/DexArena-website/assets/search-index.json?v=497f25c60c76",{cache:"no-store"}).then(response=>{if(!response.ok)throw new Error("Search unavailable");return response.json()});
       entries=await loadPromise;render();
     }catch{status.textContent="Search could not load. Please use the paper page or the task catalog.";loadPromise=null}
   }

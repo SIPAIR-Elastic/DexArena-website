@@ -125,11 +125,12 @@ test('Downloadable manifest fingerprints exactly the unchanged source data, inde
   assert(html.includes(`href="${basePath}assets/results/paper-results.json" download`));
 });
 
-test('Platform additions do not publish hidden Docs, retired Community routes, or unbacked score certification', async () => {
-  assert.equal(docsPublished, false, 'Docs remains temporarily hidden');
+test('Platform additions link the released Docs without restoring Community routes or unbacked score certification', async () => {
+  assert.equal(docsPublished, true, 'The released documentation center is public');
   const html = await readDist('leaderboard/index.html');
   const anchors = [...html.matchAll(/<a\b[^>]*\bhref="([^"]+)"[^>]*>/g)].map(([, href]) => decode(href));
-  assert(!anchors.some(href => /(?:^|\/)docs(?:\/|[?#]|$)/.test(href) && !/\/assets\/docs\//.test(href)));
+  const {basePath}=githubPagesConfig();
+  assert(anchors.some(href => new URL(href,'https://dexarena.test').pathname===`${basePath}docs/`),'Leaderboard navigation consistently exposes Docs');
   assert(!anchors.some(href => /(?:^|\/)community(?:\/|[?#]|$)/.test(href)));
   assert(!/mp\.weixin\.qq\.com|gh_6279469803d5/.test(html));
   assert(!/class="[^"]*\b(?:verified-badge|certified-score|official-submission-badge)\b/.test(html));

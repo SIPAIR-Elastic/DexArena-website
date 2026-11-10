@@ -63,5 +63,5 @@ test('The result UI has accessible inspectors, truthful scales and unchanged exp
   assert(/scene standard deviation, not confidence intervals/.test(html));
   const {basePath}=JSON.parse(await readFile(new URL('../dist/assets/site-release.json',import.meta.url),'utf8'));
   const hrefs=[...html.matchAll(/href="([^"]+)"/g)].map(match=>match[1]);
-  assert(!hrefs.some(href=>href.startsWith(`${basePath}docs/`)||href.startsWith('/docs/')),'Docs routes stay hidden; the public BibTeX asset is not a Docs page');
+  assert(hrefs.some(href=>new URL(href,'https://dexarena.test').pathname===`${basePath}docs/`),'The restored Docs center is reachable without changing public result exports');
 });

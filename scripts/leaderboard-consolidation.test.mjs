@@ -116,7 +116,7 @@ test('Old evaluation URLs become non-indexed compatibility redirects rather than
 
 test('Navigation, footer, search and sitemap never promote legacy evaluation routes', async () => {
   const paths = (await readdir(new URL('dist/', root), {recursive: true})).filter(path => path.endsWith('.html'));
-  assert.equal(paths.length, 35, 'Public content, hidden Docs and compatibility routes are all audited');
+  assert.equal(paths.length, 36, 'Public content, all seventeen Docs pages, hidden Report and compatibility routes are all audited');
   for (const path of paths) {
     const html = await read(`dist/${path}`);
     for (const href of anchors(html)) {
@@ -130,7 +130,7 @@ test('Navigation, footer, search and sitemap never promote legacy evaluation rou
     }
   }
   const search = JSON.parse(await read('dist/assets/search-index.json'));
-  assert.equal(search.length, 15 + (docsPublished ? 16 : 0) + (reportPublished ? 1 : 0), 'Only canonical published content is discoverable while retained sections are hidden');
+  assert.equal(search.length, 15 + (docsPublished ? 17 : 0) + (reportPublished ? 1 : 0), 'Only canonical published content is discoverable while retained sections are hidden');
   assert(search.every(entry => !new URL(entry.url, siteUrl).pathname.startsWith(`${basePath}evaluation/`)), 'Search does not expose compatibility pages');
   const leaderboard = search.find(entry => new URL(entry.url, siteUrl).pathname === `${basePath}leaderboard/`);
   assert(leaderboard && leaderboard.text.includes('Stage Success Rate') && leaderboard.text.includes('checkpoint_hash'), 'Protocol and evidence are searchable under the consolidated page');

@@ -225,7 +225,7 @@ test('The expanded publication record exposes all nine metadata fields and accur
   const paperLinks = descendants(tree, rows.Paper, node => node.tag === 'a');
   assert.deepEqual(paperLinks.map(link => text(tree.fragment(link))), ['Read PDF ↗', 'arXiv:2611.02629 ↗', 'Citation & BibTeX →']);
   assert.deepEqual(paperLinks.slice(0, 2).map(link => link.attrs.href), ['https://arxiv.org/pdf/2611.02629', paperUrl]);
-  assert.equal(new URL(paperLinks[2].attrs.href, siteUrl).hash, '#citation');
+  assert.equal(new URL(paperLinks[2].attrs.href, siteUrl).pathname, `${basePath}docs/citation/`, 'The publication record reaches the restored canonical citation guide');
   for (const [field, label, href] of [
     ['Code', 'GitHub · Benchmark code ↗', codeUrl],
     ['License', 'CC BY 4.0 ↗', 'https://creativecommons.org/licenses/by/4.0/'],
@@ -258,7 +258,8 @@ test('Restoring visible metadata preserves the separate citation disclosure and 
   assert.equal(tree.nodes.filter(node => node.attrs.id === 'paper-bibtex').length, 1);
   assert.doesNotMatch(tree.html, /data-findings\b|data-finding-(?:panel|tab)\b|data-result-panel\b|class="[^"]*\bpaper-abstract\b/, 'Result widgets and the full abstract are not reintroduced');
   for (const nav of tree.nodes.filter(node => node.tag === 'nav' && (Object.hasOwn(node.attrs, 'data-nav-desktop') || node.attrs.id === 'site-mobile-nav'))) {
-    assert.doesNotMatch(text(tree.fragment(nav)), /\b(?:Evaluation|Docs)\b/, 'The retired standalone Evaluation page and hidden Docs stay out of primary navigation');
+    assert.doesNotMatch(text(tree.fragment(nav)), /\bEvaluation\b/, 'The retired standalone Evaluation page stays out of primary navigation');
+    assert.match(text(tree.fragment(nav)), /\bDocs\b/, 'The restored documentation center is present in desktop and mobile navigation');
   }
   const css = await read('src/homepage.css');
   for (const [, declarations] of css.matchAll(/[^{}]*\.home-research-record\s*\{([^{}]*)\}/g)) {

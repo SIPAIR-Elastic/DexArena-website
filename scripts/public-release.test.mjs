@@ -1,14 +1,17 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {readFile} from 'node:fs/promises';
-import {docsPublished,paperPublished,paperUrl,paperPdfUrl,codeUrl,codeLink,paperLink,paperArtifactPaths,isWithheldPaperAsset,isRetiredRoute,publishContent} from '../src/publication.mjs';
+import {docsPublished,reportPublished,paperPublished,paperUrl,paperPdfUrl,codeUrl,codeLink,paperLink,paperArtifactPaths,isWithheldPaperAsset,isRetiredRoute,isHiddenRoute,publishContent} from '../src/publication.mjs';
 import {renderPaperBody,paperBibtex} from '../src/paper-page.mjs';
 import {codeBody} from '../src/code-page.mjs';
 
 const htmlText=value=>value.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
 
-test('The current release temporarily hides Docs while keeping the paper and official repository public',()=>{
-  assert.equal(docsPublished,false);
+test('The current release publishes Docs, the paper and the official repository while Report stays hidden',()=>{
+  assert.equal(docsPublished,true);
+  assert.equal(reportPublished,false);
+  for(const path of ['/docs/','/docs/getting-started/','/docs/tutorial/','/docs/data/','/docs/training/','/docs/quick-evaluation/'])assert.equal(isHiddenRoute(path),false,`${path}: released documentation is public`);
+  assert.equal(isHiddenRoute('/report/'),true,'Restoring Docs must not restore the hidden Report page');
   assert.equal(paperPublished,true);
   assert.equal(paperUrl,'https://arxiv.org/abs/2611.02629');
   assert.equal(paperPdfUrl,'https://arxiv.org/pdf/2611.02629');
@@ -17,6 +20,17 @@ test('The current release temporarily hides Docs while keeping the paper and off
   assert(paperLink.includes(`href="${paperUrl}"`),'The shared manuscript action opens the public arXiv record');
   assert(!paperLink.includes('/paper/'),'The legacy paper redirect is not a public destination');
   assert(!/code-coming-soon|data-code-status|Code coming soon/.test(codeLink),'Shared entries link to the Code page instead of repeating its status');
+});
+
+test('Restored Docs entry points survive publication filtering unchanged on every shared surface',()=>{
+  for(const source of [
+    '<a class="site-nav__link" href="/docs/">Docs</a>',
+    '<a class="arrow-link" href="/docs/getting-started/">Install DexArena →</a>',
+    '<a class="editorial-link" href="/docs/tutorial/">Follow the tutorial →</a>',
+    '<p>Read the <a href="/docs/data/">data contract</a> before evaluation.</p>',
+    '<a href="/docs/resources/">Code and datasets</a>'
+  ])assert.equal(publishContent(source),source,'The public flag cannot leave some pages with hidden-Docs link rewriting');
+  assert.equal(publishContent('<a class="arrow-link" href="/report/">Report →</a>'),'','Report remains independently withheld');
 });
 
 test('Homepage research and Code content expose the official release links',()=>{
@@ -229,7 +243,7 @@ test('Mixed publication filtering is deterministic and safe to run twice',async(
   assert.equal(published.publishContent(output),output);
   const current=publishContent(source);
   if(!docsPublished)assert.equal(current,`<article><h2><span>Replay validation</span></h2><p>Protocol text stays.</p>${codeLink}<a href="${paperPdfUrl}">PDF ↗</a><a href="/tasks/">Tasks →</a></article>`,'Hidden documentation preserves inline text and the public paper, tasks and code');
-  assert.equal(publishContent(current),current,'The current hidden state is also stable on repeated filtering');
+  assert.equal(publishContent(current),current,'The current publication state is also stable on repeated filtering');
   assert.equal(publishContent(''),'');
   assert.equal(publishContent('Research text without links.'),'Research text without links.');
 });

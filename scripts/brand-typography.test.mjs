@@ -119,7 +119,7 @@ test('Every generated shell preloads Oxanium once and retains selectable, access
     assert(!/fonts\.(?:googleapis|gstatic)\.com/i.test(html), `${file}: no runtime font-provider request`);
     checked++;
   }
-  assert.equal(checked, 32, 'Brand font loading is consistent on every public, nested task and hidden-document shell; compatibility redirects need no branding');
+  assert.equal(checked, 33, 'Brand font loading is consistent on every public, nested task, Docs and hidden-Report shell; compatibility redirects need no branding');
 });
 
 test('Deployed font URLs follow the Pages project base and the stylesheet introduces no third-party font requests', async () => {

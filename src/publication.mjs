@@ -1,5 +1,5 @@
-// Temporarily hide the documentation center; retain its source for restoration.
-export const docsPublished=false;
+// The public release now includes runnable installation and workflow guides.
+export const docsPublished=true;
 // Temporarily hide Report without removing its authored research content.
 export const reportPublished=false;
 // The project owner has released the paper and public repository.

@@ -3,7 +3,7 @@ import { copyFile, mkdir, readFile, writeFile, rm } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
-import { extraDocs, protocolBody } from "./documentation.mjs";
+import { protocolBody } from "./documentation.mjs";
 import { paperBibtex, renderPaperBody } from "./paper-page.mjs";
 import { documentationPages } from "./docs-content.mjs";
 import { reportBody } from "./report.mjs";
@@ -354,7 +354,7 @@ function evaluationRedirect({evidence=false}={}) {
 }
 
 const documentationGroups=[
-  ['Start here',['overview','getting-started','resources']],
+  ['Start here',['overview','getting-started','tutorial','resources']],
   ['Using DexArena',['configurations','embodiments','policy-integration','data','teleoperation','training']],
   ['Evaluation',['quick-evaluation','randomization','domain-randomization','parallel-environments','submission']],
   ['Reference',['troubleshooting','citation']]
@@ -364,8 +364,8 @@ const documentationOrder=documentationGroups.flatMap(([,ids])=>ids);
 const documentationHref=id=>id==='overview'?'/docs/':`/docs/${id}/`;
 
 function renderDocumentationPage(page){
-  const toc=[...page.content.matchAll(/<section\b[^>]*\bid="([^"]+)"[^>]*>[\s\S]*?<h2[^>]*>([\s\S]*?)<\/h2>/g)]
-    .map(match=>[match[1],match[2].replace(/<[^>]*>/g,'')]);
+  const toc=[...page.content.matchAll(/<section\b[^>]*\bid="([^"]+)"[^>]*>\s*<h2[^>]*>([\s\S]*?)<\/h2>|<h3\b[^>]*\bid="([^"]+)"[^>]*>([\s\S]*?)<\/h3>/g)]
+    .map(match=>[match[1]||match[3],(match[2]||match[4]).replace(/<[^>]*>/g,''),match[3]?'subsection':'section']);
   const index=documentationOrder.indexOf(page.id);
   const previous=documentationById.get(documentationOrder[index-1]);
   const following=documentationById.get(documentationOrder[index+1]);
@@ -376,101 +376,16 @@ function renderDocumentationPage(page){
       <details class="docs-mobile-menu" data-docs-menu open><summary>Documentation contents</summary><div class="docs-sidebar-content">
         <a class="docs-home" href="/docs/">DexArena <span>Docs</span></a>
         <button type="button" class="docs-search-button" data-open-search><span>Search docs & tasks</span><kbd>Ctrl K</kbd></button>
-        <label><span>Filter documentation</span><input type="search" placeholder="Find a page…" data-doc-search></label>
-        <nav aria-label="Documentation">${documentationGroups.map(([group,ids])=>`<div class="docs-nav-group"><h2 class="docs-nav-heading">${group}</h2>${ids.map(id=>documentationById.get(id)).filter(Boolean).map(target=>`<a href="${documentationHref(target.id)}" class="${target.id===page.id?'active':''}" data-doc-link${target.id===page.id?' aria-current="page"':''}>${esc(target.title)}</a>`).join('')}</div>`).join('')}<div class="docs-nav-group"><h2 class="docs-nav-heading">Simulation tasks</h2>${tasks.map(task=>`<a href="/tasks/${task.slug}/" data-doc-link>${esc(task.title)}</a>`).join('')}</div></nav>
+        <label><span>Filter documentation</span><input type="search" placeholder="Find a page…" aria-controls="docs-page-nav" data-doc-search></label>
+        <p class="docs-filter-status" data-doc-filter-status role="status" aria-live="polite" hidden></p>
+        <nav id="docs-page-nav" aria-label="Documentation">${documentationGroups.map(([group,ids])=>`<div class="docs-nav-group"><h2 class="docs-nav-heading">${group}</h2>${ids.map(id=>documentationById.get(id)).filter(Boolean).map(target=>`<a href="${documentationHref(target.id)}" class="${target.id===page.id?'active':''}" data-doc-link${target.id===page.id?' aria-current="page"':''}>${esc(target.title)}</a>`).join('')}</div>`).join('')}<div class="docs-nav-group"><h2 class="docs-nav-heading">Simulation tasks</h2>${tasks.map(task=>`<a href="/tasks/${task.slug}/" data-doc-link>${esc(task.title)}</a>`).join('')}</div></nav>
       </div></details>
     </aside>
     <article class="docs-article" id="docs-main" tabindex="-1"><div class="docs-breadcrumb"><a href="/docs/">Docs</a><span aria-hidden="true">/</span><span>${esc(page.title)}</span></div><h1>${esc(page.title)}</h1><p class="docs-lead">${esc(page.lead)}</p>
       ${page.content}<nav class="docs-pagination" aria-label="Documentation pages">${pagination(previous,'← Previous','prev')}${pagination(following,'Next →','next')}</nav>
     </article>
-    <aside class="docs-toc" aria-label="On this page"><span>On this page</span><nav aria-label="Page sections">${toc.map(([id,label])=>`<a href="#${id}" data-doc-toc>${esc(label)}</a>`).join('')}</nav></aside>
+    <aside class="docs-toc" aria-label="On this page"><span>On this page</span><nav aria-label="Page sections">${toc.map(([id,label,level])=>`<a href="#${id}" class="docs-toc-${level}" data-doc-toc>${esc(label)}</a>`).join('')}</nav></aside>
   </section>`;
-}
-
-// Retain the earlier authored renderers as reference material, not published pages.
-const docsNav = [
-  ["/docs/","Overview","overview"],
-  ["/docs/getting-started/","Getting started","getting-started"],
-  ["/docs/data/","Data & replay","data"],
-  ["/docs/training/","Training & baselines","training"],
-  ["/docs/randomization/","Scene evaluation","randomization"],
-  ["/docs/submission/","Submission preview","submission"],
-  ...extraDocs.map(page=>[page.href,page.title,page.id])
-];
-
-function docsShell(active,title,lead,content) {
-  const groups=[['Start here',['overview','getting-started','resources','configurations','quick-evaluation']],['Data & policies',['data','teleoperation','embodiments','policy-integration','training']],['Evaluation',['randomization','domain-randomization','parallel-environments','submission','troubleshooting']]];
-  const toc=[...content.matchAll(/<section id="([^"]+)"[^>]*>[\s\S]*?<h2[^>]*>([\s\S]*?)<\/h2>/g)].map(m=>[m[1],m[2].replace(/<[^>]*>/g,'')]);
-  return `<section class="docs-layout"><aside class="docs-sidebar"><a class="docs-home" href="/docs/">DexArena Wiki</a><button type="button" class="docs-search-button" data-open-search>Search docs & tasks <kbd>Ctrl K</kbd></button><label><span>Browse documentation</span><input type="search" placeholder="Filter pages…" data-doc-search></label><nav>${groups.map(([group,ids])=>`<div class="docs-nav-group"><span>${group}</span>${ids.map(id=>docsNav.find(item=>item[2]===id)).filter(Boolean).map(([h,l,id])=>`<a href="${h}" class="${active===id?"active":""}" data-doc-link>${l}</a>`).join('')}</div>`).join('')}<div class="docs-nav-group"><span>Task catalog</span>${tasks.map(task=>`<a href="/tasks/${task.slug}/" data-doc-link>${task.title}</a>`).join('')}</div></nav></aside>
-    <article class="docs-article"><div class="docs-breadcrumb"><a href="/docs/">Docs</a><span>/</span><span>${title}</span></div><h1>${title}</h1><p class="docs-lead">${lead}</p>${content}</article><aside class="docs-toc"><span>On this page</span>${toc.map(([id,label])=>`<a href="#${id}">${label}</a>`).join('')}</aside></section>`;
-}
-
-function docsOverview() {
-  return docsShell("overview","DexArena Wiki","Technical documentation for tasks, data, training, evaluation, and future submissions.",`
-  <section id="overview"><div class="docs-callout"><b>Canonical scope</b><p>The formal collection target is exactly 10 long-horizon environments plus 30 stage environments. Compatibility aliases and retired curricula are excluded.</p></div>
-  <h2>Recommended workflow</h2><ol class="docs-workflow"><li><a href="/docs/getting-started/">Install the environment</a> and check <a href="/docs/resources/">available assets and data</a>.</li><li>Read the <a href="/docs/configurations/">configuration contract</a> and run a <a href="/docs/quick-evaluation/">small evaluation</a>.</li><li>Adapt your model using <a href="/docs/policy-integration/">Policy integration</a>, then evaluate the three benchmark tracks.</li><li>Record per-episode <a href="/evaluation/evidence/">evidence</a> and follow the <a href="/leaderboard/protocol/">leaderboard protocol</a>.</li></ol><div class="docs-card-grid">${docsNav.slice(1).map(([h,l,id],i)=>`<a href="${h}"><span>${String(i+1).padStart(2,'0')}</span><b>${l}</b><p>${extraDocs.find(page=>page.id===id)?.lead||({"getting-started":"Install the simulator and create a canonical environment.",data:"Understand demonstrations, restoration and replay validation.",training:"Choose a paper baseline or an extended learning workflow.",randomization:"Run the fixed 30 × 3 native-scene matrix.",submission:"Prepare reproducible artifacts before intake opens."}[id])}</p></a>`).join("")}</div></section>
-  <section id="details"><h2>Benchmark at a glance</h2><table><tbody><tr><th>Simulator</th><td>SAPIEN / <a href="https://maniskill.readthedocs.io/en/latest/" target="_blank" rel="noreferrer">ManiSkill ↗</a></td></tr><tr><th>Control</th><td><a href="https://maniskill.readthedocs.io/en/latest/user_guide/concepts/controllers.html#pd-joint-position" target="_blank" rel="noreferrer"><code>pd_joint_pos</code> ↗</a></td></tr><tr><th>Canonical embodiment</th><td><a href="/docs/embodiments/#details">Panda + 22-DoF Sharpa hand</a></td></tr><tr><th>Actions</th><td><a href="/docs/configurations/#details">29 single-arm / 58 bimanual absolute joint targets</a></td></tr><tr><th>Recorded format</th><td><a href="https://huggingface.co/docs/lerobot/en/lerobot-dataset-v3" target="_blank" rel="noreferrer">LeRobot v3.0 ↗</a></td></tr><tr><th>Control rate</th><td><a href="/docs/configurations/#overview">20 Hz</a></td></tr></tbody></table></section>
-  ${algorithmDirectory}
-  <section id="next"><h2>Browse the benchmark</h2><p>Open the <a href="/tasks/">task catalog</a> for per-stage environment IDs and success summaries, or continue with <a href="/docs/getting-started/">Getting started</a>.</p></section>`);
-}
-
-function gettingStarted() {
-  return docsShell("getting-started","Getting started","Install the environment, load tasks, and understand the shared robot interface.",`
-  <section id="overview"><h2>Environment</h2><pre><code>conda create -n ms3 python=3.10
-conda activate ms3
-python -m pip install datasets "lerobot==0.4.0"
-python -m pip install --upgrade mani_skill gymnasium tyro swanlab h5py tensorboard</code></pre><p>The benchmark follows the ManiSkill registration model: importing a task module registers its Gym environment and robot agents.</p></section>
-  <section id="details"><h2>Create a canonical task</h2><pre><code>import gymnasium as gym
-import task.office_mouse
-
-env = gym.make(
-    "SharpaAngledClickMouse-v1",
-    robot_uids="panda_sharpa_hand_right_angled_mobile_base",
-    obs_mode="state",
-    control_mode="pd_joint_pos",
-)
-obs, info = env.reset(seed=10001)</code></pre><h3>Action layout</h3><p>Single-arm tasks concatenate 7 Panda arm targets and 22 Sharpa hand targets. Bimanual tasks use left arm, right arm, left hand, right hand for 58 total targets.</p></section>
-  <section id="next"><h2>Next</h2><p>Read <a href="/docs/data/">Data & replay</a> before training, or inspect every formal environment in the <a href="/tasks/">task catalog</a>.</p></section>`);
-}
-
-function dataDocs() {
-  return docsShell("data","Data & replay","The release contains 100 replay-successful demonstrations for each of 30 canonical stage tasks.",`
-  <section id="overview"><div class="docs-stat-row"><div><b>3,000</b><span>episodes</span></div><div><b>9.1 h</b><span>teleoperation</span></div><div><b>20 Hz</b><span>recording</span></div><div><b>100</b><span>per stage</span></div></div><h2>Two-stage review</h2><p>Episodes first enter a pending store with a reviewable MP4. Interactive or success-based review then exports accepted episodes to per-hand LeRobot directories.</p><img class="docs-figure" src="/assets/media/data-properties.png" alt="DexArena dataset properties"></section>
-  <section id="details"><h2>Frame schema</h2><table><thead><tr><th>Feature</th><th>Meaning</th></tr></thead><tbody><tr><td><code>observation.state</code></td><td>Robot proprioception and task state.</td></tr><tr><td><code>action</code></td><td>Absolute arm and hand joint targets.</td></tr><tr><td><code>observation.environment_state</code></td><td>Flat environment state for restoration and re-rendering.</td></tr><tr><td><code>next.success</code></td><td>Per-step result from the environment success predicate.</td></tr><tr><td><code>episode.seed</code></td><td>Seed used for exact reset and replay.</td></tr></tbody></table><h3>Validation</h3><p>Accepted data is restored in a fresh simulator, rendered offline, and replayed open-loop from the recorded initial state. Only replay-successful trajectories enter the release set.</p></section>
-  <section id="collection-pipeline"><h2>Data collection pipeline</h2><p>VR and glove inputs are converted into joint targets. Recording, review, export and replay validation connect human demonstration collection to offline multi-view rendering.</p>${researchFigure("data-collection-pipeline.png","Figure 3: Data collection pipeline","Figure 3 from the supplied manuscript. Recorded simulator states and actions support validation and offline rendering.")}<p><a href="/paper/#data-pipeline">Read the paper's data collection overview →</a></p></section>
-  <section id="hand-analysis"><h2>Hand usage across six motion families</h2><p>Opening and closing, grasping and placement, insertion and assembly, twisting and screwing, pressing, and scooping and pouring produce distinct patterns of hand contact and joint motion.</p>${researchFigure("hand-contact.png","Hand contact and joint excursion statistics","Blue encodes hand-link contact as a fraction of hand-contact frames; orange encodes average joint excursion. The right panels show ranges of median episode lengths and contact ratios by motion family.")}</section>
-  <section id="replay-analysis"><h2>From accepted episodes to replayable data</h2><p>The paper reports 4,112 accepted episodes and 3,222 open-loop replay successes (about 78%). The released set selects 100 replay-successful demonstrations per stage, for 3,000 episodes and 9.1 hours.</p><table><caption>Paper replay success by motion category; stage tasks are weighted equally within each category.</caption><thead><tr><th>Motion family</th><th>Replay success</th></tr></thead><tbody><tr><td>Opening and closing</td><td>98%</td></tr><tr><td>Grasping and placement</td><td>84%</td></tr><tr><td>Insertion and assembly</td><td>65%</td></tr><tr><td>Twisting and screwing</td><td>87%</td></tr><tr><td>Pressing</td><td>83%</td></tr><tr><td>Scooping and pouring</td><td>74%</td></tr></tbody></table><h3>Trajectory diversity</h3><p>Across stages, mean palm path length spans 0.35–2.04 m; mean pairwise palm-trajectory distance spans 3.3–10.2 cm. More sustained contact is associated with lower replay success (Spearman ρ = −0.58 for contact ratio, p &lt; 0.001).</p></section>
-  <section id="next"><h2>Next</h2><p>Continue to <a href="/docs/training/">Training & baselines</a> or inspect the <a href="/evaluation/">evaluation contract</a>.</p></section>`);
-}
-
-function trainingDocs() {
-  return docsShell("training","Training & baselines","The latest codebase covers imitation learning, online RL, offline RL, offline-to-online RL, and VLA adaptation.",`
-<section id="overview"><h2>Implemented families</h2><div class="docs-card-grid"><div><span>IL</span><b>${algorithmLink("ACT","act")} · ${algorithmLink("Diffusion Policy","diffusion-policy")}</b><p>Multi-view temporal observation and high-dimensional arm/hand joint prediction.</p></div><div><span>Online RL</span><b>${algorithmLink("PPO","ppo")} · DPPO</b><p>Demonstration warm-up, BC regularization, and demo-state resets.</p></div><div><span>Offline RL</span><b>BC · FQE · AWR · CQL · IQL · TD3+BC</b><p>Task-agnostic agents infer state and action widths from LeRobot datasets.</p></div><div><span>Offline → online</span><b>OPT · SAC · ${algorithmLink("RLPD","rlpd")}</b><p>Online transition collection with replay-buffer mixing.</p></div><div><span>VLA</span><b>${algorithmLink("GR00T N1.7","groot")}</b><p>Embodiment-specific state and action encoders with shared task instructions.</p></div><div><span>VLA + RL</span><b>PI0.5 SFT · Flow-SDE GRPO</b><p>Full-parameter SFT, GRPO training, export, runtime check, and deterministic task evaluation.</p></div></div></section>
-  <section id="paper-baselines"><h2>The six evaluated baselines</h2><p>The paper evaluates ${algorithmLink("PPO","ppo")}, ${algorithmLink("RLPD","rlpd")}, ${algorithmLink("ACT","act")}, ${algorithmLink("Diffusion Policy","diffusion-policy")}, ${algorithmLink("GR00T","groot")} and ${algorithmLink("π0.5","pi05")}. Additional code entry points above are implementation coverage; they are not additional scored manuscript baselines.</p><div class="docs-card-grid"><div><span>Demo-guided RL</span><b>${algorithmLink("PPO","ppo")} · ${algorithmLink("RLPD","rlpd")}</b><p>${algorithmLink("PPO","ppo")} combines BC warm-up, BC regularization, demonstration-state resets and demo-informed action statistics. ${algorithmLink("RLPD","rlpd")} mixes equal portions of demonstrations and online replay samples. Rewards are sparse success rewards.</p></div><div><span>Imitation learning</span><b>${algorithmLink("ACT","act")} · ${algorithmLink("Diffusion Policy","diffusion-policy")}</b><p>${algorithmLink("ACT","act")} balances arm and hand reconstruction losses. Both use multi-view temporal observations and generate absolute joint targets for all arm and hand joints.</p></div><div><span>VLA</span><b>${algorithmLink("GR00T N1.7","groot")}</b><p>Embodiment-specific state/action encoders; relative arm offsets and absolute finger targets; full-model fine-tuning on task demonstrations.</p></div><div><span>VLA</span><b>${algorithmLink("π0.5","pi05")}</b><p>Stage-specific learned policies are evaluated individually and composed by switching on stage success, without resetting the long-horizon environment.</p></div></div>${researchFigure("rl-training.png","PPO and RLPD training curves across the benchmark","Orange: PPO; blue: RLPD. Line styles distinguish stages. PPO's step-zero point follows BC warm-up; its fixed budget is one million environment steps per stage. Curves show training progress, not the held-out-scene leaderboard.")} and ${algorithmLink("RLPD","rlpd")} training curves across the benchmark","Orange: ${algorithmLink("PPO","ppo")}; blue: ${algorithmLink("RLPD","rlpd")}. Line styles distinguish stages. ${algorithmLink("PPO","ppo")}'s step-zero point follows BC warm-up; its fixed budget is one million environment steps per stage. Curves show training progress, not the held-out-scene leaderboard.")}<p><a href="/leaderboard/">See final evaluated checkpoint scores →</a></p></section>
-  <section id="details"><h2>Canonical registry</h2><p><code>utils/dex_tasks.py</code> is the shared source for environment IDs, instruction variants, robot UIDs, horizons, and action layouts. Training and evaluation should resolve task metadata from this registry instead of duplicating it.</p><div class="docs-callout warn"><b>Compatibility rule</b><p>Observation mode and control mode must match collection. A mismatch can cause demonstrations to be skipped or actions to be interpreted incorrectly.</p></div></section>
-  ${algorithmReferenceSection}
-  <section id="next"><h2>Next</h2><p>Use <a href="/docs/randomization/">Scene evaluation</a> to run policies on the shared native-background matrix.</p></section>`);
-}
-
-function randomizationDocs() {
-  return docsShell("randomization","Scene evaluation","One factory runs the 30 canonical tasks across three native scene surfaces with fixed policy cameras.",`
-  <section id="overview"><h2>Default matrix</h2><table><thead><tr><th>Background ID</th><th>Native surface</th></tr></thead><tbody><tr><td><code>robocasa_l3_s2</code></td><td>Blue kitchen stone island</td></tr><tr><td><code>robocasa_l3_s1</code></td><td>Light wood kitchen island</td></tr><tr><td><code>robocasa_l3_s6</code></td><td>Warm wood kitchen stone island</td></tr></tbody></table><p>An optional <code>labutopia_lab003</code> background supports additional laboratory studies but is not part of the default 90-combination matrix.</p><img class="docs-figure" src="/assets/media/scene-lighting.png" alt="Lighting variations in native scenes"></section>
-  <section id="details"><h2>Factory contract</h2><pre><code>from utils.dex_scene_eval import BACKGROUND_IDS, make_scene_eval_env
-
-env = make_scene_eval_env(
-    "SharpaAngledClickMouse-v1",
-    scene_background=BACKGROUND_IDS[0],
-    obs_mode="rgb",
-)
-obs, info = env.reset(seed=10001)</code></pre><ul><li>One CPU-physics environment per task/background pair.</li><li>Registered task robot, horizon, and <code>pd_joint_pos</code> control.</li><li>Fixed 256 × 256 base and wrist policy cameras.</li><li>Native room table and collision geometry; original surfaces disabled.</li><li>Tabletop height checked within 1 mm at reset.</li></ul></section>
-  <section id="next"><h2>Next</h2><p>Read the <a href="/evaluation/">evaluation protocol</a> for reporting requirements.</p></section>`);
-}
-
-function submissionDocs() {
-  return docsShell("submission","Submission preview","A reproducible intake structure modeled after the benchmark code contracts. Official evaluation intake is not yet open.",`
-  <section id="overview"><div class="docs-callout warn"><b>Preview only</b><p>This is a preparation checklist. The leaderboard displays manuscript baseline results; community submission intake is not yet open.</p></div><h2>Before submission</h2><ol><li>Integrate the policy with the canonical environment registry.</li><li>Freeze the exact code commit, task fingerprint, checkpoint, and preprocessing configuration.</li><li>Run the requested stage, scene, and long-horizon tracks with shared seeds.</li><li>Export per-episode evidence and aggregate metrics.</li></ol></section>
-  <section id="details"><h2>Required artifact set</h2><table><tbody><tr><th>Source</th><td>Repository URL, exact commit SHA, adapter entry point, install steps.</td></tr><tr><th>Model</th><td>Policy name, checkpoint identity, download/access path, license.</td></tr><tr><th>Benchmark</th><td>Task list, robot UIDs, action layout, observation schema, instruction version.</td></tr><tr><th>Evaluation</th><td>Seeds, scene manifest, videos, per-episode records, aggregate report.</td></tr><tr><th>Contact</th><td>Maintainer and reproducibility contact.</td></tr></tbody></table></section>
-  <section id="next"><h2>Next</h2><p>Monitor the <a href="/leaderboard/">leaderboard</a> for the official intake announcement.</p></section>`);
 }
 
 function reportPage() {
