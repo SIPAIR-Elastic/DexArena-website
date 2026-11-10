@@ -7,6 +7,7 @@ import {createStaticServer} from './serve.mjs';
 import {githubPagesConfig} from './pages-config.mjs';
 import {docsPublished,reportPublished,paperPublished,paperUrl,codeUrl,isWithheldPaperAsset,isRedirectRoute} from '../src/publication.mjs';
 import {paperBibtex} from '../src/paper-page.mjs';
+import {documentationPages} from '../src/docs-content.mjs';
 
 test('GitHub Pages is the only deployment target and main publishes automatically',async()=>{
   const pkg=JSON.parse(await readFile(new URL('../package.json',import.meta.url),'utf8'));
@@ -39,8 +40,8 @@ test('The published artifact uses Pages URLs, public release links and no obsole
   const dist=new URL('../dist/',import.meta.url);
   const paths=await readdir(dist,{recursive:true});
   const htmlPaths=paths.filter(path=>path.endsWith('.html'));
-  const discoverable=15+(docsPublished?16:0)+(reportPublished?1:0);
-  assert.equal(htmlPaths.length,35,'The complete route set remains, including withheld Docs and Report notices and three compatibility redirects');
+  const discoverable=15+(docsPublished?documentationPages.length:0)+(reportPublished?1:0);
+  assert.equal(htmlPaths.length,19+documentationPages.length,'The complete route set includes authored Docs, the Report notice and three compatibility redirects');
   for(const path of htmlPaths){
     const html=await readFile(new URL(path,dist),'utf8');
     const canonical=html.split('<link rel="canonical" href="');
@@ -60,7 +61,16 @@ test('The published artifact uses Pages URLs, public release links and no obsole
   assert(search.every(entry=>entry.url.startsWith(basePath)));
   assert(search.every(entry=>!entry.url.startsWith(`${basePath}paper/`)),'The redirect is excluded from site search');
   assert(search.every(entry=>!entry.url.startsWith(`${basePath}evaluation/`)),'Consolidated evaluation URLs are excluded from site search');
-  assert.equal(search.filter(entry=>entry.url.startsWith(`${basePath}docs/`)).length,docsPublished?16:0,'Search respects Docs publication independently of retained routes');
+  assert.equal(search.filter(entry=>entry.url.startsWith(`${basePath}docs/`)).length,docsPublished?documentationPages.length:0,'Search respects Docs publication independently of retained routes');
+  if(docsPublished){
+    assert(search.some(entry=>entry.url.startsWith(`${basePath}docs/tutorial/`)),'The new end-to-end tutorial is publicly searchable');
+    assert.equal(search.find(entry=>entry.url.startsWith(`${basePath}docs/getting-started/`))?.title,'Installation — DexArena Docs','Search uses the updated installation title');
+    assert.equal(search.find(entry=>entry.url.startsWith(`${basePath}docs/quick-evaluation/`))?.title,'Evaluation — DexArena Docs','Search uses the updated evaluation title');
+    for(const path of htmlPaths.filter(path=>!['paper/index.html','evaluation/index.html','evaluation/evidence/index.html'].includes(path))){
+      const html=await readFile(new URL(path,dist),'utf8');
+      assert(/<a\b[^>]*href=["'][^"']*\/docs\/(?:\?[^"']*)?["'][^>]*>\s*Docs(?:\s|<)/i.test(html),`${path}: Docs is consistently reachable after navigation`);
+    }
+  }
   assert.equal(search.filter(entry=>new URL(entry.url,siteUrl).pathname===`${basePath}report/`).length,reportPublished?1:0,'Search respects Report publication independently of retained routes');
   const sitemap=await readFile(new URL('sitemap.xml',dist),'utf8');
   assert(sitemap.includes(`<loc>${siteUrl}</loc>`));

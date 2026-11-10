@@ -3,6 +3,7 @@ import {test} from 'node:test';
 import {readFile,readdir,stat} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {resolve,join} from 'node:path';
+import {spawnSync} from 'node:child_process';
 import {documentationPages} from '../src/docs-content.mjs';
 import {paperAuthors,paperBibtex,paperTitle} from '../src/paper-page.mjs';
 import {docsPublished,paperUrl,paperPdfUrl,codeUrl} from '../src/publication.mjs';
@@ -11,9 +12,10 @@ import {githubPagesConfig} from './pages-config.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const dist=join(root,'dist');
 const {basePath}=githubPagesConfig();
-const pageIds=['overview','getting-started','configurations','quick-evaluation','policy-integration','parallel-environments','data','training','randomization','domain-randomization','teleoperation','embodiments','troubleshooting','resources','submission','citation'];
+const pageIds=['overview','getting-started','tutorial','configurations','quick-evaluation','policy-integration','parallel-environments','data','training','randomization','domain-randomization','teleoperation','embodiments','troubleshooting','resources','submission','citation'];
+const datasetUrl='https://huggingface.co/datasets/SIPAIR/DexArena';
 const navigationGroups=[
-  ['Start here',['overview','getting-started','resources']],
+  ['Start here',['overview','getting-started','tutorial','resources']],
   ['Using DexArena',['configurations','embodiments','policy-integration','data','teleoperation','training']],
   ['Evaluation',['quick-evaluation','randomization','domain-randomization','parallel-environments','submission']],
   ['Reference',['troubleshooting','citation']],
@@ -50,12 +52,14 @@ function paddingSides(value=''){
   return values;
 }
 
-test('The complete sixteen-page Docs source is retained independently of public visibility',async()=>{
-  assert.equal(documentationPages.length,16);
+test('The complete seventeen-page Docs center includes installation, evaluation and an end-to-end tutorial',async()=>{
+  assert.equal(documentationPages.length,17);
   assert.deepEqual(documentationPages.map(page=>page.id).sort(),[...pageIds].sort());
-  assert.equal(new Set(documentationPages.map(page=>page.id)).size,16);
+  assert.equal(new Set(documentationPages.map(page=>page.id)).size,17);
+  assert.equal(documentationPages.find(page=>page.id==='getting-started').title,'Installation');
+  assert.equal(documentationPages.find(page=>page.id==='quick-evaluation').title,'Evaluation');
   const builtPaths=await readdir(join(dist,'docs'),{recursive:true});
-  assert.equal(builtPaths.filter(path=>path.endsWith('.html')).length,16);
+  assert.equal(builtPaths.filter(path=>path.endsWith('.html')).length,17);
   for(const page of documentationPages){
     for(const field of ['id','title','lead','content'])assert.equal(typeof page[field],'string',`${page.id}: authored ${field}`);
     assert(page.title.trim()&&page.lead.trim()&&text(page.content).length>250,`${page.id}: substantive reference content`);
@@ -229,26 +233,100 @@ test('The retained citation reference shares the canonical paper, ordered author
   assert(tags(html,'p').some(node=>Object.hasOwn(node,'data-citation-status')&&node.role==='status'&&node['aria-live']==='polite'),'Citation copying reports its result accessibly');
 });
 
-test('Research examples state their checkout requirements and do not invent public artifacts',async()=>{
+test('Documentation uses the released public source and real artifact endpoint without leaking private material',async()=>{
   for(const page of documentationPages){
     const html=docsPublished?await readFile(pageFile(page.id),'utf8'):page.content;
     const visible=decode(text(html));
     const examples=[...page.content.matchAll(/<pre\b[^>]*>\s*<code\b[^>]*>([\s\S]*?)<\/code>\s*<\/pre>/gi)].map(match=>decode(match[1]));
-    if(examples.some(code=>/\bpython\b|\b(?:from|import)\s+\w|\bpip\b|\bss\s+-|\bgit\s+clone\b/.test(code)))assert(/(?:research|reference|full)\s+(?:source\s+)?(?:checkout|codebase)/i.test(visible),`${page.id}: runnable examples require the research checkout`);
     for(const example of examples){
-      assert(!/\bpip(?:3)?\s+install\b[^\n]*(?:\bdexarena\b|git\+https:\/\/github\.com\/SIPAIR-Elastic\/DexArena)/i.test(example),`${page.id}: no nonexistent package or executable public repository install`);
-      assert(!/\b(?:wget|curl|huggingface-cli\s+download)\b[^\n]*(?:dexarena|checkpoint|dataset)/i.test(example),`${page.id}: no fabricated dataset or checkpoint download`);
+      assert(!/\bpip(?:3)?\s+install\b[^\n]*\bdexarena\b/i.test(example),`${page.id}: no nonexistent PyPI package`);
+      assert(!/\bimport\s+task\b|\bfrom\s+task[.\s]|\btask\/(?:config|robots|scene_builders)\//.test(example),`${page.id}: imports and source paths use the released tasks package`);
+      assert(!/data_gen[/.]teleop|train_pi05_sft\.py|train_pi05_grpo\.py|(?:train\/)?eval_pi05\.py|SharpaAngledClickMouse-v1|hand_variants\.py/.test(example),`${page.id}: no removed training, collection or environment interface`);
     }
+    assert(!/researchPrerequisite|Research checkout required|contains a README, license and repository metadata|runnable research package is not published|download endpoints? (?:have|has) not been supplied|public dataset download endpoint has not been supplied/i.test(visible),`${page.id}: no superseded pre-release restrictions`);
+    assert(!/data_gen[/.]teleop|train_pi05_sft\.py|train_pi05_grpo\.py|(?:train\/)?eval_pi05\.py|SharpaAngledClickMouse-v1|hand_variants\.py/.test(html),`${page.id}: removed interfaces are absent from public reference material`);
     assert(!/\p{Script=Han}/u.test(html),`${page.id}: public text is English`);
     assert(!/(?:\/home\/[\w.-]+\/|\/Users\/[\w.-]+\/|file:\/\/|https?:\/\/(?:localhost|127\.0\.0\.1|10(?:\.\d{1,3}){3}|192\.168(?:\.\d{1,3}){2}|172\.(?:1[6-9]|2\d|3[01])(?:\.\d{1,3}){2})(?=[:/]))/i.test(html),`${page.id}: no private machine path or host`);
     assert(!/\b(?:ghp_[A-Za-z0-9]{20,}|AKIA[A-Z0-9]{16}|sk-[A-Za-z0-9]{24,})\b|BEGIN (?:RSA |OPENSSH )?PRIVATE KEY/.test(html),`${page.id}: no embedded credential`);
-    assert(!/href=["'][^"']*(?:huggingface\.co\/datasets\/[^"']*dexarena|dexarena[^"']*\.(?:pt|pth|ckpt|safetensors|tar\.gz|zip))["']/i.test(html),`${page.id}: no invented model or data artifact`);
+    for(const link of links(html).filter(link=>/^https:\/\/huggingface\.co\/datasets\//i.test(link.href))){
+      const url=new URL(decode(link.href));
+      assert(url.pathname==='/datasets/SIPAIR/DexArena'||url.pathname.startsWith('/datasets/SIPAIR/DexArena/'),`${page.id}: dataset links identify the actual public artifact repository`);
+    }
   }
-  for(const id of ['getting-started','resources']){
-    const visible=decode(text(docsPublished?await readFile(pageFile(id),'utf8'):documentationPages.find(page=>page.id===id).content));
-    assert(/README/i.test(visible)&&/LICENSE/i.test(visible),`${id}: explain the public repository's current README and LICENSE contents`);
-    assert(/not.{0,80}(?:available|released|contain|complete|runnable|include)|(?:pending|awaiting|only|forthcoming)/i.test(visible),`${id}: public repository scope is explicit`);
+  for(const id of ['getting-started','data','resources']){
+    const html=documentationPages.find(page=>page.id===id).content;
+    assert(links(html).some(link=>link.href===datasetUrl),`${id}: the real dataset repository is reachable`);
+    assert(/gated|(?:get|request) access/i.test(decode(text(html))),`${id}: access requirements are explicit`);
   }
+});
+
+test('Installation and replay explain public assets, modern task registration and the released data contract',()=>{
+  const installation=documentationPages.find(page=>page.id==='getting-started').content;
+  const data=documentationPages.find(page=>page.id==='data').content;
+  const visible=decode(text(installation));
+  for(const required of ['import tasks','DrawerPlugOpenDrawer-Sharpa-v1','gymnasium==0.29.1','lerobot==0.4.0','hf auth login','assets/**','--local-dir tasks'])assert(decode(installation).includes(required),`Installation documents ${required}`);
+  assert(/160/.test(visible)&&/40/.test(visible)&&/4/.test(visible),'Installation distinguishes task count from four-hand environment registrations');
+  for(const hand of ['Sharpa','Wuji','XHand','Gripper'])assert(visible.includes(hand),`Installation lists ${hand}`);
+  for(const required of ['data/sharpa/','data_append/sharpa/','recording_integrity.json','replay/source_','verify_recording_fidelity','replay_success_rate','check_label_parity','build_replay_success_subset'])assert(decode(data).includes(required),`Data reference documents ${required}`);
+  assert(/ever-success/.test(data)&&/final-success/.test(data),'Replay success and final-state success are distinguished');
+  assert(/INCOMPLETE/.test(data)&&/fingerprint/.test(data),'Incomplete replay and source compatibility cannot be confused with scored outcomes');
+});
+
+test('Training and evaluation preserve six released entry points and explain checkpoint protocol limitations',()=>{
+  const training=documentationPages.find(page=>page.id==='training').content;
+  const evaluation=documentationPages.find(page=>page.id==='quick-evaluation').content;
+  for(const file of ['train/train_ppo_pixels.py','train/train_rlpd_pixels.py','train/train_ACT.py','train/train_DP.py','train/train_groot.py','train/train_pi05.py']){
+    assert(decode(training).includes(file),`Training covers ${file}`);
+    assert(links(training).some(link=>link.href===`${codeUrl}/blob/main/${file}`),`Training links to the exact released ${file}`);
+  }
+  assert(/cabinet_fixed/.test(training)&&/256/.test(training)&&/128/.test(training),'Image-policy data preparation preserves the two resolution contracts');
+  assert(/prepare_image_dataset\.py/.test(training)&&/replay_to_vla_dataset\.py/.test(training),'Training documents policy-specific data preparation');
+  assert(/multi-instruction/i.test(evaluation)&&/single-instruction/i.test(evaluation),'Released GR00T and paper instruction protocols are not conflated');
+  assert(/inference-only/i.test(evaluation)&&/Base/.test(evaluation),'Compact π0.5 packages require the original Base and are not resumable training states');
+  assert(/long-horizon/i.test(evaluation)&&/(?:not yet|outside|not a|no |not provide|not available|not implemented|not shipped|does not|without).{0,140}(?:command.line|switch|evaluat|CLI)|(?:command.line|switch|evaluat|CLI).{0,140}(?:not yet|not available|not implemented|not shipped)/i.test(decode(text(evaluation))),'Evaluation makes the π0.5 long-horizon CLI limitation explicit');
+  assert(/10001/.test(evaluation)&&/10050/.test(evaluation),'Published VLA evaluation seed ranges are documented');
+});
+
+test('The end-to-end tutorial connects installation, replay, rendering, training and evaluation without masquerading as leaderboard evidence',()=>{
+  const tutorial=documentationPages.find(page=>page.id==='tutorial').content;
+  for(const required of ['CabinetPouringOpenCabinet-Sharpa-v1','verify_recording_fidelity','replay_success_rate','render_pixel_demos','prepare_image_dataset.py','train_ACT.py','--evaluate'])assert(decode(tutorial).includes(required),`Tutorial covers ${required}`);
+  const visible=decode(text(tutorial));
+  assert(/(?:illustrative|functional|reported|example|reference).{0,100}(?:run|measurement|timing|workstation)|(?:run|measurement|timing|workstation).{0,100}(?:illustrative|functional|reported|example|reference)/i.test(visible),'Short demonstration runs are identified as examples, not leaderboard scores');
+  for(const id of ['getting-started','data','training','quick-evaluation'])assert(links(tutorial).some(link=>pathname(link.href)===`/docs/${id}/`),`Tutorial links to the detailed ${id} reference`);
+});
+
+test('Every published Bash example parses without executing commands or retaining escaped shell-variable artifacts',()=>{
+  let checked=0;
+  for(const page of documentationPages){
+    const blocks=[...page.content.matchAll(/<pre\b[^>]*>\s*<code\b([^>]*)>([\s\S]*?)<\/code>\s*<\/pre>/gi)];
+    for(const [index,block] of blocks.entries()){
+      const attrs=attributes(`<code${block[1]}>`);
+      if(!classes(attrs).includes('language-bash'))continue;
+      const example=decode(block[2]);
+      assert(!/\\\$(?:[A-Za-z_][A-Za-z_0-9]*|\{[^}]+\})/.test(example),`${page.id} block ${index+1}: shell variables are expandable examples, not escaped authoring artifacts`);
+      const result=spawnSync('bash',['-n'],{input:example,encoding:'utf8',timeout:5000});
+      assert.ifError(result.error);
+      assert.equal(result.status,0,`${page.id} block ${index+1}: ${result.stderr}`);
+      checked++;
+    }
+  }
+  assert(checked>=20,'Syntax validation covers installation, replay, all baseline recipes and the full tutorial');
+});
+
+test('Public source references use file routes for files and tree routes for directories',()=>{
+  let checked=0;
+  for(const page of documentationPages){
+    for(const link of links(page.content)){
+      if(!link.href.startsWith(`${codeUrl}/blob/main/`))continue;
+      const url=new URL(decode(link.href));
+      assert(!url.pathname.endsWith('/'),`${page.id}: source directory links must use GitHub tree routes`);
+      assert(/\/[^/]+\.[A-Za-z0-9]+$/.test(url.pathname),`${page.id}: a blob route identifies an actual source file`);
+      checked++;
+    }
+  }
+  assert(checked>=70,'Source-path validation covers the complete released reference set');
+  const training=documentationPages.find(page=>page.id==='training').content;
+  assert(links(training).some(link=>link.href===`${codeUrl}/tree/main/train/train_configs`),'Training configuration directory opens a proper GitHub tree route');
 });
 
 test('Temporarily hidden Docs expose only non-indexed notices, never the retained reference',{skip:docsPublished},async()=>{

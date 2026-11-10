@@ -143,5 +143,5 @@ test('Every generated shell receives the same refined navigation asset before th
     assert.match(sheets.at(-1), /\/assets\/readability\.css(?:\?|$)/, `${path}: the global readable text layer stays last`);
     checked++;
   }
-  assert.equal(checked, 32, 'The refinement reaches all public, nested task and unpublished-document shells, excluding only compatibility redirects');
+  assert.equal(checked, 33, 'The refinement reaches all public, nested task, Docs and hidden-Report shells, excluding only compatibility redirects');
 });

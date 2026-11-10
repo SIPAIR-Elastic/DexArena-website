@@ -74,7 +74,7 @@ test('The shared readability asset is copied verbatim and loads last in every re
     assert(sheets.some(href => /\/assets\/navigation\.css(?:\?|$)/.test(href)), `${file}: navigation keeps its original layout stylesheet`);
     checked++;
   }
-  assert.equal(checked, 32, 'The full styled site, not only the home page, receives the type scale');
+  assert.equal(checked, 33, 'The full styled site, including all public Docs pages, receives the type scale');
 });
 
 test('Shared readability rules never author sub-14px text or undersized compact controls', () => {

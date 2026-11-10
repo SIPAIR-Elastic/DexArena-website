@@ -122,5 +122,5 @@ test('The corrected shared layout is deployed to every styled shell without chan
     assert.match(sheets.at(-1), /\/assets\/readability\.css(?:\?|$)/, `${file}: full-size text remains the final layer`);
     checked++;
   }
-  assert.equal(checked, 32, 'All styled public and unpublished-preview shells receive the corrected layout; compatibility redirects contain no research rows');
+  assert.equal(checked, 33, 'All styled public, Docs and hidden-Report shells receive the corrected layout; compatibility redirects contain no research rows');
 });

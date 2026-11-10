@@ -78,7 +78,7 @@ Use the authored source rather than patching generated HTML directly.
 | Shared type sizes and responsive reading rules | [`src/readability.css`](src/readability.css), loaded after component styles |
 | Shared corner sizes for navigation, media, cards and controls | [`src/surfaces.css`](src/surfaces.css); keep nested corners and circular controls consistent |
 | Header brand typography | [`src/navigation.css`](src/navigation.css); Oxanium and Space Grotesk are self-hosted with OFL notices in [`dist/assets/fonts/`](dist/assets/fonts/) |
-| Docs content, if a release is approved | [`src/docs-content.mjs`](src/docs-content.mjs), [`docs.css`](src/docs.css), [`docs.js`](src/docs.js) |
+| Docs content and navigation | [`src/docs-content.mjs`](src/docs-content.mjs) assembles release, training, evaluation and reference articles; [`docs.css`](src/docs.css) and [`docs.js`](src/docs.js) own the reading interface |
 | Public resource URLs, visibility and route rules | [`src/publication.mjs`](src/publication.mjs) |
 
 ### Build output is not disposable
@@ -148,7 +148,8 @@ maintainer. Documentation-only PRs still require review before merging.
 
 ### Visibility and routing
 
-- `docsPublished=false` keeps Docs out of navigation, search and sitemap. Retained article source is not a public-release signal.
+- `docsPublished=true` publishes the reviewed release guides in navigation, search and sitemap. Keep the existing article paths stable; Installation uses `/docs/getting-started/` and Evaluation uses `/docs/quick-evaluation/` for compatibility.
+- Documentation examples must match the public benchmark source and gated Hub release. Keep release-validation observations separate from manuscript scores; state model-specific camera, horizon, instruction, runtime and checkpoint limitations. Do not restore private teleoperation launch commands or obsolete release-unavailable notices.
 - `reportPublished=false` also hides Report across desktop/mobile navigation, footer, search and sitemap. Keep its source and evidence files for restoration; the old `/report/` URL shows only a non-indexed availability notice.
 - `paperPublished=true` keeps the public arXiv paper and citation available independently of Docs.
 - `/paper/` redirects to arXiv; it is not a separate project page.

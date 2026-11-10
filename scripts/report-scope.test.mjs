@@ -81,7 +81,7 @@ test('Report publication controls search visibility and retired institute refere
     assert.match(reportEntries[0].text, /01\s*·\s*Research/);
     assert.match(reportEntries[0].text, /02\s*·\s*Independent studies/);
   }
-  assert.equal(search.length, 15 + (docsPublished ? 16 : 0) + (reportPublished ? 1 : 0), 'Discoverability follows both independent publication switches');
+  assert.equal(search.length, 15 + (docsPublished ? 17 : 0) + (reportPublished ? 1 : 0), 'Discoverability follows both independent publication switches');
   for (const entry of search) {
     assert.doesNotMatch(`${entry.title} ${entry.text}`, /\bPAIR\b|Shanghai Institute for Physical Artificial Intelligence and Robotics/, `${entry.url}: searchable prose does not advertise the removed institute`);
   }
@@ -117,7 +117,7 @@ test('Unpublished Report is a non-indexed notice with no navigation, footer or d
   assert.match(html, /<meta\b(?=[^>]*\bname="robots")(?=[^>]*\bcontent="[^\"]*noindex[^\"]*nofollow)[^>]*>/i, 'The temporary notice is not discoverable by crawlers');
   assert.doesNotMatch(html, /class="report-section-nav"|id="(?:research|independent-studies)"|class="[^\"]*\b(?:report-paper-card|research-notes|research-outlook-panel)\b/, 'Retained source content is never embedded into the hidden route');
   const paths = (await readdir(new URL('dist/', root), {recursive: true})).filter(path => path.endsWith('.html'));
-  assert.equal(paths.length, 35, 'All public pages, hidden routes and compatibility documents are audited');
+  assert.equal(paths.length, 36, 'All public pages, hidden routes and compatibility documents are audited');
   for (const path of paths) {
     const document = await read(`dist/${path}`);
     for (const href of hrefs(document)) {

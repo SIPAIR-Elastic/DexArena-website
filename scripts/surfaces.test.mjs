@@ -108,7 +108,7 @@ test('The shared surface asset is deployed verbatim once in every generated shel
   assert.equal(await readFile(new URL('dist/assets/surfaces.css', root), 'utf8'), css, 'Built surface CSS matches the authored asset');
   assert.match(build, /["']surfaces\.css["']/, 'The builder explicitly copies the shared surface asset');
   const files = await htmlFiles('dist');
-  assert(files.length >= 35, 'Public routes, unpublished Docs notices and the legacy redirect are included');
+  assert(files.length >= 36, 'Public routes, all seventeen Docs pages, the hidden Report notice and compatibility redirects are included');
   let checked = 0;
   for (const file of files) {
     const html = await readFile(new URL(file, root), 'utf8');
@@ -120,5 +120,5 @@ test('The shared surface asset is deployed verbatim once in every generated shel
     assert.match(sheets.at(-1), /\/assets\/readability\.css(?:\?|$)/, `${file}: readable text stays the final stylesheet`);
     checked++;
   }
-  assert.equal(checked, 32, 'The treatment reaches every styled shell, including nested task routes and hidden Docs notices; compatibility redirects remain unstyled');
+  assert.equal(checked, 33, 'The treatment reaches every styled shell, including nested task routes, public Docs and the hidden Report notice; compatibility redirects remain unstyled');
 });

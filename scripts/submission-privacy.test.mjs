@@ -49,7 +49,7 @@ async function filesWithin(directory) {
 test('Every deployable text artifact keeps unpublished conference details private', async () => {
   const paths = await filesWithin('dist');
   const textual = paths.filter(path => textExtensions.has(extname(path).toLowerCase()));
-  assert(textual.filter(path => path.endsWith('.html')).length >= 35, 'Audit the whole generated site, including hidden Docs and the legacy paper redirect');
+  assert(textual.filter(path => path.endsWith('.html')).length >= 36, 'Audit the whole generated site, including all public Docs, hidden Report and compatibility redirects');
   for (const required of [
     'dist/report/index.html', 'dist/assets/search-index.json',
     'dist/assets/results/paper-results.json', 'dist/assets/docs/dexarena-citation.bib',

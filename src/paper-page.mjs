@@ -53,7 +53,7 @@ export function renderHomePaperBody() {
         ${paperPublished?`<div><dt>Submitted</dt><dd><time datetime="2026-11-02">2 November 2026</time></dd></div>
         <div><dt>Last revised</dt><dd><time datetime="2026-11-03">3 November 2026</time> · v2</dd></div>
         <div><dt>Status</dt><dd><strong>arXiv preprint</strong> · cs.RO</dd></div>
-        <div><dt>Paper</dt><dd class="paper-inline-links"><a href="${paperPdfUrl}" target="_blank" rel="noreferrer">Read PDF ↗</a><a href="${paperUrl}" target="_blank" rel="noreferrer">arXiv:2611.02629 ↗</a><a href="#citation">Citation &amp; BibTeX →</a></dd></div>`:''}
+        <div><dt>Paper</dt><dd class="paper-inline-links"><a href="${paperPdfUrl}" target="_blank" rel="noreferrer">Read PDF ↗</a><a href="${paperUrl}" target="_blank" rel="noreferrer">arXiv:2611.02629 ↗</a><a href="${docsPublished?'/docs/citation/':'#citation'}">Citation &amp; BibTeX →</a></dd></div>`:''}
         <div><dt>Code</dt><dd><a href="${codeUrl}" target="_blank" rel="noreferrer">GitHub · Benchmark code ↗</a></dd></div>
         <div><dt>Leaderboard</dt><dd><a href="/leaderboard/#lb-results">View benchmark results →</a></dd></div>
         ${paperPublished?`<div><dt>License</dt><dd><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0 ↗</a></dd></div>

@@ -50,11 +50,12 @@ composition.
 | 🧩 [Tasks](https://sipair-elastic.github.io/DexArena-website/tasks/) | Ten task sequences, stage definitions and physical success conditions |
 | 📊 [Leaderboard](https://sipair-elastic.github.io/DexArena-website/leaderboard/) | All results, charts, heatmaps, tables, method profiles and downloads |
 | 🧪 [Evaluation guide](https://sipair-elastic.github.io/DexArena-website/leaderboard/#evaluation) | Integrated Leaderboard topics: tracks, metrics, scene settings, protocol and evidence |
+| 📚 [Docs](https://sipair-elastic.github.io/DexArena-website/docs/) | Installation, data and replay, six baseline recipes, checkpoint evaluation, an end-to-end tutorial and citation |
 | 💻 [Code](https://sipair-elastic.github.io/DexArena-website/code/) | Official benchmark repository and issue tracker |
 
 > [!NOTE]
-> Report and Docs are temporarily hidden from the public website. Their source is
-> retained for future restoration; old URLs show non-indexed availability notices.
+> Docs is public and follows the released benchmark code and data. Report remains
+> temporarily hidden; its old URL shows a non-indexed availability notice.
 
 ## Quick start
 
@@ -132,7 +133,7 @@ a Bash-compatible shell.
 
 - 📄 **Paper:** public [arXiv preprint](https://arxiv.org/abs/2611.02629). Paper actions open arXiv; `/paper/` is a compatibility redirect.
 - 💻 **Code:** links to the [official benchmark repository](https://github.com/SIPAIR-Elastic/DexArena), separate from this website repository.
-- 📚 **Docs:** temporarily hidden from navigation, search and sitemap. Source articles remain available for maintenance; old URLs show a no-index preparation notice.
+- 📚 **Docs:** public in navigation, footer, search and sitemap. Seventeen articles include installation, data/replay, six-method training, checkpoint evaluation, an OpenCabinet tutorial and citation. Dataset/model access requirements and release-vs-manuscript differences are explicit.
 - 📰 **Report:** temporarily hidden from navigation, footer, search and sitemap. Research content and evidence remain in source; old URLs show a no-index availability notice.
 - 📊 **Results:** fixed manuscript baselines, not a live community-submission ranking. Submission intake is not open.
 - 🧪 **Evaluation:** lives inside the Leaderboard. Old `/evaluation/` and `/evaluation/evidence/` bookmarks redirect to their matching sections; neither is a standalone navigation or search entry.
